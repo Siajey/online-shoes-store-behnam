@@ -1,26 +1,65 @@
 @import "tailwindcss";
+@import "@fontsource-variable/vazirmatn";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ───────── Design tokens (مرجع: بوم طراحی) ─────────
+   پیش‌فرض تیره است. برای حالت روشن روی <html> مقدار data-theme="light" بگذارید.
+   مقدارها فقط اینجا تعریف می‌شوند؛ در کامپوننت‌ها هیچ رنگ hex ننویسید. */
+:root,
+[data-theme="dark"] {
+  --bg-page: #1a2530;
+  --bg-surface: #151e28;
+  --bg-surface-2: #1f2b37;
+  --bg-deep: #121a22;
+  --line: #2a3b4d;
+  --fg: #ffffff;
+  --fg-secondary: #c9d1da;
+  --fg-muted: #8a94a1;
+  --brand: #5b9fe3;
+  --on-brand: #0f1a24;
+  --ok: #59c7be;
+  --warn: #e3b341;
+  --danger: #e5532d;
 }
 
+[data-theme="light"] {
+  --bg-page: #f4f6f9;
+  --bg-surface: #ffffff;
+  --bg-surface-2: #e3e9f0;
+  --bg-deep: #eaeff4;
+  --line: #d5dce5;
+  --fg: #14202b;
+  --fg-secondary: #3b4a5a;
+  --fg-muted: #5b6775;
+  --brand: #2468b0;
+  --on-brand: #ffffff;
+  --ok: #0e7a6f;
+  --warn: #9a6b00;
+  --danger: #c2381a;
+}
+
+/* `inline` یعنی کلاس‌های Tailwind مستقیم به متغیرهای بالا اشاره می‌کنند و تغییر تم بدون rebuild کار می‌کند */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-page: var(--bg-page);
+  --color-surface: var(--bg-surface);
+  --color-surface-2: var(--bg-surface-2);
+  --color-deep: var(--bg-deep);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-fg-secondary: var(--fg-secondary);
+  --color-fg-muted: var(--fg-muted);
+  --color-brand: var(--brand);
+  --color-on-brand: var(--on-brand);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-danger: var(--danger);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: "Vazirmatn Variable", system-ui, sans-serif;
+
+  --radius-card: 28px;
+  --radius-sheet: 32px;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-page);
+  color: var(--fg);
 }
