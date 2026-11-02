@@ -7,8 +7,8 @@ import { cn } from "@/lib/cn";
 import { layoutCopy } from "./copy";
 import { isActivePath } from "./nav";
 
-export function MainNav() {
-  const pathname = usePathname();
+/** خود منو. pathname اگر null باشد، هیچ لینکی «فعال» نشان داده نمی‌شود (حالت جای‌نگهدار). */
+export function MainNavLinks({ pathname }: { pathname: string | null }) {
   return (
     <nav aria-label={layoutCopy.mainNav} className="flex flex-1 gap-6">
       {mainNav.map((item) => {
@@ -29,4 +29,9 @@ export function MainNav() {
       })}
     </nav>
   );
+}
+
+/** نسخه‌ی هوشمند که آدرس فعلی را می‌خواند. باید داخل <Suspense> استفاده شود. */
+export function MainNav() {
+  return <MainNavLinks pathname={usePathname()} />;
 }

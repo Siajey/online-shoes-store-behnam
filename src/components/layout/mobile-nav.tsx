@@ -27,9 +27,8 @@ const right: Item[] = [
   { href: "/account", label: layoutCopy.account, icon: <UserIcon className="size-[26px]" /> },
 ];
 
-export function MobileNav() {
-  const pathname = usePathname();
-
+/** خود منو. pathname اگر null باشد، هیچ آیتمی «فعال» نشان داده نمی‌شود (حالت جای‌نگهدار). */
+export function MobileNavBar({ pathname }: { pathname: string | null }) {
   const renderItem = (item: Item) => {
     const active = isActivePath(pathname, item.href);
     return (
@@ -67,4 +66,9 @@ export function MobileNav() {
       </Link>
     </nav>
   );
+}
+
+/** نسخه‌ی هوشمند که آدرس فعلی را می‌خواند. باید داخل <Suspense> استفاده شود. */
+export function MobileNav() {
+  return <MobileNavBar pathname={usePathname()} />;
 }

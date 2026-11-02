@@ -1,10 +1,11 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { ThemeToggle } from "@/features/theme/theme-toggle";
 import { toPersianDigits } from "@/lib/format";
 import { BrandLogo } from "./brand-logo";
 import { layoutCopy } from "./copy";
 import { BagIcon, HeartIcon, SearchIcon, UserIcon } from "./icons";
-import { MainNav } from "./main-nav";
+import { MainNav, MainNavLinks } from "./main-nav";
 
 const iconButton =
   "relative flex size-11 items-center justify-center rounded-full bg-surface-2 text-fg transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand motion-reduce:transition-none";
@@ -25,7 +26,10 @@ export function SiteHeader({ cartCount = 0 }: { cartCount?: number }) {
       <div className="bg-surface hidden h-18 lg:flex lg:items-center">
         <div className="mx-auto flex w-full max-w-300 items-center gap-8 px-8">
           <BrandLogo />
-          <MainNav />
+          {/* MainNav آدرس زمان درخواست را می‌خواند؛ تا برسد، همان منو بدون حالت «فعال» نشان داده می‌شود. */}
+          <Suspense fallback={<MainNavLinks pathname={null} />}>
+            <MainNav />
+          </Suspense>
           <form action="/products" role="search" className="w-70">
             <label className="bg-surface-2 text-fg-muted flex h-11 items-center gap-2 rounded-full px-4">
               <SearchIcon className="size-[18px]" />
