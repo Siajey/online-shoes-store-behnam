@@ -4,6 +4,8 @@ export type Product = {
   /** شناسه‌ی خوانا برای آدرس صفحه، مثل nike-air-max-90 */
   slug: string;
   name: string;
+  /** کد کالا */
+  sku?: string;
   /** قیمت نهایی (بعد از تخفیف)، عدد صحیح به تومان */
   price: number;
   /** قیمت قبل از تخفیف؛ فقط وقتی تخفیف واقعی دارد */
@@ -15,4 +17,5 @@ export type Product = {
   imageUrl?: string;
   available: boolean;
   categoryName?: string;
+  categorySlug?: string;
 };

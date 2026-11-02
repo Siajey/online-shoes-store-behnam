@@ -15,6 +15,7 @@ export function toProduct(dto: ProductDto): Product {
     id: dto.id,
     slug: dto.slug,
     name: dto.name,
+    sku: dto.sku || undefined,
     price: toToman(pricing.finalPrice, pricing.currency),
     originalPrice: hasDiscount ? toToman(pricing.originalPrice, pricing.currency) : undefined,
     discountLabel: hasDiscount ? pricing.discount?.label : undefined,
@@ -22,5 +23,6 @@ export function toProduct(dto: ProductDto): Product {
     imageUrl: dto.thumbnail || undefined,
     available: dto.isAvailable,
     categoryName: dto.category?.name,
+    categorySlug: dto.category?.slug,
   };
 }

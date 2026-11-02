@@ -40,9 +40,11 @@ describe("toProduct (روی نمونه‌ی واقعی بک‌اند)", () => {
     expect(products[5].available).toBe(false);
   });
 
-  it("تصویر و نام دسته را نگه می‌دارد", () => {
+  it("تصویر، کد کالا و دسته (نام و slug) را نگه می‌دارد", () => {
     expect(products[0].imageUrl).toContain("unsplash.com");
+    expect(products[0].sku).toBe("NK-AM90-001");
     expect(products[2].categoryName).toBe("کفش رسمی مردانه");
+    expect(products[2].categorySlug).toBe("mens-formal-shoes");
   });
 
   it("اگر واحد ریال باشد، به تومان تبدیل می‌شود", () => {
@@ -60,10 +62,11 @@ describe("toProduct (روی نمونه‌ی واقعی بک‌اند)", () => {
     expect(rial.originalPrice).toBe(4_500_000);
   });
 
-  it("thumbnail و badges خالی امن‌اند", () => {
+  it("thumbnail و badges و category خالی امن‌اند", () => {
     const p = toProduct({ ...dtos[1], thumbnail: null, badges: [], category: null });
     expect(p.imageUrl).toBeUndefined();
     expect(p.tag).toBeUndefined();
     expect(p.categoryName).toBeUndefined();
+    expect(p.categorySlug).toBeUndefined();
   });
 });
