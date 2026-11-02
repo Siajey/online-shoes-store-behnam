@@ -1,4 +1,5 @@
-import { MobileNav } from "@/components/layout/mobile-nav";
+import { Suspense } from "react";
+import { MobileNav, MobileNavBar } from "@/components/layout/mobile-nav";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 
@@ -11,7 +12,10 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         {children}
         <SiteFooter />
       </div>
-      <MobileNav />
+      {/* MobileNav آدرس زمان درخواست را می‌خواند؛ تا برسد، منو بدون حالت «فعال» نشان داده می‌شود. */}
+      <Suspense fallback={<MobileNavBar pathname={null} />}>
+        <MobileNav />
+      </Suspense>
     </>
   );
 }
