@@ -1,19 +1,31 @@
-import { formatPrice } from "@/lib/format";
-import { siteConfig } from "@/config/site";
+import Link from "next/link";
+import { Suspense } from "react";
+import { Benefits } from "@/features/landing/components/benefits";
+import { Hero } from "@/features/landing/components/hero";
+import { landingCopy } from "@/features/landing/copy";
+import { ProductGridSkeleton } from "@/features/products/components/product-grid";
+import { ProductSection } from "@/features/products/components/product-section";
 
-/** صفحه‌ی موقت برای بررسی RTL، فونت و tokens. در فاز ۲ با صفحه‌ی اصلی واقعی جایگزین می‌شود. */
 export default function Home() {
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center gap-4 p-6">
-      <h1 className="text-3xl font-medium">{siteConfig.name}</h1>
-      <p className="text-fg-muted">راه‌اندازی فاز ۰ انجام شد.</p>
-      <div className="bg-surface rounded-card flex items-center justify-between p-5">
-        <span className="text-fg-secondary">کتانی آبی اسپرت</span>
-        <span className="font-semibold">{formatPrice(2_190_000)}</span>
-      </div>
-      <button type="button" className="bg-brand text-on-brand h-13 rounded-full px-7 font-medium">
-        افزودن به سبد
-      </button>
+    <main>
+      <Hero />
+      <Benefits />
+
+      <section className="mx-auto w-full max-w-300 px-4 py-6 lg:px-8 lg:py-10">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-medium lg:text-[28px]">{landingCopy.productsTitle}</h2>
+          <Link href="/products" className="text-brand text-sm">
+            {landingCopy.viewAll}
+          </Link>
+        </div>
+        <div className="mt-6">
+          {/* ☐ وقتی API مرتب‌سازی (پرفروش/تازه) را مشخص کرد، دو بخش جدا مثل طرح ساخته می‌شود. */}
+          <Suspense fallback={<ProductGridSkeleton />}>
+            <ProductSection params={{ limit: 4 }} />
+          </Suspense>
+        </div>
+      </section>
     </main>
   );
 }

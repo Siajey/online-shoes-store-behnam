@@ -3,4 +3,6 @@ export const productCopy = {
   addToFavourites: "افزودن به علاقه‌مندی‌ها",
   removeFromFavourites: "حذف از علاقه‌مندی‌ها",
   addToCart: "افزودن به سبد",
+  empty: "هنوز محصولی ثبت نشده است.",
+  loading: "در حال بارگذاری محصولات",
 } as const;
