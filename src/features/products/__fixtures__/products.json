@@ -1,0 +1,188 @@
+{
+  "message": "محصولات با موفقیت دریافت شدند.",
+  "code": "PRODUCTS_RETRIEVED",
+  "timestamp": "2026-11-02T18:00:00.000Z",
+  "path": "/api/v1/products",
+  "data": [
+    {
+      "id": "a1b2c3d4-e5f6-4789-a012-345678901001",
+      "name": "کتونی نایک ایرمکس ۹۰",
+      "slug": "nike-air-max-90",
+      "sku": "NK-AM90-001",
+      "thumbnail": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&auto=format&fit=crop",
+      "pricing": {
+        "originalPrice": 4500000,
+        "discountAmount": 900000,
+        "finalPrice": 3600000,
+        "currency": "TOMAN",
+        "discount": {
+          "type": "PERCENTAGE",
+          "value": 20,
+          "label": "۲۰٪ تخفیف"
+        }
+      },
+      "isAvailable": true,
+      "badges": [
+        {
+          "type": "BEST_SELLER",
+          "label": "پرفروش"
+        },
+        {
+          "type": "NEW",
+          "label": "جدید"
+        }
+      ],
+      "category": {
+        "id": "c1d2e3f4-a5b6-4789-a012-345678901001",
+        "name": "کفش اسپرت مردانه",
+        "slug": "mens-sports-shoes"
+      }
+    },
+    {
+      "id": "a1b2c3d4-e5f6-4789-a012-345678901002",
+      "name": "کتونی آدیداس سامبا",
+      "slug": "adidas-samba",
+      "sku": "AD-SB-002",
+      "thumbnail": "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=600&auto=format&fit=crop",
+      "pricing": {
+        "originalPrice": 5200000,
+        "discountAmount": 0,
+        "finalPrice": 5200000,
+        "currency": "TOMAN",
+        "discount": null
+      },
+      "isAvailable": true,
+      "badges": [
+        {
+          "type": "POPULAR",
+          "label": "محبوب"
+        },
+        {
+          "type": "NEW",
+          "label": "جدید"
+        }
+      ],
+      "category": {
+        "id": "c1d2e3f4-a5b6-4789-a012-345678901001",
+        "name": "کفش اسپرت مردانه",
+        "slug": "mens-sports-shoes"
+      }
+    },
+    {
+      "id": "a1b2c3d4-e5f6-4789-a012-345678901003",
+      "name": "کفش چرم رسمی مردانه",
+      "slug": "mens-leather-formal-shoes",
+      "sku": "ML-FS-003",
+      "thumbnail": "https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=600&auto=format&fit=crop",
+      "pricing": {
+        "originalPrice": 6800000,
+        "discountAmount": 500000,
+        "finalPrice": 6300000,
+        "currency": "TOMAN",
+        "discount": {
+          "type": "FIXED_AMOUNT",
+          "value": 500000,
+          "label": "۵۰۰ هزار تومان تخفیف"
+        }
+      },
+      "isAvailable": true,
+      "badges": [
+        {
+          "type": "EXCLUSIVE",
+          "label": "خاص"
+        }
+      ],
+      "category": {
+        "id": "c1d2e3f4-a5b6-4789-a012-345678901002",
+        "name": "کفش رسمی مردانه",
+        "slug": "mens-formal-shoes"
+      }
+    },
+    {
+      "id": "a1b2c3d4-e5f6-4789-a012-345678901004",
+      "name": "کتونی نیوبالانس ۵۳۰",
+      "slug": "new-balance-530",
+      "sku": "NB-530-004",
+      "thumbnail": "https://images.unsplash.com/photo-1539185441755-769473a23570?w=600&auto=format&fit=crop",
+      "pricing": {
+        "originalPrice": 3900000,
+        "discountAmount": 0,
+        "finalPrice": 3900000,
+        "currency": "TOMAN",
+        "discount": null
+      },
+      "isAvailable": true,
+      "badges": [
+        {
+          "type": "MOST_VIEWED",
+          "label": "پربازدید"
+        }
+      ],
+      "category": {
+        "id": "c1d2e3f4-a5b6-4789-a012-345678901001",
+        "name": "کفش اسپرت مردانه",
+        "slug": "mens-sports-shoes"
+      }
+    },
+    {
+      "id": "a1b2c3d4-e5f6-4789-a012-345678901005",
+      "name": "کفش زنانه مدل لونا",
+      "slug": "womens-luna-shoes",
+      "sku": "WL-LN-005",
+      "thumbnail": "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600&auto=format&fit=crop",
+      "pricing": {
+        "originalPrice": 2800000,
+        "discountAmount": 420000,
+        "finalPrice": 2380000,
+        "currency": "TOMAN",
+        "discount": {
+          "type": "PERCENTAGE",
+          "value": 15,
+          "label": "۱۵٪ تخفیف"
+        }
+      },
+      "isAvailable": true,
+      "badges": [
+        {
+          "type": "NEW",
+          "label": "جدید"
+        }
+      ],
+      "category": {
+        "id": "c1d2e3f4-a5b6-4789-a012-345678901003",
+        "name": "کفش مجلسی زنانه",
+        "slug": "womens-formal-shoes"
+      }
+    },
+    {
+      "id": "a1b2c3d4-e5f6-4789-a012-345678901006",
+      "name": "کتونی پوما ریباند",
+      "slug": "puma-rebound",
+      "sku": "PM-RB-006",
+      "thumbnail": "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=600&auto=format&fit=crop",
+      "pricing": {
+        "originalPrice": 3400000,
+        "discountAmount": 0,
+        "finalPrice": 3400000,
+        "currency": "TOMAN",
+        "discount": null
+      },
+      "isAvailable": false,
+      "badges": [
+        {
+          "type": "POPULAR",
+          "label": "محبوب"
+        }
+      ],
+      "category": {
+        "id": "c1d2e3f4-a5b6-4789-a012-345678901001",
+        "name": "کفش اسپرت مردانه",
+        "slug": "mens-sports-shoes"
+      }
+    }
+  ],
+  "meta": {
+    "nextCursor": null,
+    "limit": 10
+  }
+}

@@ -13,19 +13,22 @@ export function ProductGrid({ products }: { products: Product[] }) {
         <ProductCard
           key={product.id}
           name={product.name}
-          href={productHref(product.id)}
+          href={productHref(product.slug)}
           price={product.price}
+          originalPrice={product.originalPrice}
+          discountLabel={product.discountLabel}
           tag={product.tag}
+          unavailable={!product.available}
           image={
             product.imageUrl ? (
-              // unoptimized: تا آدرس دامنه‌ی تصاویر مشخص نشده، تنظیم images.remotePatterns لازم نیست.
+              // unoptimized: تا دامنه‌ی تصاویر نهایی نشده، تنظیم images.remotePatterns لازم نیست.
               <Image
                 src={product.imageUrl}
                 alt={product.name}
                 fill
                 unoptimized
                 sizes="(min-width: 1024px) 270px, 50vw"
-                className="object-contain p-4"
+                className="object-cover"
               />
             ) : undefined
           }

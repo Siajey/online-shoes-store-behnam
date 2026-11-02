@@ -8,6 +8,8 @@ export const landingCopy = {
   heroTitle: "قدم‌هایت را سبک‌تر و شیک‌تر بردار",
   heroText: "کتانی و کفش روزمره، ورزشی و رسمی؛ انتخاب آسان، پرداخت امن و ارسال به سراسر کشور.",
   heroCta: "مشاهده‌ی محصولات",
+  heroSecondaryCta: "دسته‌بندی‌ها",
+  categoriesTitle: "دسته‌بندی‌ها",
   productsTitle: "محصولات",
   viewAll: "مشاهده‌ی همه",
   benefits: [

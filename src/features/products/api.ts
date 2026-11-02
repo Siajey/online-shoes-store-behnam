@@ -6,11 +6,11 @@ import type { Product } from "./types";
 export type ProductListParams = {
   cursor?: string;
   limit?: number;
+  /** ☐ نام پارامتر فیلتر دسته‌بندی (فعلاً slug دسته) با Swagger تطبیق داده شود */
   category?: string;
   q?: string;
 };
 
-/** ☐ مسیر و نام پارامترها با Swagger بک‌اند تطبیق داده شود. */
 export async function fetchProducts(
   params: ProductListParams = {},
   signal?: AbortSignal,
