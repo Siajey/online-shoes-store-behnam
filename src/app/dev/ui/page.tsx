@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ThemeToggle } from "@/features/theme/theme-toggle";
 import { ProductCard } from "@/features/products/components/product-card";
 
 /** صفحه‌ی موقت برای دیدن کامپوننت‌ها؛ فقط در حالت توسعه باز می‌شود. */
@@ -10,6 +11,11 @@ export default function UiPlayground() {
 
   return (
     <main className="mx-auto flex max-w-md flex-col gap-10 p-6">
+      <section className="flex items-center justify-between">
+        <h1 className="text-2xl font-medium">تغییر تم (ThemeToggle)</h1>
+        <ThemeToggle />
+      </section>
+
       <section className="flex flex-col gap-3">
         <h1 className="text-2xl font-medium">دکمه (Button)</h1>
         <h2 className="text-fg-muted">واریانت‌ها</h2>
