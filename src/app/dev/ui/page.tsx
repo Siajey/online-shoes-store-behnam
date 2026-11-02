@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -48,6 +49,42 @@ export default function UiPlayground() {
           ltr
         />
         <Input label="کد پستی" defaultValue="1234567890" disabled />
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h1 className="text-2xl font-medium">برچسب (Badge)</h1>
+        <h2 className="text-fg-muted">واریانت‌ها</h2>
+        <div className="flex flex-wrap gap-2">
+          <Badge>پیش‌فرض</Badge>
+          <Badge variant="brand">جدید</Badge>
+          <Badge variant="success">موجود</Badge>
+          <Badge variant="warning">تخفیف ویژه</Badge>
+          <Badge variant="danger">ناموجود</Badge>
+        </div>
+        <h2 className="text-fg-muted">وضعیت سفارش (با نقطه)</h2>
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="warning" dot>
+            در انتظار پرداخت
+          </Badge>
+          <Badge variant="brand" dot>
+            در حال آماده‌سازی
+          </Badge>
+          <Badge variant="success" dot>
+            تحویل شد
+          </Badge>
+          <Badge variant="danger" dot>
+            لغو شد
+          </Badge>
+        </div>
+        <h2 className="text-fg-muted">اندازه‌ی کوچک</h2>
+        <div className="flex flex-wrap gap-2">
+          <Badge size="sm" variant="brand">
+            ۲۰٪ تخفیف
+          </Badge>
+          <Badge size="sm" variant="success">
+            ارسال رایگان
+          </Badge>
+        </div>
       </section>
     </main>
   );
