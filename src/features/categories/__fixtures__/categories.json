@@ -1,0 +1,77 @@
+{
+  "message": "دسته‌بندی‌ها با موفقیت دریافت شدند.",
+  "code": "CATEGORIES_RETRIEVED",
+  "timestamp": "2026-11-02T18:00:00.000Z",
+  "path": "/api/v1/categories",
+  "data": [
+    {
+      "id": "8a7b2c91-4d63-4f12-9e81-2b6c5d7a1f30",
+      "name": "کفش مردانه",
+      "slug": "mens-shoes",
+      "image": "https://cdn.example.com/categories/mens-shoes.webp",
+      "parentId": null,
+      "children": [
+        {
+          "id": "9b8c3d12-5e74-4a23-8f92-3c7d6e8b2a41",
+          "name": "کفش اسپرت مردانه",
+          "slug": "mens-sports-shoes",
+          "image": "https://cdn.example.com/categories/mens-sports-shoes.webp",
+          "parentId": "8a7b2c91-4d63-4f12-9e81-2b6c5d7a1f30"
+        },
+        {
+          "id": "a1c9e4f3-6b85-4d21-9a03-4e8f7c9d2b52",
+          "name": "کفش رسمی مردانه",
+          "slug": "mens-formal-shoes",
+          "image": "https://cdn.example.com/categories/mens-formal-shoes.webp",
+          "parentId": "8a7b2c91-4d63-4f12-9e81-2b6c5d7a1f30"
+        },
+        {
+          "id": "b2d0f5a4-7c96-4e32-8b14-5f9a8d0e3c63",
+          "name": "صندل مردانه",
+          "slug": "mens-sandals",
+          "image": "https://cdn.example.com/categories/mens-sandals.webp",
+          "parentId": "8a7b2c91-4d63-4f12-9e81-2b6c5d7a1f30"
+        }
+      ]
+    },
+    {
+      "id": "c3e1a6b5-8d07-4f43-9c25-6a0b9e1f4d74",
+      "name": "کفش زنانه",
+      "slug": "womens-shoes",
+      "image": "https://cdn.example.com/categories/womens-shoes.webp",
+      "parentId": null,
+      "children": [
+        {
+          "id": "d4f2b7c6-9e18-4054-8d36-7b1c0f2a5e85",
+          "name": "کفش اسپرت زنانه",
+          "slug": "womens-sports-shoes",
+          "image": "https://cdn.example.com/categories/womens-sports-shoes.webp",
+          "parentId": "c3e1a6b5-8d07-4f43-9c25-6a0b9e1f4d74"
+        },
+        {
+          "id": "e5a3c8d7-0f29-4165-9e47-8c2d1a3b6f96",
+          "name": "کفش مجلسی زنانه",
+          "slug": "womens-formal-shoes",
+          "image": "https://cdn.example.com/categories/womens-shoes.webp",
+          "parentId": "c3e1a6b5-8d07-4f43-9c25-6a0b9e1f4d74"
+        }
+      ]
+    },
+    {
+      "id": "f6b4d9e8-1a30-4276-8f58-9d3e2b4c7a07",
+      "name": "کفش بچگانه",
+      "slug": "kids-shoes",
+      "image": "https://cdn.example.com/categories/kids-shoes.webp",
+      "parentId": null,
+      "children": []
+    },
+    {
+      "id": "a7c5e1f9-2b43-4d61-8a05-1c9e7f3b6d82",
+      "name": "اکسسوری",
+      "slug": "accessories",
+      "image": "https://cdn.example.com/categories/accessories.webp",
+      "parentId": null,
+      "children": []
+    }
+  ]
+}

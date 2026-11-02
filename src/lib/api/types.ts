@@ -16,9 +16,10 @@ export interface ApiErrorBody {
   path: string;
 }
 
-/** صفحه‌بندی cursor-based (بخش ۵ قرارداد). */
+/** صفحه‌بندی cursor-based (بخش ۵ قرارداد). limit در نمونه‌ی واقعی بک‌اند هم برمی‌گردد. */
 export interface CursorMeta {
   nextCursor: string | null;
+  limit?: number;
 }
 
 export interface Page<T> {

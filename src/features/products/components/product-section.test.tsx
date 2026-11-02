@@ -15,12 +15,13 @@ describe("ProductSection", () => {
 
   it("لیست محصولات را نشان می‌دهد", async () => {
     vi.mocked(fetchProducts).mockResolvedValue({
-      items: [{ id: "1", name: "کتانی آبی", price: 2_190_000 }],
+      items: [{ id: "1", slug: "blue", name: "کتانی آبی", price: 2_190_000, available: true }],
       nextCursor: null,
     });
     const out = await render();
     expect(out).toContain("کتانی آبی");
     expect(out).toContain("۲٬۱۹۰٬۰۰۰");
+    expect(out).toContain('href="/products/blue"');
   });
 
   it("وقتی لیست خالی است، پیام خالی نشان می‌دهد", async () => {

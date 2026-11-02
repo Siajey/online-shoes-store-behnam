@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { Badge } from "@/components/ui/badge";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/cn";
 import { formatPrice } from "@/lib/format";
@@ -11,12 +12,18 @@ export type ProductCardProps = {
   name: string;
   /** صفحه‌ی محصول */
   href: string;
-  /** قیمت به عدد صحیح (واحد: تومان) */
+  /** قیمت نهایی، به عدد صحیح (واحد: تومان) */
   price: number;
+  /** قیمت قبل از تخفیف؛ فقط وقتی تخفیف دارد */
+  originalPrice?: number;
+  /** متن تخفیف مثل «۲۰٪ تخفیف» */
+  discountLabel?: string;
   /** برچسب کوچک بالای نام، مثل «پرفروش» */
   tag?: string;
   /** تصویر محصول (مثلاً <Image />)؛ برنامه تصمیم می‌گیرد چه بگذارد. */
   image?: ReactNode;
+  /** ناموجود بودن: دکمه‌ی سبد غیرفعال و نشان «ناموجود» نمایش داده می‌شود. */
+  unavailable?: boolean;
   favourite?: boolean;
   onToggleFavourite?: () => void;
   onAddToCart?: () => void;
@@ -27,8 +34,11 @@ export function ProductCard({
   name,
   href,
   price,
+  originalPrice,
+  discountLabel,
   tag,
   image,
+  unavailable = false,
   favourite = false,
   onToggleFavourite,
   onAddToCart,
@@ -42,11 +52,29 @@ export function ProductCard({
           onClick={onToggleFavourite}
           aria-pressed={favourite}
           aria-label={favourite ? productCopy.removeFromFavourites : productCopy.addToFavourites}
-          className="bg-surface text-fg focus-visible:outline-brand absolute start-2.5 top-2.5 flex size-10 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="bg-surface text-fg focus-visible:outline-brand absolute start-2.5 top-2.5 z-10 flex size-10 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2"
         >
           <HeartIcon filled={favourite} />
         </button>
-        {image}
+        {unavailable ? (
+          <Badge size="sm" variant="neutral" className="absolute end-2.5 top-2.5 z-10">
+            {productCopy.unavailable}
+          </Badge>
+        ) : (
+          discountLabel && (
+            <Badge size="sm" variant="danger" className="absolute end-2.5 top-2.5 z-10">
+              {discountLabel}
+            </Badge>
+          )
+        )}
+        <div
+          className={cn(
+            "absolute inset-0 flex items-center justify-center",
+            unavailable && "opacity-50",
+          )}
+        >
+          {image}
+        </div>
       </div>
 
       <div className="text-brand min-h-5 text-xs font-medium">{tag}</div>
@@ -58,16 +86,22 @@ export function ProductCard({
         {name}
       </Link>
 
-      <div className="flex items-center justify-between">
-        <div className="text-lg font-medium">
-          {formatPrice(price, { unit: false })}{" "}
-          <span className="text-fg-muted text-xs font-light">{siteConfig.currency.unit}</span>
+      <div className="flex items-end justify-between">
+        <div className="flex flex-col">
+          <span className="text-fg-muted h-4 text-xs line-through">
+            {originalPrice ? formatPrice(originalPrice, { unit: false }) : null}
+          </span>
+          <div className="text-lg font-medium">
+            {formatPrice(price, { unit: false })}{" "}
+            <span className="text-fg-muted text-xs font-light">{siteConfig.currency.unit}</span>
+          </div>
         </div>
         <button
           type="button"
           onClick={onAddToCart}
+          disabled={unavailable}
           aria-label={productCopy.addToCart}
-          className="bg-brand text-on-brand focus-visible:outline-brand flex size-11 items-center justify-center rounded-2xl transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:transition-none"
+          className="bg-brand text-on-brand focus-visible:outline-brand flex size-11 items-center justify-center rounded-2xl transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none"
         >
           <PlusIcon />
         </button>

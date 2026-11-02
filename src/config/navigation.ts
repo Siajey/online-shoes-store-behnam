@@ -1,11 +1,11 @@
 export type NavItem = { label: string; href: string };
 
-/** ناوبری اصلی هدر دسکتاپ. مسیرها و پارامترهای فیلتر موقت‌اند تا قرارداد API نهایی شود. */
+/** ناوبری اصلی هدر دسکتاپ. slugها از نمونه‌ی واقعی /categories آمده‌اند. */
 export const mainNav: NavItem[] = [
   { label: "خانه", href: "/" },
   { label: "محصولات", href: "/products" },
-  { label: "مردانه", href: "/products?category=men" },
-  { label: "زنانه", href: "/products?category=women" },
+  { label: "مردانه", href: "/products?category=mens-shoes" },
+  { label: "زنانه", href: "/products?category=womens-shoes" },
   { label: "تخفیف‌ها", href: "/products?discount=true" },
 ];
 
@@ -14,8 +14,8 @@ export const footerGroups: { title: string; items: NavItem[] }[] = [
     title: "فروشگاه",
     items: [
       { label: "همه‌ی محصولات", href: "/products" },
-      { label: "مردانه", href: "/products?category=men" },
-      { label: "زنانه", href: "/products?category=women" },
+      { label: "مردانه", href: "/products?category=mens-shoes" },
+      { label: "زنانه", href: "/products?category=womens-shoes" },
       { label: "تخفیف‌ها", href: "/products?discount=true" },
     ],
   },

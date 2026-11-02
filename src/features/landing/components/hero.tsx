@@ -16,10 +16,13 @@ export function Hero() {
           <p className="text-fg-muted mt-5 max-w-120 text-base leading-9 font-light lg:text-lg">
             {landingCopy.heroText}
           </p>
-          <div className="mt-8">
+          <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/products" className={buttonVariants({ size: "lg" })}>
               {landingCopy.heroCta}
             </Link>
+            <a href="#categories" className={buttonVariants({ size: "lg", variant: "secondary" })}>
+              {landingCopy.heroSecondaryCta}
+            </a>
           </div>
         </div>
 

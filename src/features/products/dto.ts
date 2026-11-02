@@ -1,13 +1,28 @@
 /**
- * شکل محصول در پاسخ API.
- * ⚠ فرض موقت و حداقلی است. وقتی Swagger یا نمونه‌ی واقعی بک‌اند رسید،
- * این فایل (یا تایپ تولیدشده با pnpm api:gen) و mappers.ts تنها جاهایی‌اند که عوض می‌شوند.
+ * شکل محصول در GET /products — از نمونه‌ی واقعی بک‌اند (__fixtures__/products.json).
+ * اگر بک‌اند عوض شد، فقط این فایل و mappers.ts عوض می‌شوند.
  */
 export type ProductDto = {
   id: string;
   name: string;
-  /** عدد صحیح، به تومان */
-  price: number;
-  imageUrl?: string | null;
-  badge?: string | null;
+  slug: string;
+  sku: string;
+  thumbnail: string | null;
+  pricing: {
+    originalPrice: number;
+    discountAmount: number;
+    finalPrice: number;
+    /** در نمونه: "TOMAN" */
+    currency: string;
+    discount: {
+      /** مثل PERCENTAGE یا FIXED_AMOUNT */
+      type: string;
+      value: number;
+      /** متن آماده برای نمایش، مثل «۲۰٪ تخفیف» */
+      label: string;
+    } | null;
+  };
+  isAvailable: boolean;
+  badges: { type: string; label: string }[];
+  category: { id: string; name: string; slug: string } | null;
 };
