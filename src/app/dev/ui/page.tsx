@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ProductCard } from "@/features/products/components/product-card";
 
 /** صفحه‌ی موقت برای دیدن کامپوننت‌ها؛ فقط در حالت توسعه باز می‌شود. */
 export default function UiPlayground() {
@@ -85,6 +86,24 @@ export default function UiPlayground() {
             ارسال رایگان
           </Badge>
         </div>
+      </section>
+
+      <section className="flex flex-col gap-4">
+        <h1 className="text-2xl font-medium">کارت محصول (ProductCard)</h1>
+        <ProductCard
+          name="کتانی آبی اسپرت"
+          href="/dev/ui"
+          price={2_190_000}
+          tag="پرفروش"
+          image={<div className="bg-brand/30 size-28 rounded-full" />}
+        />
+        <ProductCard
+          name="کفش رسمی چرم طبیعی"
+          href="/dev/ui"
+          price={3_450_000}
+          favourite
+          image={<div className="bg-warn/30 size-28 rounded-full" />}
+        />
       </section>
     </main>
   );
