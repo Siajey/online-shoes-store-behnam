@@ -4,4 +4,12 @@ export const siteConfig = {
   description: "فروشگاه آنلاین کفش؛ خرید آسان، ارسال سریع، ضمانت اصالت کالا",
   locale: "fa-IR",
   currency: { unit: "تومان" as const },
+  /** سال شمسی برای فوتر. ثابت نوشته می‌شود تا صفحه‌ها بدون زمان جاری ایستا بمانند. */
+  copyrightYear: "۱۴۰۵",
+  /** هر مورد که خالی باشد، در فوتر نمایش داده نمی‌شود. */
+  contact: {
+    phone: "",
+    email: "",
+    address: "",
+  },
 } as const;
