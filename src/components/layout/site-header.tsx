@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { ThemeToggle } from "@/features/theme/theme-toggle";
-import { toPersianDigits } from "@/lib/format";
 import { BrandLogo } from "./brand-logo";
+import { CartLink } from "./cart-link";
 import { layoutCopy } from "./copy";
 import { BagIcon, HeartIcon, SearchIcon, UserIcon } from "./icons";
 import { MainNav, MainNavLinks } from "./main-nav";
@@ -10,10 +10,7 @@ import { MainNav, MainNavLinks } from "./main-nav";
 const iconButton =
   "relative flex size-11 items-center justify-center rounded-full bg-surface-2 text-fg transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand motion-reduce:transition-none";
 
-export function SiteHeader({ cartCount = 0 }: { cartCount?: number }) {
-  const cartLabel =
-    cartCount > 0 ? layoutCopy.cartWithCount(toPersianDigits(cartCount)) : layoutCopy.cart;
-
+export function SiteHeader() {
   return (
     <header>
       {/* موبایل: نوار باریک بالا */}
@@ -47,17 +44,9 @@ export function SiteHeader({ cartCount = 0 }: { cartCount?: number }) {
             <Link href="/favourites" aria-label={layoutCopy.favourites} className={iconButton}>
               <HeartIcon />
             </Link>
-            <Link href="/cart" aria-label={cartLabel} className={iconButton}>
+            <CartLink className={iconButton}>
               <BagIcon />
-              {cartCount > 0 && (
-                <span
-                  aria-hidden="true"
-                  className="bg-danger text-fg absolute -end-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[11px]"
-                >
-                  {toPersianDigits(cartCount)}
-                </span>
-              )}
-            </Link>
+            </CartLink>
             <Link
               href="/account"
               aria-label={layoutCopy.account}

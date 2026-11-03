@@ -6,7 +6,7 @@ import { SiteHeader } from "./site-header";
 import { MobileNav } from "./mobile-nav";
 
 describe("SiteHeader", () => {
-  const out = renderToStaticMarkup(<SiteHeader cartCount={3} />);
+  const out = renderToStaticMarkup(<SiteHeader />);
   it("نام برند و ناوبری اصلی را دارد", () => {
     expect(out).toContain(siteConfig.name);
     expect(out).toContain('aria-label="ناوبری اصلی"');
@@ -17,11 +17,9 @@ describe("SiteHeader", () => {
     expect(out).toContain('action="/products"');
     expect(out).toContain('name="q"');
   });
-  it("تعداد سبد را فارسی و در برچسب دسترس‌پذیر می‌گوید", () => {
-    expect(out).toContain('aria-label="سبد خرید، ۳ کالا"');
-  });
-  it("بدون کالا، برچسب ساده است", () => {
-    expect(renderToStaticMarkup(<SiteHeader />)).toContain('aria-label="سبد خرید"');
+  it("لینک سبد خرید با برچسب ساده (پیش از خواندن حافظه) وجود دارد", () => {
+    expect(out).toContain('aria-label="سبد خرید"');
+    expect(out).toContain('href="/cart"');
   });
 });
 
