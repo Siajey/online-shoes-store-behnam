@@ -1,68 +1,77 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { HeartIcon } from "@/components/layout/icons";
 import { Button } from "@/components/ui/button";
-import { toPersianDigits } from "@/lib/format";
+import { QuantityStepper } from "@/components/ui/quantity-stepper";
+import { MAX_QUANTITY } from "@/features/cart/cart";
+import { cartCopy } from "@/features/cart/copy";
+import { cartStore } from "@/features/cart/store";
 import { productCopy } from "../copy";
+import type { Product } from "../types";
 
-/** ☐ سقف تعداد را بعد از مشخص شدن موجودی انبار از API بگیرید. */
-const MAX_QUANTITY = 10;
+/** مدت نمایش پیام «به سبد اضافه شد» */
+const ADDED_MESSAGE_MS = 4000;
 
-/**
- * بخش خرید: تعداد، افزودن به سبد و علاقه‌مندی.
- * ⚠ هنوز به سبد وصل نیست (PR بعدی: cart-store)؛ فقط حالت‌های ظاهری کار می‌کنند.
- */
-export function ProductPurchase({ available }: { available: boolean }) {
+/** بخش خرید: تعداد، افزودن به سبد و علاقه‌مندی. (علاقه‌مندی‌ها هنوز ذخیره نمی‌شوند؛ PR جداگانه.) */
+export function ProductPurchase({ product }: { product: Product }) {
+  const available = product.available;
   const [quantity, setQuantity] = useState(1);
   const [favourite, setFavourite] = useState(false);
+  const [added, setAdded] = useState(false);
 
-  const stepButton =
-    "flex size-11 items-center justify-center rounded-full text-xl text-fg transition-colors hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:pointer-events-none disabled:opacity-40 motion-reduce:transition-none";
+  useEffect(() => {
+    if (!added) return;
+    const timer = setTimeout(() => setAdded(false), ADDED_MESSAGE_MS);
+    return () => clearTimeout(timer);
+  }, [added]);
+
+  function addToCart() {
+    cartStore.add(product, quantity);
+    setAdded(true);
+  }
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <div
-        role="group"
-        aria-label={productCopy.quantity}
-        className="bg-surface-2 flex h-13 items-center rounded-full px-1"
-      >
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center gap-3">
+        <QuantityStepper
+          value={quantity}
+          onChange={setQuantity}
+          max={MAX_QUANTITY}
+          disabled={!available}
+          labels={{
+            group: productCopy.quantity,
+            increase: productCopy.increaseQuantity,
+            decrease: productCopy.decreaseQuantity,
+          }}
+        />
+
+        <Button size="lg" disabled={!available} onClick={addToCart} className="min-w-40 flex-1">
+          {available ? productCopy.addToCartFull : productCopy.unavailable}
+        </Button>
+
         <button
           type="button"
-          aria-label={productCopy.increaseQuantity}
-          disabled={!available || quantity >= MAX_QUANTITY}
-          onClick={() => setQuantity((q) => Math.min(MAX_QUANTITY, q + 1))}
-          className={stepButton}
+          aria-pressed={favourite}
+          aria-label={favourite ? productCopy.removeFromFavourites : productCopy.addToFavourites}
+          onClick={() => setFavourite((f) => !f)}
+          className="bg-surface-2 text-fg focus-visible:outline-brand flex size-13 items-center justify-center rounded-full transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:transition-none"
         >
-          +
-        </button>
-        <span aria-live="polite" className="w-8 text-center font-medium">
-          {toPersianDigits(quantity)}
-        </span>
-        <button
-          type="button"
-          aria-label={productCopy.decreaseQuantity}
-          disabled={!available || quantity <= 1}
-          onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-          className={stepButton}
-        >
-          −
+          <HeartIcon className="size-[22px]" fill={favourite ? "currentColor" : "none"} />
         </button>
       </div>
 
-      <Button size="lg" disabled={!available} className="min-w-40 flex-1">
-        {available ? productCopy.addToCartFull : productCopy.unavailable}
-      </Button>
-
-      <button
-        type="button"
-        aria-pressed={favourite}
-        aria-label={favourite ? productCopy.removeFromFavourites : productCopy.addToFavourites}
-        onClick={() => setFavourite((f) => !f)}
-        className="bg-surface-2 text-fg focus-visible:outline-brand flex size-13 items-center justify-center rounded-full transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:transition-none"
-      >
-        <HeartIcon className="size-[22px]" fill={favourite ? "currentColor" : "none"} />
-      </button>
+      <div role="status" className="min-h-6 text-sm">
+        {added && (
+          <>
+            <span className="text-ok">{cartCopy.addedShort}</span>{" "}
+            <Link href="/cart" className="text-brand underline underline-offset-4">
+              {cartCopy.viewCart}
+            </Link>
+          </>
+        )}
+      </div>
     </div>
   );
 }

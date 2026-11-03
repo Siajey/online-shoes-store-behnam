@@ -75,7 +75,7 @@ export function ProductDetail({ product }: { product: Product }) {
             </Badge>
           </div>
 
-          <ProductPurchase available={product.available} />
+          <ProductPurchase product={product} />
         </div>
       </div>
     </>

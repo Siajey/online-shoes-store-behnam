@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
+import { CartLink } from "./cart-link";
 import { layoutCopy } from "./copy";
 import { BagIcon, BellIcon, HeartIcon, HomeIcon, UserIcon } from "./icons";
 import { isActivePath } from "./nav";
@@ -57,13 +58,12 @@ export function MobileNavBar({ pathname }: { pathname: string | null }) {
         <span aria-hidden="true" />
         {right.map(renderItem)}
       </div>
-      <Link
-        href="/cart"
-        aria-label={layoutCopy.cart}
+      <CartLink
         className="bg-brand text-on-brand ring-page focus-visible:outline-brand absolute inset-x-0 -top-4 mx-auto flex size-18 items-center justify-center rounded-full ring-8 focus-visible:outline-2 focus-visible:outline-offset-4"
+        badgeClassName="end-1 top-1"
       >
         <BagIcon className="size-[30px]" />
-      </Link>
+      </CartLink>
     </nav>
   );
 }

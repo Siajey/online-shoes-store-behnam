@@ -1,4 +1,9 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
+import { cartCopy } from "@/features/cart/copy";
+import { cartStore } from "@/features/cart/store";
 import { cn } from "@/lib/cn";
 import { productHref } from "../routes";
 import type { Product } from "../types";
@@ -7,8 +12,19 @@ import { ProductCard } from "./product-card";
 const grid = "grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-5";
 
 export function ProductGrid({ products }: { products: Product[] }) {
+  // پیام برای صفحه‌خوان؛ کلید تازه باعث می‌شود افزودن پشت‌سرهم‌ی همان کالا هم اعلام شود.
+  const [announcement, setAnnouncement] = useState({ id: 0, text: "" });
+
+  function addToCart(product: Product) {
+    cartStore.add(product);
+    setAnnouncement((a) => ({ id: a.id + 1, text: cartCopy.added(product.name) }));
+  }
+
   return (
     <div className={grid}>
+      <span key={announcement.id} role="status" className="sr-only">
+        {announcement.text}
+      </span>
       {products.map((product) => (
         <ProductCard
           key={product.id}
@@ -19,6 +35,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
           discountLabel={product.discountLabel}
           tag={product.tag}
           unavailable={!product.available}
+          onAddToCart={() => addToCart(product)}
           image={
             product.imageUrl ? (
               // unoptimized: تا دامنه‌ی تصاویر نهایی نشده، تنظیم images.remotePatterns لازم نیست.
