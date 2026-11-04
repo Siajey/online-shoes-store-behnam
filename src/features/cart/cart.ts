@@ -1,16 +1,11 @@
 import { z } from "zod";
+import { safeUrl } from "@/lib/safe-url";
 import type { CartItem, CartableProduct } from "./types";
 
 /** ☐ سقف تعداد را بعد از مشخص شدن موجودی انبار از API بگیرید. */
 export const MAX_QUANTITY = 10;
 
 const clampQuantity = (q: number) => Math.min(MAX_QUANTITY, Math.max(0, Math.floor(q)));
-
-/** فقط آدرس مطلق http(s) یا مسیر داخلی پذیرفته می‌شود. */
-const safeUrl = z
-  .string()
-  .max(2000)
-  .refine((u) => /^(https?:\/\/|\/)/.test(u));
 
 const itemSchema = z.object({
   id: z.string().min(1).max(100),
