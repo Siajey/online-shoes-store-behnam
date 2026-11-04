@@ -45,24 +45,37 @@ export function ProductCard({
   className,
 }: ProductCardProps) {
   return (
-    <article className={cn("rounded-card bg-surface flex flex-col gap-3 p-4", className)}>
-      <div className="bg-surface-2 relative flex h-48 items-center justify-center overflow-hidden rounded-[22px]">
+    <article
+      className={cn(
+        "rounded-card bg-surface flex min-w-0 flex-col gap-2 p-3 lg:gap-3 lg:p-4",
+        className,
+      )}
+    >
+      <div className="bg-surface-2 relative flex h-36 items-center justify-center overflow-hidden rounded-[18px] sm:h-44 lg:h-48 lg:rounded-[22px]">
         <button
           type="button"
           onClick={onToggleFavourite}
           aria-pressed={favourite}
           aria-label={favourite ? productCopy.removeFromFavourites : productCopy.addToFavourites}
-          className="bg-surface text-fg focus-visible:outline-brand absolute start-2.5 top-2.5 z-10 flex size-10 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2"
+          className="bg-surface text-fg focus-visible:outline-brand absolute start-2 top-2 z-10 flex size-10 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2"
         >
           <HeartIcon filled={favourite} />
         </button>
         {unavailable ? (
-          <Badge size="sm" variant="neutral" className="absolute end-2.5 top-2.5 z-10">
+          <Badge
+            size="sm"
+            variant="neutral"
+            className="absolute end-2 bottom-2 z-10 lg:top-2 lg:bottom-auto"
+          >
             {productCopy.unavailable}
           </Badge>
         ) : (
           discountLabel && (
-            <Badge size="sm" variant="danger" className="absolute end-2.5 top-2.5 z-10">
+            <Badge
+              size="sm"
+              variant="danger"
+              className="absolute end-2 bottom-2 z-10 lg:top-2 lg:bottom-auto"
+            >
               {discountLabel}
             </Badge>
           )
@@ -77,23 +90,25 @@ export function ProductCard({
         </div>
       </div>
 
-      <div className="text-brand min-h-5 text-xs font-medium">{tag}</div>
+      <div className="text-brand min-h-4 truncate text-xs font-medium lg:min-h-5">{tag}</div>
 
       <Link
         href={href}
-        className="focus-visible:outline-brand text-[17px] font-medium focus-visible:outline-2 focus-visible:outline-offset-2"
+        className="focus-visible:outline-brand line-clamp-2 min-h-12 text-[15px] leading-6 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 lg:text-[17px]"
       >
         {name}
       </Link>
 
-      <div className="flex items-end justify-between">
-        <div className="flex flex-col">
+      <div className="flex items-end justify-between gap-2">
+        <div className="flex min-w-0 flex-col">
           <span className="text-fg-muted h-4 text-xs line-through">
             {originalPrice ? formatPrice(originalPrice, { unit: false }) : null}
           </span>
-          <div className="text-lg font-medium">
+          <div className="text-base font-medium lg:text-lg">
             {formatPrice(price, { unit: false })}{" "}
-            <span className="text-fg-muted text-xs font-light">{siteConfig.currency.unit}</span>
+            <span className="text-fg-muted block text-xs font-light lg:inline">
+              {siteConfig.currency.unit}
+            </span>
           </div>
         </div>
         <button
@@ -101,7 +116,7 @@ export function ProductCard({
           onClick={onAddToCart}
           disabled={unavailable}
           aria-label={productCopy.addToCart}
-          className="bg-brand text-on-brand focus-visible:outline-brand flex size-11 items-center justify-center rounded-2xl transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none"
+          className="bg-brand text-on-brand focus-visible:outline-brand flex size-10 shrink-0 items-center justify-center rounded-2xl transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none lg:size-11"
         >
           <PlusIcon />
         </button>

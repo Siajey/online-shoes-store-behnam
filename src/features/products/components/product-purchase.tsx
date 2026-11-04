@@ -8,17 +8,19 @@ import { QuantityStepper } from "@/components/ui/quantity-stepper";
 import { MAX_QUANTITY } from "@/features/cart/cart";
 import { cartCopy } from "@/features/cart/copy";
 import { cartStore } from "@/features/cart/store";
+import { favouritesStore } from "@/features/favourites/store";
+import { useIsFavourite } from "@/features/favourites/use-favourites";
 import { productCopy } from "../copy";
 import type { Product } from "../types";
 
 /** مدت نمایش پیام «به سبد اضافه شد» */
 const ADDED_MESSAGE_MS = 4000;
 
-/** بخش خرید: تعداد، افزودن به سبد و علاقه‌مندی. (علاقه‌مندی‌ها هنوز ذخیره نمی‌شوند؛ PR جداگانه.) */
+/** بخش خرید: تعداد، افزودن به سبد و علاقه‌مندی. */
 export function ProductPurchase({ product }: { product: Product }) {
   const available = product.available;
   const [quantity, setQuantity] = useState(1);
-  const [favourite, setFavourite] = useState(false);
+  const favourite = useIsFavourite(product.id);
   const [added, setAdded] = useState(false);
 
   useEffect(() => {
@@ -55,7 +57,7 @@ export function ProductPurchase({ product }: { product: Product }) {
           type="button"
           aria-pressed={favourite}
           aria-label={favourite ? productCopy.removeFromFavourites : productCopy.addToFavourites}
-          onClick={() => setFavourite((f) => !f)}
+          onClick={() => favouritesStore.toggle(product)}
           className="bg-surface-2 text-fg focus-visible:outline-brand flex size-13 items-center justify-center rounded-full transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:transition-none"
         >
           <HeartIcon className="size-[22px]" fill={favourite ? "currentColor" : "none"} />
