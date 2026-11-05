@@ -1,0 +1,19 @@
+import { siteConfig } from "@/config/site";
+import { infoCopy } from "../copy";
+
+/** راه‌های ارتباطی از config/site.ts؛ اگر خالی باشد، پیام «به‌زودی» نشان داده می‌شود. */
+export function ReturnsContact() {
+  const lines = [
+    siteConfig.contact.phone,
+    siteConfig.contact.email,
+    siteConfig.contact.address,
+  ].filter(Boolean);
+  if (lines.length === 0) return <p className="text-fg-muted">{infoCopy.returns.noContact}</p>;
+  return (
+    <ul className="text-fg-secondary flex flex-col gap-2 leading-8">
+      {lines.map((line) => (
+        <li key={line}>{line}</li>
+      ))}
+    </ul>
+  );
+}
