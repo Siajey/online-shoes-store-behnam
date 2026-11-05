@@ -55,7 +55,7 @@ app/  ──►  features/  ──►  components/ui  +  lib/
 │  │  ├─ utils/               cn() و ابزارهای کوچک
 │  │  └─ hooks/               hookهای عمومی (useMediaQuery، useDebounce)
 │  ├─ config/                 site.ts (نام برند، لینک‌ها)، env.ts (اعتبارسنجی متغیرها با Zod)
-│  ├─ mocks/                  MSW handlers و داده‌ی ساختگی
+│  ├─ (بدون mocks)             نمونه‌ی واقعی پاسخ API در پوشه‌ی __fixtures__ هر فیچر، فقط برای تست
 │  └─ styles/                 tokens.css (رنگ، فاصله، شعاع)
 ├─ tests/e2e/                 Playwright
 ├─ .storybook/

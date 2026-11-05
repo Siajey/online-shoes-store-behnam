@@ -209,3 +209,56 @@ export interface ApiError {
 - Backend changes an endpoint: update Swagger in the same PR, fill "API changes" in the PR, notify the frontend developer.
 - Frontend runs `api:gen` and fixes TypeScript errors.
 - Any change to the sections above is recorded in `DECISIONS.md` and this file.
+
+## 9. Confirmed from backend code (2026-11-06)
+
+Read from the merged backend `main` (auth, users, addresses, health). These replace the matching ☐ items above; the older sections stay until the backend owner reviews them.
+
+**Base**
+
+- Prefix `/api/v1` is confirmed (`main.ts`). Backend runs on `http://localhost:3000`; frontend dev origin is `http://localhost:3001`.
+- Backend loads env from `env/development/.env` (not the project root).
+
+**Auth (passwordless, phone + OTP)**
+
+| Method | Path                                | CSRF | Notes                                                                                |
+| ------ | ----------------------------------- | ---- | ------------------------------------------------------------------------------------ |
+| POST   | `/auth/csrf-token`                  | no   | Sets cookie `csrf_secret`; returns `data.csrfToken`                                  |
+| POST   | `/auth/login`                       | no   | Body `{ loginMethod: "otp", credentials: { phoneNumber } }`; creates the user if new |
+| GET    | `/auth/send-login-otp/:phoneNumber` | no   | Resend; production limit 1 per 120 s                                                 |
+| POST   | `/auth/verify-login-otp`            | no   | Body `{ phoneNumber, otp }`; sets auth cookies; returns a new `data.csrfToken`       |
+| POST   | `/auth/refresh-token`               | no   | Uses the refresh cookie; sets new auth cookies                                       |
+| POST   | `/auth/logout`                      | yes  | Requires a valid session                                                             |
+
+- There is no separate registration endpoint; the first successful OTP login registers the user. There is no password login in this branch (`loginMethod` only accepts `otp`). Email password reset is not implemented yet (☐ decision D-012).
+- Phone format: `09xxxxxxxxx` (a leading `9` without `0` is also accepted). The frontend sends the normalized `09...` form.
+- OTP: fixed `12345` outside production, 6 random digits in production. SMS sending is a stub for now (☐).
+- Throttling (production): login 5 per 30 s, verify 5 per 60 s, resend and logout 1 per 120 s. Development allows 100.
+- Cookies: `access_token` (HttpOnly, SameSite=Lax, 1 h), `refresh_token` (HttpOnly, SameSite=Lax, 7 d), `csrf_secret` (HttpOnly, SameSite=Strict, 1 h). The token sent in the header is `HMAC(csrf_secret)`, returned as `data.csrfToken`.
+- CSRF header name: `x-csrf-token`. Missing cookie gives 403 `Invalid_CSRF_Secret`; wrong token gives 403 `UNAUTHORIZED`.
+- Success envelope has no `meta` on these endpoints. Messages are Persian by default (fallback language `fa`), so the frontend does not send `x-lang`.
+
+**CORS (current code)**
+
+- Allowed origins: `FRONTEND_URL_DEV` and `FRONTEND_URL` outside production, `FRONTEND_URL` only in production. Credentials are allowed.
+- `allowedHeaders` is only `Content-Type` and `Authorization`. ☐ `x-csrf-token` must be added, otherwise logout and every CSRF-protected request fails from the browser (preflight). `x-lang` is also not allowed, which is why the frontend does not send it.
+
+**Users**
+
+- `GET /users/me` returns `{ id, phoneNumber, status, role, createdAt, updatedAt, profile }`. `profile` is `null` until filled.
+- `PATCH /users/me` and `DELETE /users/me` require CSRF. Profile fields: `firstName`, `lastName` (max 20 chars each).
+- Roles: `user`, `admin`. Statuses: `active`, `inactive`, `registered`.
+
+**Addresses** (`/users/me/addresses`, session required)
+
+- `GET /`, `POST /`, `PATCH /:id`, `POST /:id/default`, `DELETE /:id`.
+- Fields: `street`, `city`, `province` (max 100 each), `postalCode` (max 10), `isDefault` (optional).
+
+**Health**
+
+- `GET /health/live`, `/health/public`, `/health/ready`, `/health/database`, `/health/disk`, `/health/memory`, `/health/redis`.
+
+**Still open (☐)**
+
+- Products, categories (write side), cart, orders, payments, admin endpoints, image upload.
+- Per-field validation errors, `Retry-After` on 429, domains for production cookies (`SameSite`).

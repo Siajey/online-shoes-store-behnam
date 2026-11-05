@@ -20,7 +20,7 @@ node -v        # باید ۲۰ یا بالاتر باشد (پیشنهاد ۲۲)
 corepack enable && corepack prepare pnpm@latest --activate
 
 pnpm create next-app@latest . --ts --tailwind --eslint --app --src-dir --import-alias "@/*" --use-pnpm
-pnpm dev       # باید روی localhost:3000 بالا بیاید
+pnpm dev       # باید روی localhost:3001 بالا بیاید (بک‌اند محلی روی ۳۰۰۰ است)
 ```
 
 اگر پوشه خالی نبود (README دارد)، README را موقتاً بیرون ببرید و برگردانید.
@@ -120,7 +120,7 @@ git push -u origin chore/setup-tooling   # → Pull Request → CI سبز → Sq
 **قرارداد، نه حدس.** یک نشست ۳۰ دقیقه‌ای بگذارید و `docs/API_CONTRACT.md` را با هم پر کنید (پیشنهادهای من داخل فایل است). بعد:
 
 - بک‌اند: Swagger را روی یک آدرس ثابت (staging) نگه دارد؛ هر تغییر API = یک Issue با برچسب `api-contract` + اطلاع به شما.
-- شما: بدون API آماده، با **MSW** و داده‌ی هم‌شکل با قرارداد جلو بروید (`NEXT_PUBLIC_USE_MOCKS=true`). وقتی endpoint آماده شد، فقط handler را حذف می‌کنید.
+- شما: بدون API آماده، صفحه‌های بدون API را بسازید و لایه‌ی API (dto و mapper) را هم‌شکل نمونه‌های واقعی همکار نگه دارید. داده‌ی ساختگی نمی‌سازیم (D-014)؛ وقتی endpoint آماده شد، فقط همان لایه را وصل می‌کنید.
 - هر دو: روی PR همدیگر **کامنت/Review** بگذارید، حتی اگر مجبور نیستید. این شواهد کار تیمی است.
 - **Staging مشترک**: فرانت روی Vercel (preview برای هر PR)، بک‌اند روی هر هاستی که دارد. اولین هدف: «یک اتصال واقعی» مثل `GET /products`.
 - یک جلسه‌ی کوتاه هفتگی (۱۵ دقیقه): چه تمام شد، چه چیزی بلاک است، چه تغییری در API لازم است.
