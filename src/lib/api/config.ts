@@ -5,18 +5,24 @@
 export const apiConfig = {
   /** پیشوند و نسخه (قطعی) */
   prefix: "/api/v1",
-  /** زبان پیام‌های سرور (قطعی: هدر پیشنهادی x-lang) */
-  langHeader: "x-lang",
+  /**
+   * زبان پیام‌ها. بک‌اند به‌طور پیش‌فرض فارسی جواب می‌دهد، پس هدر نمی‌فرستیم.
+   * (هدر سفارشی باعث preflight می‌شود و CORS بک‌اند فعلاً x-lang را مجاز نکرده است.)
+   * برای فعال کردن: langHeader را "x-lang" بگذارید و از همکار بخواهید در allowedHeaders اضافه کند.
+   */
+  langHeader: null as string | null,
   lang: "fa",
   endpoints: {
-    csrf: "/csrf-token",
-    refresh: "/refresh-token",
+    /** تأیید‌شده با کد بک‌اند (auth.controller): POST و کوکی csrf_secret می‌نشاند */
+    csrf: "/auth/csrf-token",
+    refresh: "/auth/refresh-token",
   },
-  /** ☐ روش refresh-token هنوز تأیید نشده */
+  csrfMethod: "POST" as "POST" | "GET",
+  /** روش refresh-token (تأیید‌شده) */
   refreshMethod: "POST" as "POST" | "GET",
-  /** ☐ نام هدر CSRF هنوز تأیید نشده */
+  /** تأیید‌شده با CSRFGuard بک‌اند. ☐ CORS بک‌اند باید این هدر را در allowedHeaders داشته باشد. */
   csrfHeader: "x-csrf-token",
-  /** ☐ شکل data در پاسخ /csrf-token در Swagger مشخص می‌شود. فعلاً چند حالت رایج را می‌پذیرد. */
+  /** پاسخ واقعی: data.csrfToken (هم برای /auth/csrf-token و هم برای /auth/verify-login-otp) */
   extractCsrfToken(data: unknown): string | null {
     if (typeof data === "string") return data;
     if (data && typeof data === "object") {

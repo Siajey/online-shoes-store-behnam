@@ -33,7 +33,7 @@ const calls = (m: ReturnType<typeof vi.fn>) =>
   m.mock.calls.map((c) => `${(c[1] as RequestInit).method} ${c[0]}`);
 
 describe("api client", () => {
-  it("GET: آدرس، کوکی، زبان و بدون CSRF", async () => {
+  it("GET: آدرس، کوکی و بدون CSRF و بدون هدر سفارشی", async () => {
     const { client, fetchMock } = setup(() => json(envelope([1, 2], { nextCursor: "abc" })));
     const res = await client.get<number[]>("/products", { query: { limit: 2 } });
     expect(res.data).toEqual([1, 2]);
@@ -41,7 +41,7 @@ describe("api client", () => {
     const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect(url).toBe("http://api.test/api/v1/products?limit=2");
     expect(init.credentials).toBe("include");
-    expect((init.headers as Record<string, string>)["x-lang"]).toBe("fa");
+    expect((init.headers as Record<string, string>)["x-lang"]).toBeUndefined();
     expect((init.headers as Record<string, string>)["x-csrf-token"]).toBeUndefined();
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
@@ -53,7 +53,7 @@ describe("api client", () => {
     await client.post("/orders", { body: { a: 1 } });
     await client.post("/orders", { body: { a: 2 } });
     expect(calls(fetchMock)).toEqual([
-      "GET http://api.test/api/v1/csrf-token",
+      "POST http://api.test/api/v1/auth/csrf-token",
       "POST http://api.test/api/v1/orders",
       "POST http://api.test/api/v1/orders",
     ]);
@@ -160,5 +160,36 @@ describe("api client", () => {
     await client.post("/orders", { body: {} });
     expect(calls(fetchMock).filter((c) => c.includes("csrf-token"))).toHaveLength(2);
     expect(posts).toBe(2);
+  });
+
+  it("skipCsrf: توکن نمی‌گیرد و هدر CSRF نمی‌فرستد", async () => {
+    const { client, fetchMock } = setup(() => json(envelope(null)));
+    await client.post("/auth/login", { body: { a: 1 }, skipCsrf: true, skipAuthRefresh: true });
+    expect(calls(fetchMock)).toEqual(["POST http://api.test/api/v1/auth/login"]);
+    const init = fetchMock.mock.calls[0][1] as RequestInit;
+    expect((init.headers as Record<string, string>)["x-csrf-token"]).toBeUndefined();
+  });
+
+  it("setCsrfToken: توکن دستی بدون درخواست جدید استفاده می‌شود", async () => {
+    const { client, fetchMock } = setup(() => json(envelope(null)));
+    client.setCsrfToken("manual");
+    await client.post("/auth/logout");
+    expect(calls(fetchMock)).toEqual(["POST http://api.test/api/v1/auth/logout"]);
+    const init = fetchMock.mock.calls[0][1] as RequestInit;
+    expect((init.headers as Record<string, string>)["x-csrf-token"]).toBe("manual");
+  });
+
+  it("refresh بدون هدر CSRF فرستاده می‌شود", async () => {
+    let n = 0;
+    const { client, fetchMock } = setup((url) => {
+      if (url.endsWith("/auth/refresh-token")) return json(envelope(null));
+      return n++ === 0 ? json({ message: "x", code: "UNAUTHORIZED" }, 401) : json(envelope([1]));
+    });
+    await client.get("/users/me");
+    const refreshCall = fetchMock.mock.calls.find((c) =>
+      String(c[0]).endsWith("/auth/refresh-token"),
+    );
+    const headers = (refreshCall?.[1] as RequestInit).headers as Record<string, string>;
+    expect(headers["x-csrf-token"]).toBeUndefined();
   });
 });
