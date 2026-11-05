@@ -13,6 +13,8 @@ export type RequestOptions = {
   signal?: AbortSignal;
   /** برای endpointهای ورود و OTP: ۴۰۱ آن‌ها یعنی «اطلاعات اشتباه»، نه «توکن منقضی». */
   skipAuthRefresh?: boolean;
+  /** برای endpointهایی که CSRF نمی‌خواهند (ورود، تأیید کد): توکن نمی‌گیرد و هدر نمی‌فرستد. */
+  skipCsrf?: boolean;
 };
 
 export type ApiClientOptions = {
@@ -43,11 +45,11 @@ export function createApiClient(options: ApiClientOptions) {
     method: Method,
     path: string,
     opts: RequestOptions,
-    withCsrf = true,
+    withCsrf = !opts.skipCsrf,
   ): Promise<Response> {
     const headers: Record<string, string> = {
       Accept: "application/json",
-      [apiConfig.langHeader]: apiConfig.lang,
+      ...(apiConfig.langHeader ? { [apiConfig.langHeader]: apiConfig.lang } : {}),
       ...opts.headers,
     };
     if (opts.body !== undefined) headers["Content-Type"] = "application/json";
@@ -114,7 +116,7 @@ export function createApiClient(options: ApiClientOptions) {
   }
 
   async function loadCsrfToken(): Promise<string> {
-    const res = await send("GET", apiConfig.endpoints.csrf, {}, false);
+    const res = await send(apiConfig.csrfMethod, apiConfig.endpoints.csrf, {}, false);
     const body = await parse<unknown, never>(res);
     const token = apiConfig.extractCsrfToken(body.data);
     if (!token) {
@@ -132,7 +134,8 @@ export function createApiClient(options: ApiClientOptions) {
   function refreshSession(): Promise<boolean> {
     refreshPromise ??= (async () => {
       try {
-        const res = await send(apiConfig.refreshMethod, apiConfig.endpoints.refresh, {});
+        // refresh به CSRF نیاز ندارد؛ هدر اضافه فقط preflight می‌سازد.
+        const res = await send(apiConfig.refreshMethod, apiConfig.endpoints.refresh, {}, false);
         return res.ok;
       } catch {
         return false;
@@ -166,6 +169,10 @@ export function createApiClient(options: ApiClientOptions) {
   }
 
   return {
+    /** توکن تازه‌ای که سرور همراه پاسخ داده (مثلاً بعد از تأیید کد ورود) را جایگزین می‌کند. */
+    setCsrfToken(token: string | null) {
+      csrfToken = token;
+    },
     get: <T, M = Record<string, unknown>>(path: string, opts?: RequestOptions) =>
       request<T, M>("GET", path, opts),
     post: <T, M = Record<string, unknown>>(path: string, opts?: RequestOptions) =>
