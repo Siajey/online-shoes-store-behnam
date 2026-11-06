@@ -4,6 +4,7 @@ import { DEFAULT_THEME, themeInitScript } from "@/features/theme/theme";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.url),
   title: { default: siteConfig.name, template: `%s | ${siteConfig.name}` },
   description: siteConfig.description,
 };

@@ -5,6 +5,7 @@ import { authCopy } from "../copy";
 const TABS = [
   { key: "profile", href: "/account", label: authCopy.tabProfile },
   { key: "addresses", href: "/account/addresses", label: authCopy.tabAddresses },
+  { key: "orders", href: "/account/orders", label: authCopy.tabOrders },
 ] as const;
 
 /** زبانه‌های بخش حساب. صفحه‌ی فعلی از بیرون داده می‌شود (بدون usePathname، سازگار با ایستا). */

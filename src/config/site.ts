@@ -2,6 +2,8 @@
 export const siteConfig = {
   name: "کفش بهنام",
   description: "فروشگاه آنلاین کفش؛ خرید آسان، ارسال سریع، ضمانت اصالت کالا",
+  /** آدرس عمومی سایت برای sitemap و پیش‌نمایش لینک. در استقرار با NEXT_PUBLIC_SITE_URL مقدار بدهید. */
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3001",
   locale: "fa-IR",
   currency: { unit: "تومان" as const },
   /** سال شمسی برای فوتر. ثابت نوشته می‌شود تا صفحه‌ها بدون زمان جاری ایستا بمانند. */
