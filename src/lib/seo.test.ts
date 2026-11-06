@@ -10,6 +10,10 @@ describe("seo", () => {
     const urls = buildSitemap("https://x.ir").map((e) => e.url);
     expect(urls).toContain("https://x.ir");
     expect(urls).toContain("https://x.ir/products");
+    for (const p of ["/about", "/contact", "/terms", "/privacy"]) {
+      expect(urls).toContain(`https://x.ir${p}`);
+    }
+    expect(urls.some((u) => u.includes("/checkout"))).toBe(false);
     for (const p of DISALLOWED_PATHS) expect(urls.some((u) => u.endsWith(p))).toBe(false);
   });
   it("robots مسیرهای خصوصی را می‌بندد و به sitemap اشاره می‌کند", () => {
