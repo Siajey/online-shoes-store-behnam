@@ -17,7 +17,6 @@ export const cartCopy = {
   total: "مبلغ قابل پرداخت",
   shippingNote: "هزینه‌ی ارسال در مرحله‌ی بعد محاسبه می‌شود.",
   checkout: "ادامه‌ی خرید",
-  checkoutSoon: "پرداخت آنلاین هنوز فعال نشده است.",
   added: (name: string) => `«${name}» به سبد خرید اضافه شد.`,
   addedShort: "به سبد خرید اضافه شد",
   viewCart: "مشاهده‌ی سبد خرید",

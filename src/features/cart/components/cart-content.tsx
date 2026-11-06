@@ -138,11 +138,9 @@ export function CartView({ items, onQuantityChange, onRemove, onClear }: ViewPro
           </div>
         </dl>
         <p className="text-fg-muted text-xs leading-6">{cartCopy.shippingNote}</p>
-        {/* ☐ وقتی صفحه‌ی پرداخت ساخته شد، این دکمه به لینک /checkout تبدیل شود. */}
-        <Button size="lg" fullWidth disabled>
+        <Link href="/checkout" className={buttonVariants({ size: "lg", fullWidth: true })}>
           {cartCopy.checkout}
-        </Button>
-        <p className="text-fg-muted text-center text-xs">{cartCopy.checkoutSoon}</p>
+        </Link>
         <Button variant="ghost" size="sm" onClick={onClear}>
           {cartCopy.clear}
         </Button>
