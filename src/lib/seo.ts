@@ -1,5 +1,15 @@
 /** صفحه‌های عمومی که باید در sitemap بیایند. ☐ بعد از آماده شدن API، صفحه‌های محصول هم اضافه شوند. */
-export const PUBLIC_PATHS = ["/", "/products", "/size-guide", "/returns", "/faq"] as const;
+export const PUBLIC_PATHS = [
+  "/",
+  "/products",
+  "/size-guide",
+  "/returns",
+  "/faq",
+  "/about",
+  "/contact",
+  "/terms",
+  "/privacy",
+] as const;
 
 /** مسیرهای خصوصی یا فنی که نباید ایندکس شوند. */
 export const DISALLOWED_PATHS = [
