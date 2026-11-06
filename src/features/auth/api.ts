@@ -53,3 +53,8 @@ export async function logout(): Promise<void> {
   await api.post("/auth/logout");
   api.setCsrfToken(null);
 }
+
+/** ذخیره‌ی نام و نام خانوادگی (پروفایل اگر نبود ساخته می‌شود). نیاز به CSRF دارد. */
+export async function updateProfile(input: { firstName: string; lastName: string }): Promise<void> {
+  await api.patch("/users/me", { body: input });
+}

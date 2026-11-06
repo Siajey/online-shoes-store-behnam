@@ -6,7 +6,14 @@ export type UserDto = {
   role: string;
   createdAt: string;
   updatedAt: string;
-  profile: unknown;
+  /** null تا وقتی نام یا آدرسی ثبت نشده. addresses هم همراهش می‌آید ولی از مسیر جدا خوانده می‌شود. */
+  profile: ProfileDto | null;
+};
+
+export type ProfileDto = {
+  id?: string;
+  firstName?: string | null;
+  lastName?: string | null;
 };
 
 /** data در پاسخ POST /auth/verify-login-otp */

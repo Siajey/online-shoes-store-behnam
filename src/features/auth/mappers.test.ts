@@ -22,6 +22,9 @@ describe("toUser", () => {
     });
   });
   it("پروفایل داشتن را تشخیص می‌دهد", () => {
-    expect(toUser({ ...dto, profile: { firstName: "الف" } }).hasProfile).toBe(true);
+    const user = toUser({ ...dto, profile: { firstName: "الف", lastName: null } });
+    expect(user.hasProfile).toBe(true);
+    expect(user.firstName).toBe("الف");
+    expect(user.lastName).toBeUndefined();
   });
 });

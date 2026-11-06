@@ -8,5 +8,7 @@ export function toUser(dto: UserDto): User {
     role: dto.role,
     status: dto.status,
     hasProfile: dto.profile != null,
+    firstName: dto.profile?.firstName ?? undefined,
+    lastName: dto.profile?.lastName ?? undefined,
   };
 }

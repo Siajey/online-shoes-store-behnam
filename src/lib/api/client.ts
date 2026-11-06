@@ -82,6 +82,16 @@ export function createApiClient(options: ApiClientOptions) {
   async function parse<T, M>(res: Response): Promise<ApiSuccess<T, M>> {
     const json = await readJson(res);
     if (res.ok) {
+      // پاسخ بدون بدنه (مثلاً حذف آدرس) موفقیت است، نه پاسخ نامعتبر.
+      if (res.status === 204 && !isObject(json)) {
+        return {
+          message: "",
+          code: "NO_CONTENT",
+          timestamp: "",
+          path: "",
+          data: null,
+        } as unknown as ApiSuccess<T, M>;
+      }
       if (!isObject(json)) {
         throw new ApiRequestError({
           status: res.status,
