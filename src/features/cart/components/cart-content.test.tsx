@@ -43,8 +43,8 @@ describe("CartView", () => {
     expect(out).toContain('aria-label="افزایش تعداد"');
   });
 
-  it("دکمه‌ی ادامه‌ی خرید تا ساخته شدن پرداخت غیرفعال است", () => {
-    expect(html(items)).toMatch(/<button[^>]*disabled[^>]*>ادامه‌ی خرید/);
+  it("ادامه‌ی خرید لینک به صفحه‌ی تسویه است", () => {
+    expect(html(items)).toMatch(/<a[^>]*href="\/checkout"[^>]*>ادامه‌ی خرید/);
   });
 
   it("فقط از ویژگی‌های منطقی استفاده می‌کند", () => {
