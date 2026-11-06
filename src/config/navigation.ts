@@ -26,6 +26,10 @@ export const footerGroups: { title: string; items: NavItem[] }[] = [
       { label: "رویه‌ی بازگشت کالا", href: "/returns" },
       { label: "پیگیری سفارش", href: "/account/orders" },
       { label: "سؤالات متداول", href: "/faq" },
+      { label: "درباره‌ی ما", href: "/about" },
+      { label: "راه‌های ارتباطی", href: "/contact" },
+      { label: "قوانین و مقررات", href: "/terms" },
+      { label: "حریم خصوصی", href: "/privacy" },
     ],
   },
 ];
