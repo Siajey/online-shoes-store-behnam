@@ -1,23 +1,20 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { isApiRequestError } from "@/lib/api/errors";
 import { authStore } from "../auth-store";
 import { authCopy } from "../copy";
-import { useAuth } from "../use-auth";
+import { useRequireAuth } from "../use-require-auth";
 import { AccountError, AccountSkeleton, AccountView } from "./account-views";
+import { ProfileForm } from "./profile-form";
 
-/** صفحه‌ی حساب: مهمان به /login می‌رود و بعد از ورود به همین‌جا برمی‌گردد. */
+/** صفحه‌ی حساب: فرم نام، شماره و خروج. مهمان به /login می‌رود. */
 export function AccountContent() {
   const router = useRouter();
-  const auth = useAuth();
+  const auth = useRequireAuth("/account");
   const [loggingOut, setLoggingOut] = useState(false);
   const [logoutError, setLogoutError] = useState<string | undefined>();
-
-  useEffect(() => {
-    if (auth.status === "guest") router.replace(`/login?next=${encodeURIComponent("/account")}`);
-  }, [auth.status, router]);
 
   async function logout() {
     setLoggingOut(true);
@@ -33,12 +30,19 @@ export function AccountContent() {
 
   if (auth.status === "authenticated") {
     return (
-      <AccountView user={auth.user} onLogout={logout} loggingOut={loggingOut} error={logoutError} />
+      <div className="flex flex-col gap-6">
+        <ProfileForm user={auth.user} />
+        <AccountView
+          user={auth.user}
+          onLogout={logout}
+          loggingOut={loggingOut}
+          error={logoutError}
+        />
+      </div>
     );
   }
   if (auth.status === "error") {
     return <AccountError message={auth.error} onRetry={() => void authStore.refresh()} />;
   }
-  // unknown یا guest (در حال هدایت): اسکلت
   return <AccountSkeleton />;
 }

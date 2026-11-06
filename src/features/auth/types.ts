@@ -5,6 +5,8 @@ export type User = {
   phoneNumber: string;
   role: string;
   status: string;
-  /** ☐ شکل پروفایل (نام، ایمیل...) با همکار نهایی شود؛ فعلاً null است. */
   hasProfile: boolean;
+  /** از پروفایل؛ تا پر نشود undefined است (حداکثر ۲۰ حرف طبق بک‌اند). */
+  firstName?: string;
+  lastName?: string;
 };

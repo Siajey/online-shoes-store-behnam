@@ -192,4 +192,17 @@ describe("api client", () => {
     const headers = (refreshCall?.[1] as RequestInit).headers as Record<string, string>;
     expect(headers["x-csrf-token"]).toBeUndefined();
   });
+
+  it("پاسخ ۲۰۴ بدون بدنه موفقیت است", async () => {
+    const { client } = setup(() => new Response(null, { status: 204 }));
+    client.setCsrfToken("tok");
+    const res = await client.delete("/users/me/addresses/1");
+    expect(res.data).toBeNull();
+    expect(res.code).toBe("NO_CONTENT");
+  });
+
+  it("پاسخ ۲۰۰ بدون بدنه همچنان نامعتبر است", async () => {
+    const { client } = setup(() => new Response("", { status: 200 }));
+    await expect(client.get("/x")).rejects.toMatchObject({ code: "INVALID_RESPONSE" });
+  });
 });
