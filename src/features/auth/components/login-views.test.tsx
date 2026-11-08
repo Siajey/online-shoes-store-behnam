@@ -29,6 +29,12 @@ describe("PhoneStepView", () => {
     expect(out).toContain('aria-busy="true"');
     expect(out).toMatch(/<input[^>]*disabled=""/);
   });
+  it("جمله‌ی پذیرش قوانین با لینک به قوانین و حریم خصوصی", () => {
+    const out = html();
+    expect(out).toContain('href="/terms"');
+    expect(out).toContain('href="/privacy"');
+    expect(out).toContain("می‌پذیرم.");
+  });
 });
 
 describe("OtpStepView", () => {
