@@ -9,6 +9,7 @@ import { PRODUCTS_PAGE_SIZE } from "../constants";
 import { productCopy } from "../copy";
 import { parseProductFilters, type RawSearchParams } from "../filters";
 import { ProductList } from "./product-list";
+import { ProductsToolbar } from "./products-toolbar";
 
 /** محتوای صفحه‌ی /products. باید داخل <Suspense> باشد (چون searchParams داده‌ی زمان درخواست است). */
 export async function ProductsContent({
@@ -35,6 +36,8 @@ export async function ProductsContent({
       <h1 className="text-2xl font-medium lg:text-[28px]">{title}</h1>
 
       {categories.length > 0 && <CategoryFilter categories={categories} trail={trail} />}
+
+      <ProductsToolbar filters={filters} />
 
       <div className="mt-6">
         {productsResult.status === "rejected" ? (

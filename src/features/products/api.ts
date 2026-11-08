@@ -10,6 +10,11 @@ export type ProductListParams = {
   /** ☐ نام پارامتر فیلتر دسته‌بندی (فعلاً slug دسته) با Swagger تطبیق داده شود */
   category?: string;
   q?: string;
+  /** ☐ نام و مقدارهای مرتب‌سازی و فیلتر قیمت/موجودی با Swagger تطبیق داده شود */
+  sort?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  inStock?: boolean;
 };
 
 export async function fetchProducts(
