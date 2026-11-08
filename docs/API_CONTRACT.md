@@ -124,20 +124,20 @@ Until these are fixed, the frontend should rely on the HTTP status first, and on
 
 Tokens are stored by the browser in `httpOnly` cookies; **JavaScript never reads or stores them** (not in `localStorage`).
 
-| Item          | Value                                                                       |
-| ------------- | --------------------------------------------------------------------------- |
-| Access token  | JWT in cookie ☐ name, ☐ lifetime                                            |
-| Refresh token | JWT in cookie ☐ name, ☐ lifetime, ☐ path restriction, ☐ rotation on use     |
-| Cookie flags  | `httpOnly`, `Secure`, `SameSite` ☐ (value), ☐ domain/path                   |
-| CSRF token    | Fetched from `GET /api/v1/csrf-token`, kept **in memory only**              |
-| CSRF header   | ☐ header name (sent on every state-changing request: POST/PUT/PATCH/DELETE) |
+| Item          | Value                                                                                      |
+| ------------- | ------------------------------------------------------------------------------------------ |
+| Access token  | JWT in cookie ☐ name, ☐ lifetime                                                           |
+| Refresh token | JWT in cookie ☐ name, ☐ lifetime, ☐ path restriction, ☐ rotation on use                    |
+| Cookie flags  | `httpOnly`, `Secure`, `SameSite` ☐ (value), ☐ domain/path                                  |
+| CSRF token    | Fetched from `POST /auth/csrf-token` (or from the login response), kept **in memory only** |
+| CSRF header   | `x-csrf-token` (sent on every state-changing request: POST/PUT/PATCH/DELETE)               |
 
 ### Endpoints (confirmed by the backend developer)
 
-| Method                     | Path                    | Purpose                                            |
-| -------------------------- | ----------------------- | -------------------------------------------------- |
-| GET                        | `/api/v1/csrf-token`    | Returns the CSRF token (schema in Swagger)         |
-| POST ☐ (method to confirm) | `/api/v1/refresh-token` | Uses the refresh cookie to issue new token cookies |
+| Method                     | Path                      | Purpose                                                      |
+| -------------------------- | ------------------------- | ------------------------------------------------------------ |
+| POST                       | `/api/v1/auth/csrf-token` | Returns `data.csrfToken` and sets a new `csrf_secret` cookie |
+| POST ☐ (method to confirm) | `/api/v1/refresh-token`   | Uses the refresh cookie to issue new token cookies           |
 
 ☐ Other auth endpoints (login, register, logout, Google OAuth, email verification, password reset) are to be listed here from Swagger.
 
@@ -232,16 +232,17 @@ Read from the merged backend `main` (auth, users, addresses, health). These repl
 
 - There is no separate registration endpoint; the first successful OTP login registers the user. There is no password login in this branch (`loginMethod` only accepts `otp`). Email password reset is not implemented yet (☐ decision D-012).
 - Phone format: `09xxxxxxxxx` (a leading `9` without `0` is also accepted). The frontend sends the normalized `09...` form.
-- OTP: fixed `12345` outside production, 6 random digits in production. SMS sending is a stub for now (☐).
+- OTP: 6 digits. Fixed `123456` outside production (it was `12345` before the product branch), random in production. SMS sending is a stub for now (☐).
 - Throttling (production): login 5 per 30 s, verify 5 per 60 s, resend and logout 1 per 120 s. Development allows 100.
-- Cookies: `access_token` (HttpOnly, SameSite=Lax, 1 h), `refresh_token` (HttpOnly, SameSite=Lax, 7 d), `csrf_secret` (HttpOnly, SameSite=Strict, 1 h). The token sent in the header is `HMAC(csrf_secret)`, returned as `data.csrfToken`.
+- Cookies: `access_token` (HttpOnly, SameSite=Lax, 1 h), `refresh_token` (HttpOnly, SameSite=Lax, 7 d), `csrf_secret` (HttpOnly, SameSite=Lax, 1 h). The token sent in the header is `HMAC(csrf_secret)`, returned as `data.csrfToken`.
 - CSRF header name: `x-csrf-token`. Missing cookie gives 403 `Invalid_CSRF_Secret`; wrong token gives 403 `UNAUTHORIZED`.
 - Success envelope has no `meta` on these endpoints. Messages are Persian by default (fallback language `fa`), so the frontend does not send `x-lang`.
 
 **CORS (current code)**
 
 - Allowed origins: `FRONTEND_URL_DEV` and `FRONTEND_URL` outside production, `FRONTEND_URL` only in production. Credentials are allowed.
-- `allowedHeaders` is only `Content-Type` and `Authorization`. ☐ `x-csrf-token` must be added, otherwise logout and every CSRF-protected request fails from the browser (preflight). `x-lang` is also not allowed, which is why the frontend does not send it.
+- `allowedHeaders` now includes `x-csrf-token` (✅ fixed, D-025). The list also allows `x-lang` and `x-custom-lang`; the frontend still does not send them.
+- ✅ Fixed (D-025): `POST /auth/csrf-token` used to write the token instead of the secret into the `csrf_secret` cookie, so every write failed with 403 after a page reload.
 
 **Users**
 
@@ -260,5 +261,6 @@ Read from the merged backend `main` (auth, users, addresses, health). These repl
 
 **Still open (☐)**
 
-- Products, categories (write side), cart, orders, payments, admin endpoints, image upload.
+- Products (domain and application layer only, in backend PR #10; no HTTP routes yet), categories (write side), cart, orders, payments, admin endpoints, image upload.
+- Shipping methods, address coordinates and recipient fields, product variants over HTTP, email and avatar in the profile, session list, discount codes (all needed by the design, none in the API yet).
 - Per-field validation errors, `Retry-After` on 429, domains for production cookies (`SameSite`).
