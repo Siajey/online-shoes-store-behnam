@@ -14,6 +14,18 @@ export type CartItem = {
   originalPrice?: number;
   imageUrl?: string;
   quantity: number;
+  /** اگر کالا سایز/رنگ دارد: شناسه‌ی محصول، شناسه‌ی ترکیب و برچسب. id در این حالت «productId:variantId» است تا هر ترکیب ردیف جدا باشد. */
+  productId?: string;
+  variantId?: string;
+  variantLabel?: string;
+};
+
+/** ترکیب انتخاب‌شده‌ی سایز/رنگ هنگام افزودن به سبد. */
+export type CartVariant = {
+  id: string;
+  label: string;
+  price: number;
+  originalPrice?: number;
 };
 
 /** بخشی از محصول که برای افزودن به سبد لازم است (بدون وابستگی به فیچر محصولات). */

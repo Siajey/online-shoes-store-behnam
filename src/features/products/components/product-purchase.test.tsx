@@ -13,6 +13,22 @@ const product: Product = {
 const html = (over: Partial<Product> = {}) =>
   renderToStaticMarkup(<ProductPurchase product={{ ...product, ...over }} />);
 
+describe("ProductPurchase با سایز و رنگ", () => {
+  const variants = [
+    { id: "a", price: 900000, available: true, options: { سایز: "۴۰", رنگ: "مشکی" } },
+    { id: "b", price: 900000, available: true, options: { سایز: "۴۲", رنگ: "سفید" } },
+  ];
+  it("گزینه‌ها نمایش داده می‌شوند و دکمه تا انتخاب کامل غیرفعال است", () => {
+    const out = html({ variants });
+    expect(out).toContain('role="radio"');
+    expect(out).toContain("ابتدا سایز و رنگ را انتخاب کنید.");
+    expect(out).toMatch(/<button[^>]*disabled=""[^>]*>افزودن به سبد خرید/);
+  });
+  it("محصول بدون variant گزینه‌ای ندارد", () => {
+    expect(html()).not.toContain('role="radio"');
+  });
+});
+
 describe("ProductPurchase", () => {
   it("تعداد اولیه ۱ (فارسی) و دکمه‌های تعداد را دارد", () => {
     const out = html();
