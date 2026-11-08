@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# کفش بهنام — فرانت‌اند
 
-## Getting Started
+فروشگاه آنلاین کفش، فارسی و راست‌به‌چپ (RTL)، موبایل‌اول. ساخته‌شده با Next.js (App Router)، React 19، TypeScript و Tailwind CSS v4. بک‌اند در ریپوی جدا (NestJS) است.
 
-First, run the development server:
+## اجرا
+
+نیازمندی‌ها: Node 22 و pnpm.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+cp .env.example .env.local
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+فرانت روی `http://localhost:3001` بالا می‌آید و بک‌اند محلی باید روی `http://localhost:3000` اجرا باشد (CORS بک‌اند فقط همین origin را مجاز می‌داند).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## متغیرهای محیطی
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| نام                    | کاربرد                                             |
+| ---------------------- | -------------------------------------------------- |
+| `NEXT_PUBLIC_API_URL`  | آدرس بک‌اند (پیش‌فرض محلی `http://localhost:3000`) |
+| `NEXT_PUBLIC_SITE_URL` | آدرس عمومی سایت برای `sitemap` و `robots`          |
 
-## Learn More
+فایل‌های `.env*` به گیت نمی‌روند؛ فقط `.env.example` ثبت می‌شود.
 
-To learn more about Next.js, take a look at the following resources:
+## دستورها
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| دستور            | کار                       |
+| ---------------- | ------------------------- |
+| `pnpm dev`       | اجرای توسعه روی پورت ۳۰۰۱ |
+| `pnpm lint`      | بررسی ESLint              |
+| `pnpm typecheck` | بررسی تایپ‌ها             |
+| `pnpm test`      | تست‌های Vitest            |
+| `pnpm build`     | ساخت نسخه‌ی production    |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+قبل از هر PR: `pnpm lint && pnpm typecheck && pnpm test && pnpm build`. CI همین چهار مرحله را اجرا می‌کند. کامیت‌ها با commitlint بررسی می‌شوند (قالب conventional، خط‌های بدنه حداکثر ۱۰۰ نویسه).
 
-## Deploy on Vercel
+## ساختار
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/
+  app/          فقط چینش صفحه‌ها (مسیرها)
+  features/     منطق فروشگاهی: products، cart، favourites، auth، addresses، checkout، info...
+  components/   کامپوننت‌های عمومی بدون منطق فروشگاه (ui، layout)
+  lib/          کلاینت API، قالب‌بندی، ابزارهای مشترک
+  config/       تنظیمات سایت و ناوبری
+docs/           تصمیم‌ها و قرارداد API
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## مستندات
+
+- [`docs/PROJECT.md`](docs/PROJECT.md): خلاصه‌ی پروژه، قواعد و مراحل
+- [`docs/DECISIONS.md`](docs/DECISIONS.md): تصمیم‌های معماری (D-001 به بعد)
+- [`docs/API_CONTRACT.md`](docs/API_CONTRACT.md): قرارداد API با بک‌اند
+- [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md): راه‌اندازی قدم‌به‌قدم
+- [`docs/FRONTEND_STRUCTURE.md`](docs/FRONTEND_STRUCTURE.md): ساختار فرانت
+- [`docs/GIT_WORKFLOW.md`](docs/GIT_WORKFLOW.md): روند گیت و PR
+
+## وضعیت
+
+ورود با کد پیامکی، حساب (نام و آدرس‌ها)، سبد و علاقه‌مندی‌های مهمان، تسویه (بدون ثبت سفارش) و صفحه‌های اطلاعاتی آماده‌اند. محصولات، سفارش و پرداخت منتظر API بک‌اندند و داده‌ی ساختگی ساخته نمی‌شود (D-014).
