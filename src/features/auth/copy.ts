@@ -1,6 +1,11 @@
 /** متن‌های ثابت فیچر ورود و حساب. در JSX متن فارسی پخش نکنید. */
 export const authCopy = {
   loginTitle: "ورود یا ثبت‌نام",
+  termsPrefix: "با ورود، ",
+  termsLink: "قوانین",
+  termsAnd: " و ",
+  privacyLink: "حریم خصوصی",
+  termsSuffix: (brand: string) => ` ${brand} را می‌پذیرم.`,
   loginSubtitle: "شماره موبایل خود را وارد کنید. اگر حساب ندارید، خودکار ساخته می‌شود.",
   phoneLabel: "شماره موبایل",
   phonePlaceholder: "۰۹۱۲۳۴۵۶۷۸۹",

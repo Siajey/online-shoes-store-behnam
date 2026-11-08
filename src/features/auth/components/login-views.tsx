@@ -1,5 +1,7 @@
 import type { FormEvent } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { siteConfig } from "@/config/site";
 import { Input } from "@/components/ui/input";
 import { toPersianDigits } from "@/lib/format";
 import { authCopy } from "../copy";
@@ -46,6 +48,17 @@ export function PhoneStepView({ value, onChange, onSubmit, pending, error }: Pho
       <Button type="submit" size="lg" fullWidth loading={pending}>
         {authCopy.sendCode}
       </Button>
+      <p className="text-fg-muted text-center text-xs leading-6">
+        {authCopy.termsPrefix}
+        <Link href="/terms" className="text-brand underline underline-offset-4">
+          {authCopy.termsLink}
+        </Link>
+        {authCopy.termsAnd}
+        <Link href="/privacy" className="text-brand underline underline-offset-4">
+          {authCopy.privacyLink}
+        </Link>
+        {authCopy.termsSuffix(siteConfig.name)}
+      </p>
     </form>
   );
 }

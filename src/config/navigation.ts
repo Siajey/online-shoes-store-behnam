@@ -7,6 +7,7 @@ export const mainNav: NavItem[] = [
   { label: "مردانه", href: "/products?category=mens-shoes" },
   { label: "زنانه", href: "/products?category=womens-shoes" },
   { label: "تخفیف‌ها", href: "/products?discount=true" },
+  { label: "درباره‌ی ما", href: "/about" },
 ];
 
 export const footerGroups: { title: string; items: NavItem[] }[] = [

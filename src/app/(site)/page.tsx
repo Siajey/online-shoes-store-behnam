@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { CategoryGridSkeleton } from "@/features/categories/components/category-grid";
 import { CategorySection } from "@/features/categories/components/category-section";
+import { WelcomeGate } from "@/features/welcome/components/welcome-gate";
 import { Benefits } from "@/features/landing/components/benefits";
 import { Hero } from "@/features/landing/components/hero";
 import { landingCopy } from "@/features/landing/copy";
@@ -13,6 +14,7 @@ const sectionClass = "mx-auto w-full max-w-300 px-4 py-6 lg:px-8 lg:py-10";
 export default function Home() {
   return (
     <main>
+      <WelcomeGate />
       <Hero />
       <Benefits />
 
