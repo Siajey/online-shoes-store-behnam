@@ -27,4 +27,16 @@ export const addressCopy = {
   invalidPostalCode: "کدپستی باید ۱۰ رقم باشد.",
   postalLine: (code: string) => `کدپستی: ${code}`,
   listLabel: "فهرست آدرس‌ها",
+  chooseProvince: "انتخاب استان",
+  mapTitle: "موقعیت روی نقشه",
+  mapHint:
+    "نقطه‌ی تحویل را روی نقشه بزنید تا استان، شهر و نشانی پر شود. بعد می‌توانید ویرایش کنید.",
+  mapLabel: "نقشه‌ی انتخاب موقعیت",
+  useMyLocation: "موقعیت فعلی من",
+  resolving: "در حال یافتن آدرس…",
+  resolved: "آدرس از روی نقشه پر شد. لطفاً بررسی و کامل کنید.",
+  notFound: "آدرسی برای این نقطه پیدا نشد. لطفاً دستی وارد کنید.",
+  geocodeError: "یافتن آدرس انجام نشد. لطفاً دستی وارد کنید.",
+  locationDenied: "دسترسی به موقعیت داده نشد.",
+  locationUnsupported: "مرورگر شما موقعیت‌یابی را پشتیبانی نمی‌کند.",
 } as const;
