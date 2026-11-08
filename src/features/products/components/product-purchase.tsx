@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { HeartIcon } from "@/components/layout/icons";
 import { Button } from "@/components/ui/button";
 import { QuantityStepper } from "@/components/ui/quantity-stepper";
@@ -12,13 +12,28 @@ import { favouritesStore } from "@/features/favourites/store";
 import { useIsFavourite } from "@/features/favourites/use-favourites";
 import { productCopy } from "../copy";
 import type { Product } from "../types";
+import {
+  findVariant,
+  missingGroups,
+  optionGroups,
+  toggleSelection,
+  variantLabel,
+  type Selection,
+} from "../variants";
+import { VariantPicker } from "./variant-picker";
 
 /** مدت نمایش پیام «به سبد اضافه شد» */
 const ADDED_MESSAGE_MS = 4000;
 
 /** بخش خرید: تعداد، افزودن به سبد و علاقه‌مندی. */
 export function ProductPurchase({ product }: { product: Product }) {
-  const available = product.available;
+  const variants = product.variants;
+  const hasVariants = Boolean(variants?.length);
+  const [selection, setSelection] = useState<Selection>({});
+  const groups = useMemo(() => optionGroups(variants ?? [], selection), [variants, selection]);
+  const variant = hasVariants ? findVariant(variants ?? [], selection) : undefined;
+  const missing = hasVariants ? missingGroups(variants ?? [], selection) : [];
+  const canBuy = hasVariants ? Boolean(variant?.available) : product.available;
   const [quantity, setQuantity] = useState(1);
   const favourite = useIsFavourite(product.id);
   const [added, setAdded] = useState(false);
@@ -30,18 +45,37 @@ export function ProductPurchase({ product }: { product: Product }) {
   }, [added]);
 
   function addToCart() {
-    cartStore.add(product, quantity);
+    if (hasVariants) {
+      if (!variant || !variant.available) return;
+      cartStore.add(product, quantity, {
+        id: variant.id,
+        label: variantLabel(variant),
+        price: variant.price,
+        originalPrice: variant.originalPrice,
+      });
+    } else {
+      cartStore.add(product, quantity);
+    }
     setAdded(true);
   }
 
   return (
     <div className="flex flex-col gap-3">
+      {hasVariants && (
+        <VariantPicker
+          groups={groups}
+          selection={selection}
+          onToggle={(name, value) =>
+            setSelection((s) => toggleSelection(variants ?? [], s, name, value))
+          }
+        />
+      )}
       <div className="flex flex-wrap items-center gap-3">
         <QuantityStepper
           value={quantity}
           onChange={setQuantity}
           max={MAX_QUANTITY}
-          disabled={!available}
+          disabled={!canBuy}
           labels={{
             group: productCopy.quantity,
             increase: productCopy.increaseQuantity,
@@ -49,8 +83,8 @@ export function ProductPurchase({ product }: { product: Product }) {
           }}
         />
 
-        <Button size="lg" disabled={!available} onClick={addToCart} className="min-w-40 flex-1">
-          {available ? productCopy.addToCartFull : productCopy.unavailable}
+        <Button size="lg" disabled={!canBuy} onClick={addToCart} className="min-w-40 flex-1">
+          {product.available ? productCopy.addToCartFull : productCopy.unavailable}
         </Button>
 
         <button
@@ -64,6 +98,12 @@ export function ProductPurchase({ product }: { product: Product }) {
         </button>
       </div>
 
+      {hasVariants && missing.length > 0 && (
+        <p className="text-fg-muted text-sm">{productCopy.selectFirst(missing.join(" و "))}</p>
+      )}
+      {hasVariants && missing.length === 0 && variant && !variant.available && (
+        <p className="text-danger text-sm">{productCopy.selectedVariantUnavailable}</p>
+      )}
       <div role="status" className="min-h-6 text-sm">
         {added && (
           <>

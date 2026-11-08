@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { safeUrl } from "@/lib/safe-url";
-import type { CartItem, CartableProduct } from "./types";
+import type { CartItem, CartVariant, CartableProduct } from "./types";
 
 /** ☐ سقف تعداد را بعد از مشخص شدن موجودی انبار از API بگیرید. */
 export const MAX_QUANTITY = 10;
@@ -14,12 +14,29 @@ const itemSchema = z.object({
   price: z.number().int().nonnegative(),
   originalPrice: z.number().int().positive().optional(),
   imageUrl: safeUrl.optional(),
+  productId: z.string().min(1).max(100).optional(),
+  variantId: z.string().min(1).max(100).optional(),
+  variantLabel: z.string().min(1).max(200).optional(),
   quantity: z.number().int().min(1).max(MAX_QUANTITY),
 });
 
-export function toCartItem(product: CartableProduct): Omit<CartItem, "quantity"> {
+export function toCartItem(
+  product: CartableProduct,
+  variant?: CartVariant,
+): Omit<CartItem, "quantity"> {
   const { id, slug, name, price, originalPrice, imageUrl } = product;
-  return { id, slug, name, price, originalPrice, imageUrl };
+  if (!variant) return { id, slug, name, price, originalPrice, imageUrl };
+  return {
+    id: `${id}:${variant.id}`,
+    productId: id,
+    variantId: variant.id,
+    variantLabel: variant.label,
+    slug,
+    name,
+    price: variant.price,
+    originalPrice: variant.originalPrice,
+    imageUrl,
+  };
 }
 
 /** کالا را اضافه می‌کند؛ اگر از قبل هست، تعداد را زیاد می‌کند (حداکثر MAX_QUANTITY) و قیمت را تازه می‌کند. */

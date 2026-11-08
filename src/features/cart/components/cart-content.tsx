@@ -80,6 +80,11 @@ export function CartView({ items, onQuantityChange, onRemove, onClear }: ViewPro
                   className="focus-visible:outline-brand text-base leading-7 font-medium focus-visible:outline-2 focus-visible:outline-offset-2"
                 >
                   {item.name}
+                  {item.variantLabel && (
+                    <span className="text-fg-muted block text-sm font-normal">
+                      {item.variantLabel}
+                    </span>
+                  )}
                 </Link>
                 <button
                   type="button"

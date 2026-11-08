@@ -1,3 +1,14 @@
+/** یک ترکیب سایز/رنگ از محصول. options مثل { "سایز": "۴۲", "رنگ": "مشکی" }. */
+export type ProductVariant = {
+  id: string;
+  sku?: string;
+  /** قیمت نهایی این ترکیب، به تومان */
+  price: number;
+  originalPrice?: number;
+  available: boolean;
+  options: Readonly<Record<string, string>>;
+};
+
 /** مدل داخلی فرانت. UI فقط با همین کار می‌کند و از شکل API خبر ندارد. */
 export type Product = {
   id: string;
@@ -18,4 +29,6 @@ export type Product = {
   available: boolean;
   categoryName?: string;
   categorySlug?: string;
+  /** ترکیب‌های سایز/رنگ؛ اگر نبود، محصول انتخاب ندارد. ☐ منتظر variantها در API HTTP. */
+  variants?: readonly ProductVariant[];
 };
