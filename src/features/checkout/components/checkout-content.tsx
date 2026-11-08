@@ -7,7 +7,7 @@ import { useRequireAuth } from "@/features/auth/use-require-auth";
 import { isApiRequestError } from "@/lib/api/errors";
 import { resolveSelectedAddressId } from "../address-choice";
 import { checkoutCopy } from "../copy";
-import { CheckoutView, type AddressesState } from "./checkout-views";
+import { CheckoutView, type AddressesState, type Recipient } from "./checkout-views";
 
 function Skeleton() {
   return (
@@ -53,6 +53,9 @@ export function CheckoutContent() {
   if (!cartReady || auth.status === "unknown") return <Skeleton />;
   if (auth.status !== "authenticated") return <Skeleton />;
 
+  const name = [auth.user.firstName, auth.user.lastName].filter(Boolean).join(" ");
+  const recipient: Recipient | null = name ? { name, phone: auth.user.phoneNumber } : null;
+
   const selectedId =
     addresses.status === "ready" ? resolveSelectedAddressId(addresses.items, chosen) : null;
 
@@ -61,6 +64,7 @@ export function CheckoutContent() {
       items={items}
       addresses={addresses}
       selectedId={selectedId}
+      recipient={recipient}
       onSelect={setChosen}
       onRetry={() => {
         setAddresses({ status: "loading" });
