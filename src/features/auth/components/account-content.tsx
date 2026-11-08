@@ -7,9 +7,9 @@ import { authStore } from "../auth-store";
 import { authCopy } from "../copy";
 import { useRequireAuth } from "../use-require-auth";
 import { AccountError, AccountSkeleton, AccountView } from "./account-views";
-import { ProfileForm } from "./profile-form";
+import { AccountMenu } from "./account-menu";
 
-/** صفحه‌ی حساب: فرم نام، شماره و خروج. مهمان به /login می‌رود. */
+/** خلاصه‌ی حساب: خوش‌آمد، منوی بخش‌ها، شماره و خروج. مهمان به /login می‌رود. */
 export function AccountContent() {
   const router = useRouter();
   const auth = useRequireAuth("/account");
@@ -31,7 +31,9 @@ export function AccountContent() {
   if (auth.status === "authenticated") {
     return (
       <div className="flex flex-col gap-6">
-        <ProfileForm user={auth.user} />
+        <AccountMenu
+          name={[auth.user.firstName, auth.user.lastName].filter(Boolean).join(" ") || undefined}
+        />
         <AccountView
           user={auth.user}
           onLogout={logout}
