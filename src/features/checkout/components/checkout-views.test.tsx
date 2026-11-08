@@ -25,6 +25,43 @@ const html = (addresses: AddressesState, selectedId: string | null = null, cart 
     />,
   );
 
+describe("CheckoutView sections", () => {
+  it("گیرنده، ارسال دوگانه، پرداخت آنلاین و بدون پرداخت در محل", () => {
+    const out = renderToStaticMarkup(
+      <CheckoutView
+        items={items}
+        addresses={{ status: "ready", items: [addr("a", true)] }}
+        selectedId="a"
+        onSelect={noop}
+        onRetry={noop}
+        recipient={{ name: "علی رضایی", phone: "09121234567" }}
+      />,
+    );
+    for (const s of [
+      "علی رضایی",
+      "پست پیشتاز",
+      "تیپاکس",
+      "پرداخت آنلاین",
+      "قوانین و مقررات",
+      "اطلاعات و پرداخت",
+    ])
+      expect(out).toContain(s);
+    expect(out).not.toContain("پیک");
+  });
+  it("بدون نام: پیام ویرایش پروفایل", () => {
+    const out = renderToStaticMarkup(
+      <CheckoutView
+        items={items}
+        addresses={{ status: "ready", items: [] }}
+        selectedId={null}
+        onSelect={noop}
+        onRetry={noop}
+      />,
+    );
+    expect(out).toContain("ویرایش پروفایل");
+  });
+});
+
 describe("CheckoutView", () => {
   it("سبد خالی: پیام و لینک محصولات", () => {
     const out = html({ status: "ready", items: [] }, null, []);
@@ -48,7 +85,7 @@ describe("CheckoutView", () => {
   it("آدرس‌ها: رادیو، انتخاب‌شده checked و نشان پیش‌فرض", () => {
     const out = html({ status: "ready", items: [addr("1"), addr("2", true)] }, "2");
     expect(out).toContain('type="radio"');
-    expect(out.match(/checked=""/g)?.length).toBe(1);
+    expect(out.match(/name="address"[^>]*checked=""/g)?.length).toBe(1);
     expect(out).toContain("پیش‌فرض");
     expect(out).toContain("کدپستی: ۱۲۳۴۵۶۷۸۹۰");
   });
