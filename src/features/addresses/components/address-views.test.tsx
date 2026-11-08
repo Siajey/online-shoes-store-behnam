@@ -90,6 +90,15 @@ describe("AddressFormView", () => {
     for (const t of ["استان", "شهر", "نشانی کامل", "کدپستی", "ذخیره", "انصراف"])
       expect(out).toContain(t);
   });
+  it("استان انتخابی و اسلات نقشه", () => {
+    const out = form({
+      values: { province: "تهران", city: "", street: "", postalCode: "" },
+      map: <div>نقشه‌ی آزمایشی</div>,
+    });
+    expect(out).toContain("<select");
+    expect(out).toContain("انتخاب استان");
+    expect(out).toContain("نقشه‌ی آزمایشی");
+  });
   it("خطاها و خطای کلی", () => {
     const out = form({
       errors: { province: "required", postalCode: "postalCode", street: "tooLong" },

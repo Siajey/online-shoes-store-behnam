@@ -1,9 +1,11 @@
 import type { FormEvent, ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { StateMessage } from "@/components/ui/state-message";
 import { toPersianDigits } from "@/lib/format";
 import { addressCopy } from "../copy";
+import { provinceOptions } from "../provinces";
 import { MAX_ADDRESSES, type Address, type AddressInput } from "../types";
 import { MAX_FIELD_LENGTH, POSTAL_CODE_LENGTH, type AddressErrors } from "../validation";
 
@@ -81,6 +83,8 @@ type FormProps = {
   pending: boolean;
   errors: AddressErrors;
   formError?: string;
+  /** اسلات نقشه (مثلاً LocationPicker) که بالای فیلدها نمایش داده می‌شود */
+  map?: ReactNode;
 };
 
 const errorText = (e: AddressErrors[keyof AddressErrors]) =>
@@ -106,11 +110,14 @@ export function AddressFormView(p: FormProps) {
       className="rounded-card bg-surface flex flex-col gap-4 p-6"
     >
       <h2 className="text-lg font-medium">{p.title}</h2>
+      {p.map}
       <div className="grid gap-4 sm:grid-cols-2">
-        <Input
+        <Select
           label={addressCopy.province}
           name="province"
           autoComplete="address-level1"
+          placeholder={addressCopy.chooseProvince}
+          options={provinceOptions(p.values.province)}
           value={p.values.province}
           onChange={set("province")}
           error={errorText(p.errors.province)}

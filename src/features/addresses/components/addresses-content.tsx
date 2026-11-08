@@ -13,6 +13,7 @@ import {
   updateAddress,
 } from "../api";
 import { addressCopy } from "../copy";
+import { LocationPicker } from "./location-picker";
 import type { Address, AddressInput } from "../types";
 import { validateAddress, type AddressErrors } from "../validation";
 import { AddressCard, AddressFormView, AddressListView } from "./address-views";
@@ -150,6 +151,7 @@ export function AddressesContent() {
         pending={pending}
         errors={errors}
         formError={formError}
+        map={<LocationPicker onResolved={(partial) => setValues((v) => ({ ...v, ...partial }))} />}
       />
     );
   }
