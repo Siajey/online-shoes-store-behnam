@@ -1,72 +1,78 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ApiSuccess } from "@/lib/api/types";
-import type { ProductDto } from "./dto";
+import type { ProductDetailDto, ProductsPageDto } from "./dto";
 import sample from "./__fixtures__/products.json";
-import { toProduct } from "./mappers";
+import { toProduct, toProductDetail } from "./mappers";
 
-/** نمونه‌ی واقعی پاسخ GET /products که بک‌اند داده است. */
-const dtos = (sample as unknown as ApiSuccess<ProductDto[]>).data;
+const items = (sample as unknown as ApiSuccess<ProductsPageDto>).data.items;
 
-describe("toProduct (روی نمونه‌ی واقعی بک‌اند)", () => {
-  const products = dtos.map(toProduct);
+describe("toProduct (شکل ماژول محصول بک‌اند)", () => {
+  beforeEach(() => vi.stubEnv("NEXT_PUBLIC_MEDIA_BASE_URL", "https://cdn.example.com"));
+  afterEach(() => vi.unstubAllEnvs());
 
-  it("هر شش محصول بدون خطا تبدیل می‌شود", () => {
-    expect(products).toHaveLength(6);
+  it("هر شش محصول تبدیل می‌شود", () => {
+    expect(items.map((i) => toProduct(i))).toHaveLength(6);
   });
-
-  it("محصول تخفیف‌دار: قیمت نهایی، قیمت قبلی و متن تخفیف", () => {
-    const p = products[0];
-    expect(p.name).toBe("کتونی نایک ایرمکس ۹۰");
-    expect(p.slug).toBe("nike-air-max-90");
-    expect(p.price).toBe(3_600_000);
-    expect(p.originalPrice).toBe(4_500_000);
-    expect(p.discountLabel).toBe("۲۰٪ تخفیف");
+  it("قیمت پایه = کمترین قیمت و بیشینه فقط وقتی فرق دارد", () => {
+    expect(toProduct(items[0]).price).toBe(3_600_000);
+    expect(toProduct(items[0]).maxPrice).toBeUndefined();
+    expect(toProduct(items[4]).maxPrice).toBe(3_100_000);
   });
-
-  it("محصول بدون تخفیف: قیمت قبلی و متن تخفیف ندارد", () => {
-    const p = products[1];
-    expect(p.price).toBe(5_200_000);
-    expect(p.originalPrice).toBeUndefined();
-    expect(p.discountLabel).toBeUndefined();
+  it("تصویر از کلید و آدرس CDN", () => {
+    expect(toProduct(items[0]).imageUrl).toBe(
+      "https://cdn.example.com/seed/nike-air-max-90-0.webp",
+    );
   });
-
-  it("اولین برچسب به tag تبدیل می‌شود", () => {
-    expect(products[0].tag).toBe("پرفروش");
-    expect(products[3].tag).toBe("پربازدید");
+  it("بدون آدرس CDN تصویر ندارد", () => {
+    vi.stubEnv("NEXT_PUBLIC_MEDIA_BASE_URL", "");
+    expect(toProduct(items[0]).imageUrl).toBeUndefined();
   });
-
-  it("ناموجود بودن را حفظ می‌کند", () => {
-    expect(products[0].available).toBe(true);
-    expect(products[5].available).toBe(false);
+  it("ناموجود (inStock=false)", () => {
+    expect(toProduct(items[5]).available).toBe(false);
+    expect(toProduct(items[0]).available).toBe(true);
   });
-
-  it("تصویر، کد کالا و دسته (نام و slug) را نگه می‌دارد", () => {
-    expect(products[0].imageUrl).toContain("unsplash.com");
-    expect(products[0].sku).toBe("NK-AM90-001");
-    expect(products[2].categoryName).toBe("کفش رسمی مردانه");
-    expect(products[2].categorySlug).toBe("mens-formal-shoes");
+  it("نام و slug دسته از lookup", () => {
+    const lookup = new Map([
+      [items[0].categoryId as string, { name: "کفش اسپرت مردانه", slug: "mens-sports-shoes" }],
+    ]);
+    const p = toProduct(items[0], lookup);
+    expect(p.categoryName).toBe("کفش اسپرت مردانه");
+    expect(p.categorySlug).toBe("mens-sports-shoes");
+    expect(toProduct(items[0]).categorySlug).toBeUndefined();
   });
-
-  it("اگر واحد ریال باشد، به تومان تبدیل می‌شود", () => {
-    const base = dtos[0];
-    const rial = toProduct({
-      ...base,
-      pricing: {
-        ...base.pricing,
-        currency: "RIAL",
-        finalPrice: 36_000_000,
-        originalPrice: 45_000_000,
-      },
-    });
-    expect(rial.price).toBe(3_600_000);
-    expect(rial.originalPrice).toBe(4_500_000);
+  it("بدون قیمت (بدون ترکیب فعال): ناموجود", () => {
+    expect(toProduct({ ...items[0], minPrice: null, maxPrice: null }).available).toBe(false);
   });
+});
 
-  it("thumbnail و badges و category خالی امن‌اند", () => {
-    const p = toProduct({ ...dtos[1], thumbnail: null, badges: [], category: null });
-    expect(p.imageUrl).toBeUndefined();
-    expect(p.tag).toBeUndefined();
-    expect(p.categoryName).toBeUndefined();
-    expect(p.categorySlug).toBeUndefined();
+describe("toProductDetail", () => {
+  const detail: ProductDetailDto = {
+    ...items[0],
+    description: "توضیح",
+    images: [
+      { fileKey: "a.webp", altText: null },
+      { fileKey: "b.webp", altText: null },
+    ],
+    options: { size: ["40", "41"], color: ["مشکی"] },
+    variants: [
+      { id: "v1", price: 3_600_000, isAvailable: true, attributes: { size: "40", color: "مشکی" } },
+      { id: "v2", price: 3_600_000, isAvailable: false, attributes: { size: "41", color: "مشکی" } },
+    ],
+  };
+  beforeEach(() => vi.stubEnv("NEXT_PUBLIC_MEDIA_BASE_URL", "https://cdn.example.com"));
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("ترکیب‌ها با برچسب فارسی و موجودی", () => {
+    const p = toProductDetail(detail);
+    expect(p.variants?.[0].options).toEqual({ سایز: "40", رنگ: "مشکی" });
+    expect(p.variants?.map((v) => v.available)).toEqual([true, false]);
+  });
+  it("گالری و توضیحات", () => {
+    const p = toProductDetail(detail);
+    expect(p.images).toEqual(["https://cdn.example.com/a.webp", "https://cdn.example.com/b.webp"]);
+    expect(p.description).toBe("توضیح");
+  });
+  it("بدون ترکیب: variants ندارد", () => {
+    expect(toProductDetail({ ...detail, variants: [] }).variants).toBeUndefined();
   });
 });

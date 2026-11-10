@@ -1,3 +1,4 @@
+import { toPersianDigits } from "@/lib/format";
 import type { ProductVariant } from "./types";
 
 /** انتخاب کاربر: نام گروه (مثل «سایز») به مقدار. */
@@ -89,6 +90,6 @@ export function toggleSelection(
 /** برچسب کوتاه برای سبد، مثل «سایز ۴۲، رنگ مشکی». */
 export function variantLabel(variant: ProductVariant): string {
   return Object.entries(variant.options)
-    .map(([n, v]) => `${n} ${v}`)
+    .map(([n, v]) => `${n} ${toPersianDigits(v)}`)
     .join("، ");
 }

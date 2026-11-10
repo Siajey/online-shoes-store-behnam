@@ -6,7 +6,8 @@ export type CategoryDto = {
   id: string;
   name: string;
   slug: string;
-  image: string | null;
-  parentId: string | null;
+  /** در API ماژول محصول وجود ندارد */
+  image?: string | null;
+  parentId?: string | null;
   children?: CategoryDto[];
 };

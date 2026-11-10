@@ -7,8 +7,7 @@ describe("ProductsToolbar", () => {
     const out = renderToStaticMarkup(
       <ProductsToolbar filters={{ category: "men", q: "نایک", sort: "price-asc" }} />,
     );
-    for (const s of ["ارزان‌ترین", "گران‌ترین", "بیشترین تخفیف", "اعمال فیلتر"])
-      expect(out).toContain(s);
+    for (const s of ["ارزان‌ترین", "گران‌ترین", "اعمال فیلتر"]) expect(out).toContain(s);
     expect(out).toContain('method="get"');
     expect(out).toContain('name="category"');
     expect(out).toContain('aria-current="true"');
