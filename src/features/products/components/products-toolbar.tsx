@@ -10,7 +10,6 @@ const SORT_OPTIONS: { value: ProductSort | undefined; label: string }[] = [
   { value: undefined, label: t.sortDefault },
   { value: "price-asc", label: t.sortPriceAsc },
   { value: "price-desc", label: t.sortPriceDesc },
-  { value: "discount", label: t.sortDiscount },
 ];
 
 /**

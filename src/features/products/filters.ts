@@ -3,7 +3,7 @@ import { toEnglishDigits } from "@/lib/format";
 export type RawSearchParams = Record<string, string | string[] | undefined>;
 
 /** ترتیب نمایش. نبودن sort یعنی پیش‌فرض (تازه‌ترین). ☐ نام و مقدارها با Swagger تطبیق داده شود. */
-export const SORTS = ["price-asc", "price-desc", "discount"] as const;
+export const SORTS = ["price-asc", "price-desc"] as const;
 export type ProductSort = (typeof SORTS)[number];
 
 export type ProductFilters = {

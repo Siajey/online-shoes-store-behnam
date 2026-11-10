@@ -29,6 +29,12 @@ export type Product = {
   available: boolean;
   categoryName?: string;
   categorySlug?: string;
+  /** توضیحات (فقط در صفحه‌ی محصول) */
+  description?: string;
+  /** همه‌ی تصاویر گالری (فقط در صفحه‌ی محصول) */
+  images?: readonly string[];
+  /** بیشترین قیمت ترکیب‌ها؛ فقط وقتی با قیمت پایه فرق دارد */
+  maxPrice?: number;
   /** ترکیب‌های سایز/رنگ؛ اگر نبود، محصول انتخاب ندارد. ☐ منتظر variantها در API HTTP. */
   variants?: readonly ProductVariant[];
 };

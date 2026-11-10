@@ -5,7 +5,7 @@ import type { CategoryDto } from "@/features/categories/dto";
 import categoriesSample from "@/features/categories/__fixtures__/categories.json";
 import { ProductGrid } from "@/features/products/components/product-grid";
 import { toProduct } from "@/features/products/mappers";
-import type { ProductDto } from "@/features/products/dto";
+import type { ProductsPageDto } from "@/features/products/dto";
 import productsSample from "@/features/products/__fixtures__/products.json";
 
 /** پیش‌نمایش با «نمونه‌ی واقعی پاسخ بک‌اند»؛ فقط در حالت توسعه باز می‌شود. */
@@ -13,7 +13,9 @@ export default function DataPreview() {
   if (process.env.NODE_ENV === "production") notFound();
 
   const categories = (categoriesSample.data as unknown as CategoryDto[]).map(toCategory);
-  const products = (productsSample.data as unknown as ProductDto[]).map(toProduct);
+  const products = (productsSample.data as unknown as ProductsPageDto).items.map((p) =>
+    toProduct(p),
+  );
 
   return (
     <main className="mx-auto flex w-full max-w-300 flex-col gap-10 p-6">

@@ -1,4 +1,5 @@
 import { cn } from "@/lib/cn";
+import { toPersianDigits } from "@/lib/format";
 import { productCopy } from "../copy";
 import type { OptionGroup, Selection } from "../variants";
 
@@ -17,7 +18,7 @@ export function VariantPicker({ groups, selection, onToggle }: Props) {
           <legend className="text-fg-secondary mb-3 text-sm">
             {g.name}
             {selection[g.name] && (
-              <span className="text-fg ms-2 font-medium">{selection[g.name]}</span>
+              <span className="text-fg ms-2 font-medium">{toPersianDigits(selection[g.name])}</span>
             )}
           </legend>
           <div className="flex flex-wrap gap-2">
@@ -41,7 +42,7 @@ export function VariantPicker({ groups, selection, onToggle }: Props) {
                       "text-fg-muted hover:border-line cursor-not-allowed line-through opacity-50",
                   )}
                 >
-                  {o.value}
+                  {toPersianDigits(o.value)}
                 </button>
               );
             })}

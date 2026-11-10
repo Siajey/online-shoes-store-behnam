@@ -1,41 +1,52 @@
-import type { ProductDto, VariantDto } from "./dto";
+import { mediaUrl } from "@/lib/media";
+import type { ProductDetailDto, ProductListItemDto, PublicVariantDto } from "./dto";
 import type { Product, ProductVariant } from "./types";
 
-/** فرانت همه‌چیز را به تومان نگه می‌دارد (تصمیم D-013). */
-function toToman(amount: number, currency: string): number {
-  return currency.toUpperCase() === "RIAL" ? Math.round(amount / 10) : amount;
-}
+/** نام فارسی ویژگی‌ها؛ نام ناشناخته همان‌طور که هست نمایش داده می‌شود. */
+const ATTRIBUTE_LABELS: Record<string, string> = { size: "سایز", color: "رنگ" };
 
-function toVariant(v: VariantDto, currency: string): ProductVariant {
+export const attributeLabel = (name: string) => ATTRIBUTE_LABELS[name] ?? name;
+
+/** نام و slug دسته بر اساس شناسه (از درخت /categories). */
+export type CategoryLookup = ReadonlyMap<string, { name: string; slug: string }>;
+
+function toVariant(v: PublicVariantDto): ProductVariant {
   return {
     id: v.id,
-    sku: v.sku || undefined,
-    price: toToman(v.price, currency),
-    available: v.isActive && v.stock > 0,
-    options: Object.fromEntries(v.attributes.map((a) => [a.name, a.value])),
+    price: v.price,
+    available: v.isAvailable,
+    options: Object.fromEntries(
+      Object.entries(v.attributes).map(([name, value]) => [attributeLabel(name), value]),
+    ),
   };
 }
 
-/** تنها جایی که شکل API به مدل فرانت تبدیل می‌شود. */
-export function toProduct(dto: ProductDto): Product {
-  const { pricing } = dto;
-  const hasDiscount = pricing.discount !== null && pricing.originalPrice > pricing.finalPrice;
-
+/** تنها جایی که شکل API (آیتم لیست) به مدل فرانت تبدیل می‌شود. */
+export function toProduct(dto: ProductListItemDto, categories?: CategoryLookup): Product {
+  const category = dto.categoryId ? categories?.get(dto.categoryId) : undefined;
+  const min = dto.minPrice ?? 0;
   return {
     id: dto.id,
     slug: dto.slug,
     name: dto.name,
-    sku: dto.sku || undefined,
-    price: toToman(pricing.finalPrice, pricing.currency),
-    originalPrice: hasDiscount ? toToman(pricing.originalPrice, pricing.currency) : undefined,
-    discountLabel: hasDiscount ? pricing.discount?.label : undefined,
-    tag: dto.badges[0]?.label,
-    imageUrl: dto.thumbnail || undefined,
-    available: dto.isAvailable,
-    categoryName: dto.category?.name,
-    categorySlug: dto.category?.slug,
-    variants: dto.variants?.length
-      ? dto.variants.map((v) => toVariant(v, pricing.currency))
-      : undefined,
+    price: min,
+    maxPrice: dto.maxPrice !== null && dto.maxPrice > min ? dto.maxPrice : undefined,
+    imageUrl: mediaUrl(dto.primaryImage?.fileKey),
+    available: dto.inStock && dto.minPrice !== null,
+    categoryName: category?.name,
+    categorySlug: category?.slug,
+  };
+}
+
+/** جزئیات محصول: همان آیتم لیست + توضیحات، گالری و ترکیب‌های سایز/رنگ. */
+export function toProductDetail(dto: ProductDetailDto, categories?: CategoryLookup): Product {
+  const base = toProduct(dto, categories);
+  const images = dto.images.map((i) => mediaUrl(i.fileKey)).filter((u): u is string => Boolean(u));
+  return {
+    ...base,
+    description: dto.description || undefined,
+    images: images.length > 0 ? images : undefined,
+    imageUrl: base.imageUrl ?? images[0],
+    variants: dto.variants.length > 0 ? dto.variants.map(toVariant) : undefined,
   };
 }

@@ -25,7 +25,6 @@ export const productCopy = {
   sortDefault: "پیش‌فرض",
   sortPriceAsc: "ارزان‌ترین",
   sortPriceDesc: "گران‌ترین",
-  sortDiscount: "بیشترین تخفیف",
   filtersTitle: "فیلترها",
   filtersCount: (n: string) => `فیلترها (${n})`,
   priceRange: "محدوده‌ی قیمت (تومان)",
