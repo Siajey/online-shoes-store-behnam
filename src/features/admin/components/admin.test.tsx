@@ -40,6 +40,7 @@ describe("AdminNavView", () => {
     expect(out).toContain('aria-current="page"');
     expect(out).toContain('aria-disabled="true"');
     expect(out).toContain('href="/admin/products"');
-    expect(out).not.toContain('href="/admin/brands"');
+    expect(out).toContain('href="/admin/brands"');
+    expect(out).not.toContain('href="/admin/variants"');
   });
 });
