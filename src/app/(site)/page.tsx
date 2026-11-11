@@ -5,6 +5,8 @@ import { CategorySection } from "@/features/categories/components/category-secti
 import { WelcomeGate } from "@/features/welcome/components/welcome-gate";
 import { Benefits } from "@/features/landing/components/benefits";
 import { Hero } from "@/features/landing/components/hero";
+import { NewsletterSection } from "@/features/landing/components/newsletter-section";
+import { OfferBanner } from "@/features/landing/components/offer-banner";
 import { landingCopy } from "@/features/landing/copy";
 import { ProductGridSkeleton } from "@/features/products/components/product-grid";
 import { ProductSection } from "@/features/products/components/product-section";
@@ -41,6 +43,9 @@ export default function Home() {
           </Suspense>
         </div>
       </section>
+
+      <OfferBanner />
+      <NewsletterSection />
     </main>
   );
 }
