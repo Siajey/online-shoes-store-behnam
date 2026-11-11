@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
+import { buttonVariants } from "@/components/ui/button";
 import { isApiRequestError } from "@/lib/api/errors";
 import { changeProductStatus, fetchAdminProducts } from "../api";
 import { adminProductsCopy as t } from "../copy";
@@ -98,11 +100,13 @@ export function AdminProductsContent() {
 
   return (
     <section aria-labelledby="admin-products-title" className="flex flex-col gap-6">
-      <div>
+      <div className="flex items-center justify-between gap-4">
         <h2 id="admin-products-title" className="text-xl font-medium">
           {t.title}
         </h2>
-        <p className="text-fg-muted mt-1 text-sm">{t.createSoon}</p>
+        <Link href="/admin/products/new" className={buttonVariants()}>
+          {t.create}
+        </Link>
       </div>
       <FilterBar
         status={status}
