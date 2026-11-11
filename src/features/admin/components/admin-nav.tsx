@@ -9,7 +9,7 @@ const ITEMS = [
   { href: "/admin/products", label: adminCopy.nav.products, ready: true },
   { href: "/admin/categories", label: adminCopy.nav.categories, ready: true },
   { href: "/admin/brands", label: adminCopy.nav.brands, ready: true },
-  { href: "/admin/variants", label: adminCopy.nav.variants, ready: false },
+  { href: "/admin/users", label: adminCopy.nav.users, ready: true },
 ] as const;
 
 export function AdminNavView({ pathname }: { pathname: string | null }) {
