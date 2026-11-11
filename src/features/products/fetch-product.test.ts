@@ -100,7 +100,7 @@ describe("fetchProducts", () => {
       sort: "minPrice:asc",
       pageSize: 12,
       nextCursor: "c0",
-      minPrice: 5,
+      minPrice: 50,
       inStock: true,
     });
   });

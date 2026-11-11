@@ -22,8 +22,6 @@ export async function fetchAdminProducts(
       pageSize: params.limit,
     },
     signal,
-    // همه‌ی endpointهای /admin حتی GET هم CSRFGuard دارند.
-    csrf: true,
   });
   return { items: res.data.items.map(toAdminProduct), nextCursor: res.data.nextCursor ?? null };
 }

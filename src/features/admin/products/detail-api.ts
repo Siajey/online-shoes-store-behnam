@@ -9,10 +9,8 @@ export async function fetchAdminProduct(
   id: string,
   signal?: AbortSignal,
 ): Promise<AdminProductDetail> {
-  // همه‌ی endpointهای /admin حتی GET هم CSRFGuard دارند.
   const res = await api.get<AdminProductDetailDto>(`/admin/products/${encodeURIComponent(id)}`, {
     signal,
-    csrf: true,
   });
   return map(res.data);
 }

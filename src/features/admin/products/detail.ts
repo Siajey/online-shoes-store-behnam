@@ -1,3 +1,4 @@
+import { rialToToman } from "@/lib/money";
 import type { ProductFormInput } from "./form";
 import type { ProductStatus } from "./types";
 
@@ -56,7 +57,7 @@ export function toVariant(d: AdminVariantDto): AdminVariant {
     id: d.id,
     title: d.title?.trim() || d.sku || "بدون عنوان",
     sku: d.sku ?? undefined,
-    price: d.price,
+    price: rialToToman(d.price),
     stock: d.stock,
     isActive: d.isActive,
     attributes: d.attributes ?? {},

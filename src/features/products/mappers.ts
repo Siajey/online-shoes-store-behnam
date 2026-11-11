@@ -1,4 +1,5 @@
 import { mediaUrl } from "@/lib/media";
+import { rialToToman } from "@/lib/money";
 import type { ProductDetailDto, ProductListItemDto, PublicVariantDto } from "./dto";
 import type { Product, ProductVariant } from "./types";
 
@@ -13,7 +14,7 @@ export type CategoryLookup = ReadonlyMap<string, { name: string; slug: string }>
 function toVariant(v: PublicVariantDto): ProductVariant {
   return {
     id: v.id,
-    price: v.price,
+    price: rialToToman(v.price),
     available: v.isAvailable,
     options: Object.fromEntries(
       Object.entries(v.attributes).map(([name, value]) => [attributeLabel(name), value]),
@@ -24,13 +25,14 @@ function toVariant(v: PublicVariantDto): ProductVariant {
 /** تنها جایی که شکل API (آیتم لیست) به مدل فرانت تبدیل می‌شود. */
 export function toProduct(dto: ProductListItemDto, categories?: CategoryLookup): Product {
   const category = dto.categoryId ? categories?.get(dto.categoryId) : undefined;
-  const min = dto.minPrice ?? 0;
+  const min = rialToToman(dto.minPrice ?? 0);
+  const max = dto.maxPrice === null ? null : rialToToman(dto.maxPrice);
   return {
     id: dto.id,
     slug: dto.slug,
     name: dto.name,
     price: min,
-    maxPrice: dto.maxPrice !== null && dto.maxPrice > min ? dto.maxPrice : undefined,
+    maxPrice: max !== null && max > min ? max : undefined,
     imageUrl: mediaUrl(dto.primaryImage?.fileKey),
     available: dto.inStock && dto.minPrice !== null,
     categoryName: category?.name,
