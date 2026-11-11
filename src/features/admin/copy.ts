@@ -13,5 +13,6 @@ export const adminCopy = {
     categories: "دسته‌بندی‌ها",
     brands: "برندها",
     variants: "واریانت‌ها",
+    users: "کاربران",
   },
 } as const;

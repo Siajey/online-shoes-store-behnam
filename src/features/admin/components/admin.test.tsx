@@ -35,12 +35,11 @@ describe("AdminGateView", () => {
 });
 
 describe("AdminNavView", () => {
-  it("مسیر فعال aria-current دارد و بخش‌های آماده‌نشده غیرفعال‌اند", () => {
+  it("مسیر فعال aria-current دارد و همهٔ بخش‌ها لینک‌اند", () => {
     const out = renderToStaticMarkup(<AdminNavView pathname="/admin/products" />);
     expect(out).toContain('aria-current="page"');
-    expect(out).toContain('aria-disabled="true"');
     expect(out).toContain('href="/admin/products"');
     expect(out).toContain('href="/admin/brands"');
-    expect(out).not.toContain('href="/admin/variants"');
+    expect(out).toContain('href="/admin/users"');
   });
 });
