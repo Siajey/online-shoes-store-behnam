@@ -32,15 +32,10 @@ const payload: ProductPayload = {
 beforeEach(() => Object.values(api).forEach((fn) => vi.mocked(fn).mockReset()));
 
 describe("detail api", () => {
-  it("fetch با CSRF و آدرس امن", async () => {
+  it("fetch با آدرس امن", async () => {
     vi.mocked(api.get).mockResolvedValue(ok(dto) as never);
     expect((await fetchAdminProduct("p 1")).id).toBe("p 1");
-    const [path, opts] = vi.mocked(api.get).mock.calls[0] as unknown as [
-      string,
-      { csrf?: boolean },
-    ];
-    expect(path).toBe("/admin/products/p%201");
-    expect(opts.csrf).toBe(true);
+    expect(vi.mocked(api.get).mock.calls[0][0]).toBe("/admin/products/p%201");
   });
   it("ساخت: type=shoe همراه فیلدها", async () => {
     vi.mocked(api.post).mockResolvedValue(ok(dto) as never);

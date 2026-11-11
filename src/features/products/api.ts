@@ -6,6 +6,7 @@ import type { ProductDetailDto, ProductsPageDto } from "./dto";
 import type { ProductSort } from "./filters";
 import { toProduct, toProductDetail, type CategoryLookup } from "./mappers";
 import type { Product } from "./types";
+import { tomanToRial } from "@/lib/money";
 
 export type ProductListParams = {
   cursor?: string;
@@ -71,8 +72,8 @@ export async function fetchProducts(
       nextCursor: params.cursor,
       categoryId,
       sort: params.sort ? SORT_PARAM[params.sort] : DEFAULT_SORT,
-      minPrice: params.minPrice,
-      maxPrice: params.maxPrice,
+      minPrice: params.minPrice === undefined ? undefined : tomanToRial(params.minPrice),
+      maxPrice: params.maxPrice === undefined ? undefined : tomanToRial(params.maxPrice),
       inStock: params.inStock ? true : undefined,
     },
     signal,

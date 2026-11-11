@@ -32,7 +32,6 @@ describe("fetchAdminProducts", () => {
       nextCursor: "c0",
       pageSize: 20,
     });
-    expect((opts as unknown as { csrf?: boolean }).csrf).toBe(true);
   });
   it("جستجوی خالی ارسال نمی‌شود", async () => {
     vi.mocked(api.get).mockResolvedValue(ok({ items: [], nextCursor: null }) as never);

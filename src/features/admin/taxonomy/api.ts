@@ -4,10 +4,8 @@ import { toAdminBrand, toAdminCategory } from "./mappers";
 import type { AdminBrand, AdminCategory } from "./types";
 import type { BrandPayload, CategoryPayload } from "./validation";
 
-// همه‌ی endpointهای /admin حتی GET هم CSRFGuard دارند، پس csrf: true.
-
 export async function fetchAdminCategories(signal?: AbortSignal): Promise<AdminCategory[]> {
-  const res = await api.get<AdminCategoryDto[]>("/admin/categories", { signal, csrf: true });
+  const res = await api.get<AdminCategoryDto[]>("/admin/categories", { signal });
   return res.data.map(toAdminCategory);
 }
 
@@ -28,7 +26,7 @@ export async function deleteCategory(id: string): Promise<void> {
 }
 
 export async function fetchAdminBrands(signal?: AbortSignal): Promise<AdminBrand[]> {
-  const res = await api.get<AdminBrandDto[]>("/admin/brands", { signal, csrf: true });
+  const res = await api.get<AdminBrandDto[]>("/admin/brands", { signal });
   return res.data.map(toAdminBrand);
 }
 

@@ -66,7 +66,7 @@ const dto: AdminProductDetailDto = {
       id: "v1",
       title: null,
       sku: "S-1",
-      price: 100,
+      price: 1000,
       stock: 3,
       isActive: true,
       attributes: { size: "42" },

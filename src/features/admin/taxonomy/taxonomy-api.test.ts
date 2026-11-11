@@ -20,7 +20,7 @@ const T = "2026-11-10T00:00:00.000Z";
 beforeEach(() => Object.values(api).forEach((fn) => vi.mocked(fn).mockReset()));
 
 describe("دسته‌ها", () => {
-  it("فهرست با CSRF و نگاشت", async () => {
+  it("فهرست و نگاشت", async () => {
     vi.mocked(api.get).mockResolvedValue(
       ok([
         { id: "1", name: "ن", slug: "n", parentId: null, sortOrder: 3, createdAt: T, updatedAt: T },
@@ -29,12 +29,7 @@ describe("دسته‌ها", () => {
     expect(await fetchAdminCategories()).toEqual([
       { id: "1", name: "ن", slug: "n", parentId: null, sortOrder: 3 },
     ]);
-    const [path, opts] = vi.mocked(api.get).mock.calls[0] as unknown as [
-      string,
-      { csrf?: boolean },
-    ];
-    expect(path).toBe("/admin/categories");
-    expect(opts.csrf).toBe(true);
+    expect(vi.mocked(api.get).mock.calls[0][0]).toBe("/admin/categories");
   });
   it("ساخت، ویرایش و حذف", async () => {
     const dto = {
