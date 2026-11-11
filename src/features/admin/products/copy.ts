@@ -1,0 +1,18 @@
+export const adminProductsCopy = {
+  title: "محصولات",
+  searchLabel: "جستجوی نام محصول",
+  searchCta: "جستجو",
+  filterAll: "همه",
+  loading: "در حال بارگذاری محصولات…",
+  empty: "محصولی پیدا نشد.",
+  loadError: "دریافت محصولات انجام نشد. دوباره تلاش کنید.",
+  actionError: "تغییر وضعیت انجام نشد.",
+  retry: "تلاش دوباره",
+  loadMore: "نمایش بیشتر",
+  noPrice: "قیمت ندارد",
+  inStock: "موجود",
+  outOfStock: "ناموجود",
+  variants: "واریانت فعال",
+  noImage: "بدون تصویر",
+  createSoon: "ساخت و ویرایش محصول در مرحلهٔ بعد اضافه می‌شود.",
+} as const;

@@ -15,6 +15,8 @@ export type RequestOptions = {
   skipAuthRefresh?: boolean;
   /** برای endpointهایی که CSRF نمی‌خواهند (ورود، تأیید کد): توکن نمی‌گیرد و هدر نمی‌فرستد. */
   skipCsrf?: boolean;
+  /** برای GETهایی که بک‌اند CSRF می‌خواهد (مثل همه‌ی endpointهای /admin): توکن را در GET هم می‌فرستد. */
+  csrf?: boolean;
 };
 
 export type ApiClientOptions = {
@@ -53,7 +55,8 @@ export function createApiClient(options: ApiClientOptions) {
       ...opts.headers,
     };
     if (opts.body !== undefined) headers["Content-Type"] = "application/json";
-    if (withCsrf && isMutating(method)) headers[apiConfig.csrfHeader] = await getCsrfToken();
+    if (withCsrf && (isMutating(method) || opts.csrf))
+      headers[apiConfig.csrfHeader] = await getCsrfToken();
 
     try {
       return await doFetch(buildUrl(path, opts.query), {
@@ -169,7 +172,7 @@ export function createApiClient(options: ApiClientOptions) {
       } else {
         options.onAuthLost?.();
       }
-    } else if (res.status === 403 && isMutating(method)) {
+    } else if (res.status === 403 && (isMutating(method) || opts.csrf)) {
       // ممکن است خطای CSRF باشد: توکن تازه می‌گیریم و فقط یک بار دوباره می‌فرستیم.
       csrfToken = null;
       res = await send(method, path, opts);
