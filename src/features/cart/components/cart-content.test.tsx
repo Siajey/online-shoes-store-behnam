@@ -47,6 +47,15 @@ describe("CartView", () => {
     expect(html(items)).toMatch(/<a[^>]*href="\/checkout"[^>]*>ادامه‌ی خرید/);
   });
 
+  it("ردیف هزینهٔ ارسال و کد تخفیف غیرفعال", () => {
+    const out = html(items);
+    expect(out).toContain("هزینه‌ی ارسال");
+    expect(out).toContain("در مرحله‌ی بعد محاسبه می‌شود");
+    expect(out).toContain("کد تخفیف");
+    expect(out).toMatch(/<input[^>]*disabled/);
+    expect(out).toContain("ثبت کد تخفیف به‌زودی فعال می‌شود.");
+  });
+
   it("فقط از ویژگی‌های منطقی استفاده می‌کند", () => {
     expect(html(items)).not.toMatch(/class="[^"]*(\s|")(ml|mr|pl|pr|left|right)-/);
   });

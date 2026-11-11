@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ShoeIllustration } from "@/components/illustrations/shoe-illustration";
 import { TrashIcon } from "@/components/layout/icons";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { QuantityStepper } from "@/components/ui/quantity-stepper";
 import { StateMessage } from "@/components/ui/state-message";
 import { siteConfig } from "@/config/site";
@@ -22,6 +23,26 @@ const price = (amount: number) => (
     <span className="text-fg-muted text-xs font-light">{siteConfig.currency.unit}</span>
   </>
 );
+
+/**
+ * ورود کد تخفیف. بک‌اند هنوز کد تخفیف ندارد، پس فیلد غیرفعال است و چیزی نمایش داده یا حساب نمی‌شود.
+ * ☐ بعد از آماده شدن API، همین‌جا ثبت و نمایش مبلغ تخفیف اضافه شود.
+ */
+export function DiscountCodeBox() {
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex items-end gap-2">
+        <div className="flex-1">
+          <Input label={cartCopy.discountLabel} ltr disabled placeholder="CODE" />
+        </div>
+        <Button type="button" variant="secondary" disabled className="h-13">
+          {cartCopy.discountApply}
+        </Button>
+      </div>
+      <p className="text-fg-muted text-xs leading-6">{cartCopy.discountSoon}</p>
+    </div>
+  );
+}
 
 type ViewProps = {
   items: readonly CartItem[];
@@ -137,12 +158,16 @@ export function CartView({ items, onQuantityChange, onRemove, onClear }: ViewPro
               <dd>{price(savings)}</dd>
             </div>
           )}
+          <div className="flex justify-between">
+            <dt className="text-fg-muted">{cartCopy.shipping}</dt>
+            <dd className="text-fg-muted">{cartCopy.shippingLater}</dd>
+          </div>
           <div className="border-line flex items-baseline justify-between border-t pt-3 text-base font-medium">
             <dt>{cartCopy.total}</dt>
             <dd className="text-lg">{price(cartTotal(items))}</dd>
           </div>
         </dl>
-        <p className="text-fg-muted text-xs leading-6">{cartCopy.shippingNote}</p>
+        <DiscountCodeBox />
         <Link href="/checkout" className={buttonVariants({ size: "lg", fullWidth: true })}>
           {cartCopy.checkout}
         </Link>
