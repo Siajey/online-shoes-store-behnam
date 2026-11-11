@@ -14,5 +14,6 @@ export const adminProductsCopy = {
   outOfStock: "ناموجود",
   variants: "واریانت فعال",
   noImage: "بدون تصویر",
-  createSoon: "ساخت و ویرایش محصول در مرحلهٔ بعد اضافه می‌شود.",
+  create: "محصول جدید",
+  edit: "ویرایش",
 } as const;

@@ -1,5 +1,6 @@
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StateMessage } from "@/components/ui/state-message";
 import { cn } from "@/lib/cn";
@@ -103,6 +104,12 @@ export function ProductRow({ product, busy, onAction }: RowProps) {
         </div>
       </div>
       <div className="flex flex-wrap gap-2">
+        <Link
+          href={`/admin/products/${product.id}`}
+          className={buttonVariants({ size: "sm", variant: "ghost" })}
+        >
+          {t.edit}
+        </Link>
         {allowedActions(product.status).map((action) => (
           <Button
             key={action}
