@@ -1,14 +1,14 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { StateMessage } from "@/components/ui/state-message";
 import { isApiRequestError } from "@/lib/api/errors";
 import { fetchAdminBrands, fetchAdminCategories } from "../../taxonomy/api";
 import { toCategoryRows } from "../../taxonomy/tree";
 import type { AdminBrand, AdminCategory } from "../../taxonomy/types";
+import { changeProductStatus } from "../api";
 import { createProduct, fetchAdminProduct, updateProduct } from "../detail-api";
 import { toFormInput, type AdminProductDetail } from "../detail";
 import {
@@ -18,6 +18,7 @@ import {
   type ProductFormInput,
 } from "../form";
 import { productFormCopy as t } from "../form-copy";
+import type { StatusAction } from "../types";
 import { ProductFormView, VariantsReadOnly } from "./product-form-view";
 
 type Load =
@@ -42,6 +43,8 @@ export function ProductFormContent({ productId }: { productId?: string }) {
   const [formError, setFormError] = useState<string>();
   const [notice, setNotice] = useState<string>();
   const [reloadKey, setReloadKey] = useState(0);
+  const [statusBusy, setStatusBusy] = useState(false);
+  const [statusError, setStatusError] = useState<string>();
 
   useEffect(() => {
     let cancelled = false;
@@ -128,28 +131,47 @@ export function ProductFormContent({ productId }: { productId?: string }) {
     }
   }
 
+  async function changeStatus(action: StatusAction) {
+    if (!product) return;
+    setStatusBusy(true);
+    setStatusError(undefined);
+    try {
+      await changeProductStatus(product.id, action);
+      // بعد از اولین انتشار slug قفل می‌شود؛ پس محصول دوباره خوانده می‌شود.
+      const fresh = await fetchAdminProduct(product.id);
+      setLoad({ status: "ready", categories, brands, product: fresh });
+      setValues((current) => ({ ...current, slug: fresh.slug }));
+    } catch (e) {
+      setStatusError(messageOf(e, t.statusError));
+    } finally {
+      setStatusBusy(false);
+    }
+  }
+
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between gap-4">
-        <h2 className="text-xl font-medium">{product ? t.editTitle : t.newTitle}</h2>
-        <Link href="/admin/products" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-          {t.back}
-        </Link>
-      </div>
-      <ProductFormView
-        mode={product ? "edit" : "create"}
-        values={values}
-        errors={errors}
-        slugLocked={slugLocked}
-        categories={categoryOptions}
-        brands={brandOptions}
-        pending={pending}
-        formError={formError}
-        notice={notice}
-        onChange={setValues}
-        onSubmit={() => void submit()}
-      />
-      {product && <VariantsReadOnly variants={product.variants} />}
-    </div>
+    <ProductFormView
+      mode={product ? "edit" : "create"}
+      values={values}
+      errors={errors}
+      slugLocked={slugLocked}
+      categories={categoryOptions}
+      brands={brandOptions}
+      pending={pending}
+      formError={formError}
+      notice={notice}
+      publish={
+        product
+          ? {
+              status: product.status,
+              busy: statusBusy,
+              error: statusError,
+              onAction: (a) => void changeStatus(a),
+            }
+          : undefined
+      }
+      variants={product ? <VariantsReadOnly variants={product.variants} /> : undefined}
+      onChange={setValues}
+      onSubmit={() => void submit()}
+    />
   );
 }
