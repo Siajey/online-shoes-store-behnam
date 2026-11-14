@@ -62,3 +62,52 @@ export const TrashIcon = (p: ComponentProps<"svg">) => (
     <path d="M10 11v6M14 11v6" />
   </Icon>
 );
+
+export const SummaryIcon = (p: ComponentProps<"svg">) => (
+  <Icon {...p}>
+    <path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z" />
+  </Icon>
+);
+export const CubeIcon = (p: ComponentProps<"svg">) => (
+  <Icon {...p}>
+    <path d="M21 8l-9-5-9 5v8l9 5 9-5zM3.3 7L12 12l8.7-5M12 22V12" />
+  </Icon>
+);
+export const PinIcon = (p: ComponentProps<"svg">) => (
+  <Icon {...p}>
+    <path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z" />
+    <circle cx="12" cy="10" r="2.5" />
+  </Icon>
+);
+export const PencilIcon = (p: ComponentProps<"svg">) => (
+  <Icon {...p}>
+    <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+  </Icon>
+);
+export const ShieldIcon = (p: ComponentProps<"svg">) => (
+  <Icon {...p}>
+    <path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z" />
+  </Icon>
+);
+export const LogoutIcon = (p: ComponentProps<"svg">) => (
+  <Icon {...p}>
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+  </Icon>
+);
+export const PlusIcon = (p: ComponentProps<"svg">) => (
+  <Icon {...p}>
+    <path d="M12 5v14M5 12h14" />
+  </Icon>
+);
+/** فلش «جلو» در راست‌به‌چپ (رو به چپ). */
+export const ChevronStartIcon = (p: ComponentProps<"svg">) => (
+  <Icon {...p}>
+    <path d="M15 5l-7 7 7 7" />
+  </Icon>
+);
+export const HelpIcon = (p: ComponentProps<"svg">) => (
+  <Icon {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01" />
+  </Icon>
+);

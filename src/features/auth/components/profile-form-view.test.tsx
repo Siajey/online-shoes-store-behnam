@@ -16,6 +16,12 @@ const html = (over: Partial<Parameters<typeof ProfileFormView>[0]> = {}) =>
   );
 
 describe("ProfileFormView", () => {
+  it("شماره‌ی موبایل فقط‌خواندنی و فارسی؛ بدون شماره فیلدی نیست", () => {
+    const out = html({ phone: "09120000000" });
+    expect(out).toContain("۰۹۱۲۰۰۰۰۰۰۰");
+    expect(out).toContain("disabled");
+    expect(html()).not.toContain("شماره موبایل");
+  });
   it("دو فیلد با مقدار اولیه و دکمه‌ی ذخیره", () => {
     const out = html();
     expect(out).toContain("نام خانوادگی");

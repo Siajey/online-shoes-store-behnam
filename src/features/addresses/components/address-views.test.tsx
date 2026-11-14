@@ -39,6 +39,16 @@ describe("AddressCard", () => {
     expect(out).toContain("پیش‌فرض</span>");
     expect(out).not.toContain("پیش‌فرض شود");
   });
+  it("ویرایش و حذف دکمه‌ی آیکونی با برچسب دسترسی‌پذیر", () => {
+    const out = card();
+    expect(out).toContain('aria-label="ویرایش"');
+    expect(out).toContain('aria-label="حذف"');
+    expect(out).toContain("<svg");
+  });
+  it("آدرس پیش‌فرض کادر برند دارد", () => {
+    expect(card({ address: addr("1", true) })).toContain("border-brand");
+    expect(card()).not.toContain("border-brand");
+  });
   it("حالت تأیید حذف", () => {
     const out = card({ confirmingRemove: true });
     expect(out).toContain("این آدرس حذف شود؟");
@@ -61,8 +71,10 @@ describe("AddressListView", () => {
     expect(out).toContain("هنوز آدرسی ثبت نکرده‌اید.");
     expect(out).toContain("افزودن آدرس");
   });
-  it("یک آدرس: هنوز می‌شود اضافه کرد", () => {
-    expect(list(1)).toContain("افزودن آدرس");
+  it("یک آدرس: کاشی خط‌چین افزودن", () => {
+    const out = list(1);
+    expect(out).toContain("افزودن آدرس");
+    expect(out).toContain("border-dashed");
   });
   it("دو آدرس: دکمه نیست و پیام سقف می‌آید", () => {
     const out = list(2);
