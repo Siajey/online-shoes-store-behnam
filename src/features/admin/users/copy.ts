@@ -4,6 +4,13 @@ export const adminUsersCopy = {
   all: "همه",
   roleGroup: "نقش",
   statusGroup: "وضعیت",
+  columns: {
+    user: "کاربر",
+    role: "نقش",
+    joined: "تاریخ عضویت",
+    status: "وضعیت",
+    actions: "عملیات",
+  },
   phoneLabel: "جستجوی شماره موبایل",
   phoneHint: "شمارهٔ کامل را وارد کنید (مثلاً ۰۹۱۲۱۲۳۴۵۶۷).",
   phoneInvalid: "شمارهٔ موبایل معتبر نیست.",

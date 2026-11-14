@@ -1,8 +1,9 @@
+import { UsersIcon } from "@/features/admin/components/admin-icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { StateMessage } from "@/components/ui/state-message";
-import { cn } from "@/lib/cn";
 import { toPersianDigits } from "@/lib/format";
 import { adminUsersCopy as t } from "../copy";
 import { formatJoinDate } from "../format";
@@ -16,39 +17,12 @@ import {
 } from "../labels";
 import { ROLES, STATUSES, type AdminUser, type UserRole, type UserStatus } from "../types";
 
-type ChipsProps<T extends string> = {
-  label: string;
-  value: T | undefined;
-  options: readonly T[];
-  names: Record<T, string>;
-  onChange: (value: T | undefined) => void;
-};
+/** ستون‌های جدول در صفحه‌ی بزرگ: کاربر | نقش | عضویت | وضعیت | عملیات */
+const GRID =
+  "lg:grid lg:grid-cols-[minmax(0,2fr)_1fr_1.2fr_1fr_minmax(0,2.4fr)] lg:items-center lg:gap-4";
 
-function Chips<T extends string>({ label, value, options, names, onChange }: ChipsProps<T>) {
-  const items: { value: T | undefined; name: string }[] = [
-    { value: undefined, name: t.all },
-    ...options.map((o) => ({ value: o, name: names[o] })),
-  ];
-  return (
-    <div role="group" aria-label={label} className="flex flex-wrap items-center gap-2">
-      <span className="text-fg-muted text-sm">{label}</span>
-      {items.map((item) => (
-        <button
-          key={item.name}
-          type="button"
-          aria-pressed={value === item.value}
-          onClick={() => onChange(item.value)}
-          className={cn(
-            "rounded-full px-4 py-2 text-sm",
-            value === item.value ? "bg-brand text-on-brand" : "bg-surface text-fg-secondary",
-          )}
-        >
-          {item.name}
-        </button>
-      ))}
-    </div>
-  );
-}
+const ROLE_OPTIONS = ROLES.map((r) => ({ value: r, label: ROLE_LABEL[r] }));
+const STATUS_OPTIONS = STATUSES.map((s) => ({ value: s, label: STATUS_LABEL[s] }));
 
 export type UsersFilterBarProps = {
   role: UserRole | undefined;
@@ -76,29 +50,15 @@ export function UsersFilterBar({
   onClear,
 }: UsersFilterBarProps) {
   return (
-    <div className="flex flex-col gap-4">
-      <Chips
-        label={t.roleGroup}
-        value={role}
-        options={ROLES}
-        names={ROLE_LABEL}
-        onChange={onRole}
-      />
-      <Chips
-        label={t.statusGroup}
-        value={status}
-        options={STATUSES}
-        names={STATUS_LABEL}
-        onChange={onStatus}
-      />
+    <div className="flex flex-col gap-3">
       <form
-        className="flex items-start gap-2"
+        className="flex flex-wrap items-start gap-3"
         onSubmit={(e) => {
           e.preventDefault();
           onSearch();
         }}
       >
-        <div className="flex-1">
+        <div className="min-w-56 flex-1">
           <Input
             label={t.phoneLabel}
             hint={t.phoneHint}
@@ -107,6 +67,24 @@ export function UsersFilterBar({
             value={phone}
             error={phoneError}
             onChange={(e) => onPhone(e.target.value)}
+          />
+        </div>
+        <div className="w-full sm:w-40">
+          <Select
+            label={t.roleGroup}
+            options={ROLE_OPTIONS}
+            placeholder={t.all}
+            value={role ?? ""}
+            onChange={(e) => onRole((e.target.value || undefined) as UserRole | undefined)}
+          />
+        </div>
+        <div className="w-full sm:w-40">
+          <Select
+            label={t.statusGroup}
+            options={STATUS_OPTIONS}
+            placeholder={t.all}
+            value={status ?? ""}
+            onChange={(e) => onStatus((e.target.value || undefined) as UserStatus | undefined)}
           />
         </div>
         <Button type="submit" variant="secondary" className="mt-7 h-13">
@@ -147,9 +125,15 @@ export function UserRow({
   onCancel,
 }: UserRowProps) {
   return (
-    <li className="rounded-card bg-surface flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="min-w-0">
-        <div className="flex flex-wrap items-center gap-2">
+    <li className={`flex flex-col gap-3 py-4 ${GRID}`}>
+      <div className="flex min-w-0 items-center gap-3">
+        <span
+          aria-hidden="true"
+          className="bg-surface-2 text-brand flex size-11 flex-none items-center justify-center rounded-full"
+        >
+          <UsersIcon width="20" height="20" />
+        </span>
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
           <span dir="ltr" className="font-medium">
             {toPersianDigits(user.phoneNumber)}
           </span>
@@ -158,19 +142,24 @@ export function UserRow({
               {t.you}
             </Badge>
           )}
-          <Badge variant={user.role === "admin" ? "success" : "neutral"} size="sm">
-            {ROLE_LABEL[user.role]}
-          </Badge>
-          <Badge variant={STATUS_BADGE[user.status]} size="sm">
-            {STATUS_LABEL[user.status]}
-          </Badge>
-        </div>
-        <div className="text-fg-muted mt-1 text-sm">
-          {t.joined}: {formatJoinDate(user.createdAt)}
         </div>
       </div>
+      <div>
+        <Badge variant={user.role === "admin" ? "success" : "neutral"} size="sm">
+          {ROLE_LABEL[user.role]}
+        </Badge>
+      </div>
+      <div className="text-fg-muted text-sm">
+        <span className="lg:sr-only">{t.joined}: </span>
+        {formatJoinDate(user.createdAt)}
+      </div>
+      <div>
+        <Badge variant={STATUS_BADGE[user.status]} size="sm">
+          {STATUS_LABEL[user.status]}
+        </Badge>
+      </div>
       {isSelf ? (
-        <p className="text-fg-muted text-xs sm:max-w-60">{t.selfNote}</p>
+        <p className="text-fg-muted text-xs">{t.selfNote}</p>
       ) : confirming ? (
         <div className="flex flex-wrap items-center gap-2" role="group" aria-label={t.confirmTitle}>
           <span className="text-danger text-sm">
@@ -199,6 +188,22 @@ export function UserRow({
         </div>
       )}
     </li>
+  );
+}
+
+function HeaderRow() {
+  const c = t.columns;
+  return (
+    <div
+      aria-hidden="true"
+      className={`text-fg-muted border-line hidden border-b pb-3 text-sm ${GRID}`}
+    >
+      <span>{c.user}</span>
+      <span>{c.role}</span>
+      <span>{c.joined}</span>
+      <span>{c.status}</span>
+      <span>{c.actions}</span>
+    </div>
   );
 }
 
@@ -237,20 +242,23 @@ export function UsersListView(p: UsersListViewProps) {
   return (
     <div className="flex flex-col gap-4">
       {p.actionError && <StateMessage tone="error">{p.actionError}</StateMessage>}
-      <ul className="flex flex-col gap-3">
-        {p.state.items.map((user) => (
-          <UserRow
-            key={user.id}
-            user={user}
-            isSelf={user.id === p.selfId}
-            busy={p.busyId === user.id}
-            confirming={p.confirming?.id === user.id ? p.confirming.action : null}
-            onAction={(a) => p.onAction(user.id, a)}
-            onConfirm={p.onConfirm}
-            onCancel={p.onCancelConfirm}
-          />
-        ))}
-      </ul>
+      <div className="rounded-card bg-surface p-4 lg:p-6">
+        <HeaderRow />
+        <ul className="divide-line divide-y">
+          {p.state.items.map((user) => (
+            <UserRow
+              key={user.id}
+              user={user}
+              isSelf={user.id === p.selfId}
+              busy={p.busyId === user.id}
+              confirming={p.confirming?.id === user.id ? p.confirming.action : null}
+              onAction={(a) => p.onAction(user.id, a)}
+              onConfirm={p.onConfirm}
+              onCancel={p.onCancelConfirm}
+            />
+          ))}
+        </ul>
+      </div>
       {p.state.hasMore && (
         <Button
           variant="outline"

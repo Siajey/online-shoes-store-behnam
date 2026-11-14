@@ -116,10 +116,7 @@ export function AdminUsersContent() {
   }
 
   return (
-    <section aria-labelledby="admin-users-title" className="flex flex-col gap-6">
-      <h2 id="admin-users-title" className="text-xl font-medium">
-        {t.title}
-      </h2>
+    <section aria-label={t.title} className="flex flex-col gap-6">
       <UsersFilterBar
         role={role}
         status={status}
