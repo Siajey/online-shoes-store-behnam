@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { buttonVariants } from "@/components/ui/button";
+import { PlusIcon } from "@/features/admin/components/admin-icons";
 import { isApiRequestError } from "@/lib/api/errors";
 import { changeProductStatus, fetchAdminProducts } from "../api";
 import { adminProductsCopy as t } from "../copy";
@@ -99,12 +100,10 @@ export function AdminProductsContent() {
   }
 
   return (
-    <section aria-labelledby="admin-products-title" className="flex flex-col gap-6">
-      <div className="flex items-center justify-between gap-4">
-        <h2 id="admin-products-title" className="text-xl font-medium">
-          {t.title}
-        </h2>
-        <Link href="/admin/products/new" className={buttonVariants()}>
+    <section aria-label={t.title} className="flex flex-col gap-6">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <Link href="/admin/products/new" className={buttonVariants({ className: "gap-2" })}>
+          <PlusIcon />
           {t.create}
         </Link>
       </div>

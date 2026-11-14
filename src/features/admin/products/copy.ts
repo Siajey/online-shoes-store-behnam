@@ -1,6 +1,14 @@
 export const adminProductsCopy = {
   title: "محصولات",
   searchLabel: "جستجوی نام محصول",
+  statusLabel: "وضعیت",
+  columns: {
+    product: "محصول",
+    price: "قیمت (تومان)",
+    stock: "موجودی",
+    status: "وضعیت",
+    actions: "عملیات",
+  },
   searchCta: "جستجو",
   filterAll: "همه",
   loading: "در حال بارگذاری محصولات…",
@@ -12,8 +20,9 @@ export const adminProductsCopy = {
   noPrice: "قیمت ندارد",
   inStock: "موجود",
   outOfStock: "ناموجود",
-  variants: "واریانت فعال",
+  variants: "ترکیب فعال",
   noImage: "بدون تصویر",
-  create: "محصول جدید",
+  create: "افزودن محصول",
   edit: "ویرایش",
+  editNamed: (name: string) => `ویرایش «${name}»`,
 } as const;

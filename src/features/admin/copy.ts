@@ -8,11 +8,16 @@ export const adminCopy = {
   forbiddenText: "این بخش فقط برای مدیران فروشگاه است.",
   errorText: "بررسی دسترسی انجام نشد. اتصال را بررسی و دوباره تلاش کنید.",
   retry: "تلاش دوباره",
+  panelSubtitle: "پنل مدیریت",
+  adminRole: "مدیر فروشگاه",
+  titles: {
+    productNew: "محصول جدید",
+    productEdit: "ویرایش محصول",
+  },
   nav: {
     products: "محصولات",
     categories: "دسته‌بندی‌ها",
     brands: "برندها",
-    variants: "واریانت‌ها",
     users: "کاربران",
   },
 } as const;
