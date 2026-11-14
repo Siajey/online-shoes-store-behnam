@@ -54,6 +54,7 @@ export function ProfileForm({ user }: { user: User }) {
       errors={errors}
       formError={formError}
       saved={saved}
+      phone={user.phoneNumber}
     />
   );
 }

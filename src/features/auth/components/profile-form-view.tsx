@@ -14,6 +14,8 @@ type Props = {
   /** خطای کلی (مثلاً قطعی اینترنت) */
   formError?: string;
   saved: boolean;
+  /** شماره‌ی موبایل (فقط خواندنی) */
+  phone?: string;
 };
 
 const fieldError = (e: ProfileErrors[keyof ProfileErrors]) =>
@@ -32,6 +34,7 @@ export function ProfileFormView({
   errors,
   formError,
   saved,
+  phone,
 }: Props) {
   return (
     <form
@@ -63,6 +66,17 @@ export function ProfileFormView({
           disabled={pending}
         />
       </div>
+      {phone && (
+        <Input
+          label={authCopy.phoneLabel}
+          name="phone"
+          ltr
+          readOnly
+          disabled
+          value={toPersianDigits(phone)}
+          hint={authCopy.phoneReadonly}
+        />
+      )}
       {formError && (
         <p role="alert" className="text-danger text-sm">
           {formError}
