@@ -27,6 +27,8 @@ export type ProductCardProps = {
   favourite?: boolean;
   onToggleFavourite?: () => void;
   onAddToCart?: () => void;
+  /** اگر داده شود، دکمه‌ی «+» به‌جای onAddToCart لینکی به این آدرس (صفحه‌ی محصول برای انتخاب سایز و رنگ) است. */
+  addToCartHref?: string;
   className?: string;
 };
 
@@ -42,6 +44,7 @@ export function ProductCard({
   favourite = false,
   onToggleFavourite,
   onAddToCart,
+  addToCartHref,
   className,
 }: ProductCardProps) {
   return (
@@ -111,15 +114,25 @@ export function ProductCard({
             </span>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={onAddToCart}
-          disabled={unavailable}
-          aria-label={productCopy.addToCart}
-          className="bg-brand text-on-brand focus-visible:outline-brand flex size-10 shrink-0 items-center justify-center rounded-2xl transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none lg:size-11"
-        >
-          <PlusIcon />
-        </button>
+        {addToCartHref && !unavailable ? (
+          <Link
+            href={addToCartHref}
+            aria-label={productCopy.addToCart}
+            className="bg-brand text-on-brand focus-visible:outline-brand flex size-10 shrink-0 items-center justify-center rounded-2xl transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none lg:size-11"
+          >
+            <PlusIcon />
+          </Link>
+        ) : (
+          <button
+            type="button"
+            onClick={onAddToCart}
+            disabled={unavailable}
+            aria-label={productCopy.addToCart}
+            className="bg-brand text-on-brand focus-visible:outline-brand flex size-10 shrink-0 items-center justify-center rounded-2xl transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none lg:size-11"
+          >
+            <PlusIcon />
+          </button>
+        )}
       </div>
     </article>
   );

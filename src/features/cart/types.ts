@@ -18,7 +18,14 @@ export type CartItem = {
   productId?: string;
   variantId?: string;
   variantLabel?: string;
+  /** فقط ردیف‌های سبد سرور: سقف تعداد این ردیف (کمینه‌ی موجودی و ۱۰) */
+  maxQuantity?: number;
+  /** فقط ردیف‌های سبد سرور: دلیل ناموجود بودن؛ ردیف ناموجود در جمع مبلغ نمی‌آید. */
+  unavailable?: CartUnavailableReason;
 };
+
+export type CartUnavailableReason =
+  "variantUnavailable" | "productUnavailable" | "outOfStock" | "insufficientStock";
 
 /** ترکیب انتخاب‌شده‌ی سایز/رنگ هنگام افزودن به سبد. */
 export type CartVariant = {

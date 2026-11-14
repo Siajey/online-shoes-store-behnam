@@ -2,8 +2,6 @@
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
-import { cartCopy } from "@/features/cart/copy";
-import { cartStore } from "@/features/cart/store";
 import { favouritesCopy } from "@/features/favourites/copy";
 import { favouritesStore } from "@/features/favourites/store";
 import { useFavourites } from "@/features/favourites/use-favourites";
@@ -28,11 +26,6 @@ export function ProductGrid({ products }: { products: Product[] }) {
     setAnnouncement((a) => ({ id: a.id + 1, text }));
   }
 
-  function addToCart(product: Product) {
-    cartStore.add(product);
-    setAnnouncement((a) => ({ id: a.id + 1, text: cartCopy.added(product.name) }));
-  }
-
   return (
     <div className={grid}>
       <span key={announcement.id} role="status" className="sr-only">
@@ -50,7 +43,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
           unavailable={!product.available}
           favourite={favouriteIds.has(product.id)}
           onToggleFavourite={() => toggleFavourite(product)}
-          onAddToCart={() => addToCart(product)}
+          addToCartHref={productHref(product.slug)}
           image={
             product.imageUrl ? (
               // unoptimized: تا دامنه‌ی تصاویر نهایی نشده، تنظیم images.remotePatterns لازم نیست.
