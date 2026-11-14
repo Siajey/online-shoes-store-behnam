@@ -81,6 +81,15 @@ describe("UsersListView", () => {
   });
 });
 
+describe("UsersListView (جدول)", () => {
+  it("سرستون‌ها و تاریخ عضویت", () => {
+    const out = renderToStaticMarkup(<UsersListView {...base} state={ready([u()])} />);
+    for (const title of ["کاربر", "نقش", "تاریخ عضویت", "وضعیت", "عملیات"]) {
+      expect(out).toContain(title);
+    }
+  });
+});
+
 describe("UsersFilterBar", () => {
   const bar = {
     role: undefined,
@@ -93,11 +102,11 @@ describe("UsersFilterBar", () => {
     onSearch: noop,
     onClear: noop,
   } as const;
-  it("چیپ‌ها و تعداد کل", () => {
+  it("منوهای نقش و وضعیت و تعداد کل", () => {
     const out = renderToStaticMarkup(<UsersFilterBar {...bar} role="admin" total={12} />);
-    expect(out).toContain('aria-pressed="true"');
     expect(out).toContain("ثبت‌نام‌شده");
     expect(out).toContain("تعداد کل");
+    expect(out).toMatch(/<option[^>]*value="admin"[^>]*>/);
   });
   it("خطای شماره و دکمهٔ پاک‌کردن", () => {
     const out = renderToStaticMarkup(
