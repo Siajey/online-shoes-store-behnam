@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { QuantityStepper } from "@/components/ui/quantity-stepper";
 import { MAX_QUANTITY } from "@/features/cart/cart";
 import { cartCopy } from "@/features/cart/copy";
-import { cartStore } from "@/features/cart/store";
+import { cartStore } from "@/features/cart/instance";
+import { useCartMeta } from "@/features/cart/use-cart";
 import { favouritesStore } from "@/features/favourites/store";
 import { useIsFavourite } from "@/features/favourites/use-favourites";
 import { productCopy } from "../copy";
@@ -37,6 +38,8 @@ export function ProductPurchase({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
   const favourite = useIsFavourite(product.id);
   const [added, setAdded] = useState(false);
+  const [addError, setAddError] = useState<string | null>(null);
+  const { pending } = useCartMeta();
 
   useEffect(() => {
     if (!added) return;
@@ -44,19 +47,20 @@ export function ProductPurchase({ product }: { product: Product }) {
     return () => clearTimeout(timer);
   }, [added]);
 
-  function addToCart() {
-    if (hasVariants) {
-      if (!variant || !variant.available) return;
-      cartStore.add(product, quantity, {
-        id: variant.id,
-        label: variantLabel(variant),
-        price: variant.price,
-        originalPrice: variant.originalPrice,
-      });
-    } else {
-      cartStore.add(product, quantity);
-    }
-    setAdded(true);
+  async function addToCart() {
+    if (hasVariants && (!variant || !variant.available)) return;
+    setAddError(null);
+    const result =
+      hasVariants && variant
+        ? await cartStore.add(product, quantity, {
+            id: variant.id,
+            label: variantLabel(variant),
+            price: variant.price,
+            originalPrice: variant.originalPrice,
+          })
+        : await cartStore.add(product, quantity);
+    if (result.ok) setAdded(true);
+    else setAddError(result.message);
   }
 
   return (
@@ -83,7 +87,12 @@ export function ProductPurchase({ product }: { product: Product }) {
           }}
         />
 
-        <Button size="lg" disabled={!canBuy} onClick={addToCart} className="min-w-40 flex-1">
+        <Button
+          size="lg"
+          disabled={!canBuy || pending}
+          onClick={() => void addToCart()}
+          className="min-w-40 flex-1"
+        >
           {product.available ? productCopy.addToCartFull : productCopy.unavailable}
         </Button>
 
@@ -103,6 +112,11 @@ export function ProductPurchase({ product }: { product: Product }) {
       )}
       {hasVariants && missing.length === 0 && variant && !variant.available && (
         <p className="text-danger text-sm">{productCopy.selectedVariantUnavailable}</p>
+      )}
+      {addError && (
+        <p role="alert" className="text-danger text-sm">
+          {addError}
+        </p>
       )}
       <div role="status" className="min-h-6 text-sm">
         {added && (

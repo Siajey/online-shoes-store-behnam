@@ -1,9 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { cartCopy } from "@/features/cart/copy";
-import { cartStore } from "@/features/cart/store";
 import { favouritesCopy } from "@/features/favourites/copy";
 import { favouritesStore } from "@/features/favourites/store";
 import { useFavourites } from "@/features/favourites/use-favourites";
@@ -18,6 +17,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
   // پیام برای صفحه‌خوان؛ کلید تازه باعث می‌شود افزودن پشت‌سرهم‌ی همان کالا هم اعلام شود.
   const [announcement, setAnnouncement] = useState({ id: 0, text: "" });
 
+  const router = useRouter();
   const favourites = useFavourites();
   const favouriteIds = useMemo(() => new Set(favourites.map((p) => p.id)), [favourites]);
 
@@ -28,9 +28,10 @@ export function ProductGrid({ products }: { products: Product[] }) {
     setAnnouncement((a) => ({ id: a.id + 1, text }));
   }
 
+  // هر کفش سایز/رنگ دارد و قیمت و موجودی هر ترکیب جدا است؛ پس افزودن سریع به سبد ممکن نیست
+  // و دکمه‌ی کارت کاربر را به صفحه‌ی محصول می‌برد تا سایز و رنگ را انتخاب کند.
   function addToCart(product: Product) {
-    cartStore.add(product);
-    setAnnouncement((a) => ({ id: a.id + 1, text: cartCopy.added(product.name) }));
+    router.push(productHref(product.slug));
   }
 
   return (

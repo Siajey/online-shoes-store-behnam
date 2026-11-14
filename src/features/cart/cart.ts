@@ -75,14 +75,20 @@ export function removeItem(items: readonly CartItem[], id: string): readonly Car
 export const cartCount = (items: readonly CartItem[]) =>
   items.reduce((sum, i) => sum + i.quantity, 0);
 
+/** ردیف ناموجود (فقط در سبد سرور) در جمع مبلغ و سود نمی‌آید. */
 export const cartTotal = (items: readonly CartItem[]) =>
-  items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  items.reduce((sum, i) => (i.unavailable ? sum : sum + i.price * i.quantity), 0);
+
+/** سقف تعداد یک ردیف؛ سبد سرور سقف خودش را (موجودی انبار) می‌دهد. */
+export const maxFor = (item: CartItem) => item.maxQuantity ?? MAX_QUANTITY;
+
+export const hasUnavailable = (items: readonly CartItem[]) => items.some((i) => i.unavailable);
 
 /** مجموع سود تخفیف‌ها. */
 export const cartSavings = (items: readonly CartItem[]) =>
   items.reduce(
     (sum, i) =>
-      i.originalPrice && i.originalPrice > i.price
+      !i.unavailable && i.originalPrice && i.originalPrice > i.price
         ? sum + (i.originalPrice - i.price) * i.quantity
         : sum,
     0,

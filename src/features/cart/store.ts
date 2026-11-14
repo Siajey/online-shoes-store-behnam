@@ -15,7 +15,7 @@ type StoreOptions = Parameters<typeof createPersistedStore<CartItem>>[0];
 
 /**
  * فروشگاه سبد خرید. سبد مهمان فقط در مرورگر می‌ماند؛
- * ادغام با سبد سرور بعد از ورود کار مرحله‌ی بعد است (☐).
+ * بعد از ورود، سرویس سبد (service.ts) آن را با سبد حساب ادغام می‌کند.
  */
 export function createCartStore(options: Pick<StoreOptions, "getStorage" | "target">) {
   const store = createPersistedStore<CartItem>({
@@ -40,9 +40,3 @@ export function createCartStore(options: Pick<StoreOptions, "getStorage" | "targ
 }
 
 export type CartStore = ReturnType<typeof createCartStore>;
-
-/** نمونه‌ی اصلی برنامه. */
-export const cartStore = createCartStore({
-  getStorage: () => (typeof window === "undefined" ? null : window.localStorage),
-  target: typeof window === "undefined" ? null : window,
-});

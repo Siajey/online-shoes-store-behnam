@@ -1,3 +1,5 @@
+import { toPersianDigits } from "@/lib/format";
+
 /** متن‌های ثابت فیچر سبد خرید. */
 export const cartCopy = {
   title: "سبد خرید",
@@ -24,5 +26,19 @@ export const cartCopy = {
   added: (name: string) => `«${name}» به سبد خرید اضافه شد.`,
   addedShort: "به سبد خرید اضافه شد",
   viewCart: "مشاهده‌ی سبد خرید",
+  syncError: "ارتباط با سرور برقرار نشد. دوباره تلاش کنید.",
+  retry: "تلاش دوباره",
+  variantRequired: "ابتدا سایز و رنگ را انتخاب کنید.",
+  mergeSkipped: (count: number) =>
+    `${toPersianDigits(count)} کالا از سبد قبلی شما در دسترس نبود و اضافه نشد.`,
+  removedProduct: "این کالا دیگر در فروشگاه نیست.",
+  unavailable: {
+    variantUnavailable: "این سایز و رنگ دیگر موجود نیست.",
+    productUnavailable: "این کالا فعلاً عرضه نمی‌شود.",
+    outOfStock: "موجودی این کالا تمام شده است.",
+    insufficientStock: "موجودی کمتر از تعداد انتخابی شما است.",
+  },
+  unavailableBlock: "برای ادامه‌ی خرید، کالاهای ناموجود را از سبد حذف کنید.",
+  stockLimit: (max: string) => `حداکثر ${max} عدد موجود است`,
   maxReached: (max: string) => `حداکثر ${max} عدد از هر کالا`,
 } as const;

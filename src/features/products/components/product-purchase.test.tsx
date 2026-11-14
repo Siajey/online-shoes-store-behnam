@@ -1,7 +1,10 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { Product } from "../types";
 import { ProductPurchase } from "./product-purchase";
+
+// سبد از authStore و آن از کلاینت API استفاده می‌کند که env می‌خواهد.
+vi.mock("@/config/env", () => ({ env: { NEXT_PUBLIC_API_URL: "http://localhost:3000" } }));
 
 const product: Product = {
   id: "p1",
