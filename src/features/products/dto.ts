@@ -27,7 +27,7 @@ export type PublicVariantDto = {
   id: string;
   price: number;
   isAvailable: boolean;
-  attributes: Record<string, string>;
+  attributes: { name: string; value: string | number }[] | Record<string, string | number>;
 };
 
 /** data از GET /products/slug/:slug */
