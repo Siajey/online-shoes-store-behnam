@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { favouritesCopy } from "@/features/favourites/copy";
 import { favouritesStore } from "@/features/favourites/store";
@@ -17,7 +16,6 @@ export function ProductGrid({ products }: { products: Product[] }) {
   // پیام برای صفحه‌خوان؛ کلید تازه باعث می‌شود افزودن پشت‌سرهم‌ی همان کالا هم اعلام شود.
   const [announcement, setAnnouncement] = useState({ id: 0, text: "" });
 
-  const router = useRouter();
   const favourites = useFavourites();
   const favouriteIds = useMemo(() => new Set(favourites.map((p) => p.id)), [favourites]);
 
@@ -26,12 +24,6 @@ export function ProductGrid({ products }: { products: Product[] }) {
     favouritesStore.toggle(product);
     const text = was ? favouritesCopy.removed(product.name) : favouritesCopy.added(product.name);
     setAnnouncement((a) => ({ id: a.id + 1, text }));
-  }
-
-  // هر کفش سایز/رنگ دارد و قیمت و موجودی هر ترکیب جدا است؛ پس افزودن سریع به سبد ممکن نیست
-  // و دکمه‌ی کارت کاربر را به صفحه‌ی محصول می‌برد تا سایز و رنگ را انتخاب کند.
-  function addToCart(product: Product) {
-    router.push(productHref(product.slug));
   }
 
   return (
@@ -51,7 +43,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
           unavailable={!product.available}
           favourite={favouriteIds.has(product.id)}
           onToggleFavourite={() => toggleFavourite(product)}
-          onAddToCart={() => addToCart(product)}
+          addToCartHref={productHref(product.slug)}
           image={
             product.imageUrl ? (
               // unoptimized: تا دامنه‌ی تصاویر نهایی نشده، تنظیم images.remotePatterns لازم نیست.

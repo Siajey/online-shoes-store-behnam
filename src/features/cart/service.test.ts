@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { ApiRequestError } from "@/lib/api/errors";
 import { createCartService } from "./service";
-import type { CartServerApi, ServerCart } from "./server/types";
+import type { CartServerApi, MergeLine, ServerCart } from "./server/types";
 import { createCartStore } from "./store";
 import type { CartItem } from "./types";
 
@@ -56,7 +56,7 @@ function setup(server: Partial<CartServerApi> = {}, auth = fakeAuth()) {
     setQuantity: vi.fn(async (id, q) => cartOf(item(id, q))),
     remove: vi.fn(async () => cartOf()),
     clear: vi.fn(async () => cartOf()),
-    merge: vi.fn(async (lines) => ({
+    merge: vi.fn(async (lines: MergeLine[]) => ({
       cart: cartOf(...lines.map((l) => item(l.variantId, l.quantity))),
       skippedVariantIds: [],
     })),
