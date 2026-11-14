@@ -11,13 +11,24 @@ export const attributeLabel = (name: string) => ATTRIBUTE_LABELS[name] ?? name;
 /** نام و slug دسته بر اساس شناسه (از درخت /categories). */
 export type CategoryLookup = ReadonlyMap<string, { name: string; slug: string }>;
 
+/**
+ * بک‌اند ویژگی‌های ترکیب را آرایه‌ی {name, value} می‌دهد؛ شکل شیء هم پذیرفته می‌شود.
+ * مقدار همیشه رشته می‌شود تا بقیه‌ی برنامه فقط رشته ببیند.
+ */
+function attributePairs(attributes: PublicVariantDto["attributes"]): [string, string][] {
+  const pairs: [string, string | number][] = Array.isArray(attributes)
+    ? attributes.map((a) => [a.name, a.value])
+    : Object.entries(attributes);
+  return pairs.map(([name, value]) => [name, String(value)]);
+}
+
 function toVariant(v: PublicVariantDto): ProductVariant {
   return {
     id: v.id,
     price: rialToToman(v.price),
     available: v.isAvailable,
     options: Object.fromEntries(
-      Object.entries(v.attributes).map(([name, value]) => [attributeLabel(name), value]),
+      attributePairs(v.attributes).map(([name, value]) => [attributeLabel(name), value]),
     ),
   };
 }

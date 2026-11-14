@@ -76,3 +76,27 @@ describe("toProductDetail", () => {
     expect(toProductDetail({ ...detail, variants: [] }).variants).toBeUndefined();
   });
 });
+
+describe("ویژگی‌های عددی ترکیب", () => {
+  it("مقدار عددی (سایز) را به رشته تبدیل می‌کند", () => {
+    const dto = {
+      id: "p1",
+      type: "shoe",
+      name: "کفش",
+      slug: "shoe",
+      categoryId: null,
+      brandId: null,
+      primaryImage: null,
+      minPrice: 10,
+      maxPrice: 10,
+      inStock: true,
+      details: null,
+      description: "",
+      images: [],
+      options: {},
+      variants: [{ id: "v1", price: 10, isAvailable: true, attributes: { size: 42 } }],
+    };
+    const product = toProductDetail(dto as never);
+    expect(product.variants?.[0].options["سایز"]).toBe("42");
+  });
+});

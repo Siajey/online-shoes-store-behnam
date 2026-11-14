@@ -11,7 +11,7 @@ export type CartLineDto = {
   maxQuantity: number;
   /** برای ترکیبی که از سیستم حذف شده null است. */
   product: { id: string; name: string; slug: string; imageKey: string | null } | null;
-  attributes: { name: string; value: string }[];
+  attributes: { name: string; value: string | number }[];
   originalUnitPrice: number | null;
   unitPrice: number | null;
   lineTotal: number | null;
