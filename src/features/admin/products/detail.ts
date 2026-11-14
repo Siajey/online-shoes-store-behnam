@@ -10,7 +10,8 @@ export type AdminVariantDto = {
   price: number;
   stock: number;
   isActive: boolean;
-  attributes: Record<string, string>;
+  /** بک‌اند آرایه‌ی {name, value} می‌دهد؛ شکل شیء هم پذیرفته می‌شود. */
+  attributes: { name: string; value: string | number }[] | Record<string, string | number>;
 };
 
 export type AdminProductDetailDto = {
@@ -52,6 +53,17 @@ export type AdminProductDetail = {
   variants: AdminVariant[];
 };
 
+/** ویژگی‌های ترکیب (سایز، رنگ…) به شیء «نام → مقدار رشته‌ای». */
+export function normalizeAttributes(
+  raw: AdminVariantDto["attributes"] | null | undefined,
+): Record<string, string> {
+  if (!raw) return {};
+  const pairs: [string, string | number][] = Array.isArray(raw)
+    ? raw.map((a) => [a.name, a.value])
+    : Object.entries(raw);
+  return Object.fromEntries(pairs.map(([name, value]) => [name, String(value)]));
+}
+
 export function toVariant(d: AdminVariantDto): AdminVariant {
   return {
     id: d.id,
@@ -60,7 +72,7 @@ export function toVariant(d: AdminVariantDto): AdminVariant {
     price: rialToToman(d.price),
     stock: d.stock,
     isActive: d.isActive,
-    attributes: d.attributes ?? {},
+    attributes: normalizeAttributes(d.attributes),
   };
 }
 
