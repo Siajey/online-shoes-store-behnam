@@ -2,6 +2,7 @@ export const layoutCopy = {
   mainNav: "ناوبری اصلی",
   mobileNav: "منوی اصلی",
   searchLabel: "جستجو",
+  searchClear: "پاک کردن جستجو",
   searchPlaceholder: "جستجوی کفش، برند، دسته‌بندی...",
   favourites: "علاقه‌مندی‌ها",
   account: "حساب کاربری",
