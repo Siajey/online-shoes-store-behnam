@@ -1,6 +1,12 @@
-import type { CartItem } from "../types";
+import type { CartCoupon, CartItem } from "../types";
 
-export type ServerCart = { items: CartItem[]; hasUnavailable: boolean };
+export type ServerCart = {
+  items: CartItem[];
+  hasUnavailable: boolean;
+  coupon: CartCoupon;
+  /** مبلغ تخفیف کد، به تومان */
+  couponDiscount: number;
+};
 
 export type MergeResult = { cart: ServerCart; skippedVariantIds: string[] };
 
@@ -14,4 +20,6 @@ export type CartServerApi = {
   remove(variantId: string): Promise<ServerCart>;
   clear(): Promise<ServerCart>;
   merge(lines: MergeLine[]): Promise<MergeResult>;
+  applyCoupon(code: string): Promise<ServerCart>;
+  removeCoupon(): Promise<ServerCart>;
 };

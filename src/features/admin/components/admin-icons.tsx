@@ -75,3 +75,20 @@ export const PlusIcon = (props: IconProps) => (
     <path d="M12 5v14M5 12h14" />
   </Icon>
 );
+
+/** تخفیف‌ها */
+export const PercentIcon = (props: IconProps) => (
+  <Icon {...props}>
+    <path d="M19 5 5 19" />
+    <circle cx="7.5" cy="7.5" r="2.5" />
+    <circle cx="16.5" cy="16.5" r="2.5" />
+  </Icon>
+);
+
+/** کوپن‌ها */
+export const TicketIcon = (props: IconProps) => (
+  <Icon {...props}>
+    <path d="M4 8a2 2 0 0 0 0 4v0a2 2 0 0 1 0 4v2h16v-2a2 2 0 0 1 0-4v0a2 2 0 0 0 0-4V6H4v2Z" />
+    <path d="M14 6v12" strokeDasharray="2 2.5" />
+  </Icon>
+);

@@ -19,7 +19,11 @@ export type CartLineDto = {
 
 export type CartDto = {
   items: CartLineDto[];
-  coupon: { code: string | null; status: string };
+  coupon: {
+    code: string | null;
+    status: "none" | "applied" | "invalid";
+    invalidReason?: string | null;
+  };
   totals: {
     itemCount: number;
     subtotal: number;

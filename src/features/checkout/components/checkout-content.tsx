@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { listAddresses } from "@/features/addresses/api";
-import { useCartItems, useCartReady } from "@/features/cart/use-cart";
+import { useCartItems, useCartMeta, useCartReady } from "@/features/cart/use-cart";
 import { useRequireAuth } from "@/features/auth/use-require-auth";
 import { isApiRequestError } from "@/lib/api/errors";
 import { resolveSelectedAddressId } from "../address-choice";
@@ -26,6 +26,7 @@ export function CheckoutContent() {
   const auth = useRequireAuth("/checkout");
   const cartReady = useCartReady();
   const items = useCartItems();
+  const meta = useCartMeta();
   const [addresses, setAddresses] = useState<AddressesState>({ status: "loading" });
   const [chosen, setChosen] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
@@ -65,6 +66,7 @@ export function CheckoutContent() {
       addresses={addresses}
       selectedId={selectedId}
       recipient={recipient}
+      couponDiscount={meta.couponDiscount}
       onSelect={setChosen}
       onRetry={() => {
         setAddresses({ status: "loading" });

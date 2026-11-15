@@ -22,10 +22,12 @@ export function createFavouritesStore(options: Options) {
     getServerSnapshot: store.getServerSnapshot,
     subscribe: store.subscribe,
     toggle: (product: Product) => store.update((items) => toggleFavourite(items, product)),
+    clear: () => store.update(() => []),
   };
 }
 
-export const favouritesStore = createFavouritesStore({
+/** فقط مهمان؛ بقیه‌ی برنامه از instance.ts استفاده می‌کنند. */
+export const localFavourites = createFavouritesStore({
   getStorage: () => (typeof window === "undefined" ? null : window.localStorage),
   target: typeof window === "undefined" ? null : window,
 });

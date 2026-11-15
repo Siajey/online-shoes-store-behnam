@@ -5,7 +5,15 @@ import { usePathname } from "next/navigation";
 import type { ComponentType, SVGProps } from "react";
 import { cn } from "@/lib/cn";
 import { adminCopy } from "../copy";
-import { BadgeIcon, BoxIcon, ExitIcon, TagIcon, UsersIcon } from "./admin-icons";
+import {
+  BadgeIcon,
+  BoxIcon,
+  ExitIcon,
+  PercentIcon,
+  TagIcon,
+  TicketIcon,
+  UsersIcon,
+} from "./admin-icons";
 
 type Item = {
   href: string;
@@ -17,6 +25,8 @@ const ITEMS: readonly Item[] = [
   { href: "/admin/products", label: adminCopy.nav.products, Icon: BoxIcon },
   { href: "/admin/categories", label: adminCopy.nav.categories, Icon: TagIcon },
   { href: "/admin/brands", label: adminCopy.nav.brands, Icon: BadgeIcon },
+  { href: "/admin/discounts", label: adminCopy.nav.discounts, Icon: PercentIcon },
+  { href: "/admin/coupons", label: adminCopy.nav.coupons, Icon: TicketIcon },
   { href: "/admin/users", label: adminCopy.nav.users, Icon: UsersIcon },
 ];
 

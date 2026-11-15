@@ -202,9 +202,11 @@ export function PaymentSection() {
 export function OrderSummary({
   items,
   hasAddress,
+  couponDiscount = 0,
 }: {
   items: readonly CartItem[];
   hasAddress: boolean;
+  couponDiscount?: number;
 }) {
   const savings = cartSavings(items);
   return (
@@ -224,13 +226,19 @@ export function OrderSummary({
             <dd>{price(savings)}</dd>
           </div>
         )}
+        {couponDiscount > 0 && (
+          <div className="text-ok flex justify-between">
+            <dt>{t.couponRow}</dt>
+            <dd>{price(couponDiscount)}</dd>
+          </div>
+        )}
         <div className="flex justify-between">
           <dt className="text-fg-muted">{t.shippingRow}</dt>
           <dd className="text-fg-muted text-xs">{t.shippingRowPending}</dd>
         </div>
         <div className="border-line flex items-baseline justify-between border-t pt-3 text-base font-medium">
           <dt>{t.total}</dt>
-          <dd className="text-lg">{price(cartTotal(items))}</dd>
+          <dd className="text-lg">{price(cartTotal(items, couponDiscount))}</dd>
         </div>
       </dl>
       <p className="text-fg-muted text-xs leading-6">{t.shippingNote}</p>
@@ -262,6 +270,8 @@ type ViewProps = {
   onSelect: (id: string) => void;
   onRetry: () => void;
   recipient?: Recipient | null;
+  /** تخفیف کد تخفیف سبد (تومان) */
+  couponDiscount?: number;
 };
 
 /** نمای خالص صفحه‌ی تسویه. */
@@ -272,6 +282,7 @@ export function CheckoutView({
   onSelect,
   onRetry,
   recipient = null,
+  couponDiscount = 0,
 }: ViewProps) {
   if (items.length === 0) {
     return (
@@ -319,7 +330,11 @@ export function CheckoutView({
             <PaymentSection />
           </section>
         </div>
-        <OrderSummary items={items} hasAddress={selectedId !== null} />
+        <OrderSummary
+          items={items}
+          hasAddress={selectedId !== null}
+          couponDiscount={couponDiscount}
+        />
       </div>
     </div>
   );

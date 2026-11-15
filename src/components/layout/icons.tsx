@@ -111,3 +111,9 @@ export const HelpIcon = (p: ComponentProps<"svg">) => (
     <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01" />
   </Icon>
 );
+
+export const TicketIcon = (p: ComponentProps<"svg">) => (
+  <Icon {...p}>
+    <path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2.5 2.5 0 0 0 0 5v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2.5 2.5 0 0 0 0-5zM14 6v12" />
+  </Icon>
+);

@@ -24,6 +24,13 @@ export type CartItem = {
   unavailable?: CartUnavailableReason;
 };
 
+/** وضعیت کد تخفیف روی سبد سرور. none: کدی ثبت نشده؛ invalid: کد ثبت‌شده دیگر معتبر نیست. */
+export type CartCoupon = {
+  code: string | null;
+  status: "none" | "applied" | "invalid";
+  invalidReason: string | null;
+};
+
 export type CartUnavailableReason =
   "variantUnavailable" | "productUnavailable" | "outOfStock" | "insufficientStock";
 

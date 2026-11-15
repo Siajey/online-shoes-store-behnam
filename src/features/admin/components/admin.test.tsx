@@ -45,12 +45,14 @@ describe("AdminNavView", () => {
     expect(out).toContain('href="/admin/categories"');
     expect(out).toContain('href="/admin/brands"');
     expect(out).toContain('href="/admin/users"');
+    expect(out).toContain('href="/admin/discounts"');
+    expect(out).toContain('href="/admin/coupons"');
   });
 
   it("لینک بازگشت به فروشگاه دارد و هر آیتم آیکن دارد", () => {
     const out = renderToStaticMarkup(<AdminNavView pathname="/admin/users" />);
     expect(out).toMatch(/<a[^>]*href="\/"[^>]*>.*بازگشت به فروشگاه/);
-    expect(out.match(/<svg/g)?.length).toBe(5);
+    expect(out.match(/<svg/g)?.length).toBe(7);
   });
 
   it("فقط از ویژگی‌های منطقی استفاده می‌کند", () => {
@@ -81,6 +83,11 @@ describe("adminTitle", () => {
     expect(adminTitle("/admin/categories")).toBe("دسته‌بندی‌ها");
     expect(adminTitle("/admin/brands")).toBe("برندها");
     expect(adminTitle("/admin/users")).toBe("کاربران");
+    expect(adminTitle("/admin/discounts")).toBe("تخفیف‌ها");
+    expect(adminTitle("/admin/discounts/new")).toBe("تخفیف جدید");
+    expect(adminTitle("/admin/discounts/abc")).toBe("ویرایش تخفیف");
+    expect(adminTitle("/admin/coupons")).toBe("کوپن‌ها");
+    expect(adminTitle("/admin/coupons/abc")).toBe("ویرایش کوپن");
     expect(adminTitle(null)).toBe("پنل مدیریت");
   });
 });
