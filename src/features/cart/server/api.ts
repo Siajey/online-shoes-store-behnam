@@ -29,6 +29,10 @@ export const cartServerApi: CartServerApi = {
       (await api.delete<CartDto>(`/cart/items/${encodeURIComponent(variantId)}`, withCsrf)).data,
     ),
   clear: async () => toServerCart((await api.delete<CartDto>("/cart", withCsrf)).data),
+  applyCoupon: async (code) =>
+    toServerCart((await api.put<CartDto>("/cart/coupon", { ...withCsrf, body: { code } })).data),
+  removeCoupon: async () =>
+    toServerCart((await api.delete<CartDto>("/cart/coupon", withCsrf)).data),
   merge: async (items) => {
     const { data } = await api.post<MergeCartDto>("/cart/merge", {
       ...withCsrf,

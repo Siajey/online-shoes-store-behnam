@@ -48,6 +48,11 @@ export function CartContent() {
       pending={meta.pending}
       error={meta.error}
       notice={meta.notice}
+      coupon={meta.coupon}
+      couponDiscount={meta.couponDiscount}
+      couponEnabled={meta.mode === "server"}
+      onApplyCoupon={(code) => cartStore.applyCoupon(code)}
+      onRemoveCoupon={() => void cartStore.removeCoupon()}
       onQuantityChange={(id, quantity) => void cartStore.setQuantity(id, quantity)}
       onRemove={(id) => void cartStore.remove(id)}
       onClear={() => void cartStore.clear()}

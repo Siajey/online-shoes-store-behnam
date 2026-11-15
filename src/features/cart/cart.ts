@@ -76,8 +76,12 @@ export const cartCount = (items: readonly CartItem[]) =>
   items.reduce((sum, i) => sum + i.quantity, 0);
 
 /** ردیف ناموجود (فقط در سبد سرور) در جمع مبلغ و سود نمی‌آید. */
-export const cartTotal = (items: readonly CartItem[]) =>
-  items.reduce((sum, i) => (i.unavailable ? sum : sum + i.price * i.quantity), 0);
+export const cartTotal = (items: readonly CartItem[], couponDiscount = 0) =>
+  Math.max(
+    0,
+    items.reduce((sum, i) => (i.unavailable ? sum : sum + i.price * i.quantity), 0) -
+      couponDiscount,
+  );
 
 /** سقف تعداد یک ردیف؛ سبد سرور سقف خودش را (موجودی انبار) می‌دهد. */
 export const maxFor = (item: CartItem) => item.maxQuantity ?? MAX_QUANTITY;

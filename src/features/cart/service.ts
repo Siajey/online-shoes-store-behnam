@@ -1,8 +1,8 @@
 import { isApiRequestError } from "@/lib/api/errors";
 import { cartCopy } from "./copy";
-import type { CartServerApi } from "./server/types";
+import type { CartServerApi, ServerCart } from "./server/types";
 import type { CartStore } from "./store";
-import type { CartItem, CartVariant, CartableProduct } from "./types";
+import type { CartCoupon, CartItem, CartVariant, CartableProduct } from "./types";
 
 type AuthLike = {
   getSnapshot(): { status: string; user: { id: string } | null };
@@ -20,6 +20,10 @@ export type CartMeta = {
   error: string | null;
   /** پیام اطلاع‌رسانی بعد از ادغام (مثلاً «۲ کالا اضافه نشد») */
   notice: string | null;
+  /** کد تخفیف سبد سرور؛ برای مهمان null */
+  coupon: CartCoupon | null;
+  /** مبلغ تخفیف کد، به تومان */
+  couponDiscount: number;
 };
 
 export type CartResult = { ok: true } | { ok: false; message: string };
@@ -32,6 +36,8 @@ const LOCAL_META: CartMeta = {
   pending: false,
   error: null,
   notice: null,
+  coupon: null,
+  couponDiscount: 0,
 };
 
 const messageOf = (error: unknown) =>
@@ -90,7 +96,12 @@ export function createCartService({ local, server, auth }: Deps) {
         if (gen !== generation) return;
         if (all.length > 0) local.clear();
         serverItems = cart.items;
-        setMeta({ loading: false, notice: skipped > 0 ? cartCopy.mergeSkipped(skipped) : null });
+        setMeta({
+          loading: false,
+          notice: skipped > 0 ? cartCopy.mergeSkipped(skipped) : null,
+          coupon: cart.coupon,
+          couponDiscount: cart.couponDiscount,
+        });
       } catch (error) {
         if (gen !== generation) return;
         setMeta({ loading: false, error: messageOf(error) });
@@ -126,27 +137,39 @@ export function createCartService({ local, server, auth }: Deps) {
   }
 
   /** یک تغییر در سبد سرور. بعد از خطا، سبد دوباره خوانده می‌شود تا صفحه با سرور هم‌خوان بماند. */
-  function mutate(op: () => Promise<{ items: CartItem[] }>): Promise<CartResult> {
+  function mutate(
+    op: () => Promise<ServerCart>,
+    options: { silent?: boolean } = {},
+  ): Promise<CartResult> {
     const gen = generation;
     pendingCount++;
     setMeta({ pending: true, error: null, notice: null });
     return enqueue(async (): Promise<CartResult> => {
       let result: CartResult = OK;
+      let couponPatch: Partial<CartMeta> = {};
+      const take = (cart: ServerCart) => {
+        if (gen !== generation) return;
+        serverItems = cart.items;
+        couponPatch = { coupon: cart.coupon, couponDiscount: cart.couponDiscount };
+      };
       try {
-        const cart = await op();
-        if (gen === generation) serverItems = cart.items;
+        take(await op());
       } catch (error) {
         result = { ok: false, message: messageOf(error) };
         try {
-          const fresh = await server.get();
-          if (gen === generation) serverItems = fresh.items;
+          take(await server.get());
         } catch {
           // خواندن دوباره هم شکست خورد؛ همان خطای اول به کاربر نشان داده می‌شود.
         }
       }
       pendingCount--;
       if (gen === generation) {
-        setMeta({ pending: pendingCount > 0, error: result.ok ? null : result.message });
+        setMeta({
+          ...couponPatch,
+          pending: pendingCount > 0,
+          // خطای کد تخفیف کنار همان کادر نشان داده می‌شود، نه بالای صفحه.
+          error: result.ok || options.silent ? null : result.message,
+        });
       }
       return result;
     });
@@ -206,6 +229,17 @@ export function createCartService({ local, server, auth }: Deps) {
       }
       const variantId = variantOf(id);
       return variantId ? mutate(() => server.remove(variantId)) : Promise.resolve(OK);
+    },
+    /** ثبت کد تخفیف روی سبد سرور؛ فقط برای کاربر واردشده. */
+    applyCoupon(code: string): Promise<CartResult> {
+      if (!inServer()) return Promise.resolve({ ok: false, message: cartCopy.couponLoginRequired });
+      const trimmed = code.trim();
+      if (!trimmed) return Promise.resolve({ ok: false, message: cartCopy.couponEmpty });
+      return mutate(() => server.applyCoupon(trimmed), { silent: true });
+    },
+    removeCoupon(): Promise<CartResult> {
+      if (!inServer()) return Promise.resolve(OK);
+      return mutate(() => server.removeCoupon(), { silent: true });
     },
     clear(): Promise<CartResult> {
       if (!inServer()) {

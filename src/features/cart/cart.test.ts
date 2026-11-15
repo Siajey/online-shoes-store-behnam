@@ -70,6 +70,12 @@ describe("جمع‌ها", () => {
   it("سبد خالی صفر است", () => {
     expect(cartCount([])).toBe(0);
     expect(cartTotal([])).toBe(0);
+  });
+
+  it("تخفیف کد از جمع کم می‌شود و هرگز منفی نمی‌شود", () => {
+    const one = [{ id: "a", slug: "a", name: "a", price: 1_000_000, quantity: 1 }];
+    expect(cartTotal(one, 250_000)).toBe(750_000);
+    expect(cartTotal(one, 5_000_000)).toBe(0);
     expect(cartSavings([])).toBe(0);
   });
 });

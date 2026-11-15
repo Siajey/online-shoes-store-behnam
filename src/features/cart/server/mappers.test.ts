@@ -82,3 +82,46 @@ describe("toServerCart", () => {
     expect(cart.hasUnavailable).toBe(true);
   });
 });
+
+describe("کد تخفیف در سبد", () => {
+  const cart = (over = {}): CartDto => ({
+    items: [line()],
+    coupon: { code: null, status: "none" },
+    totals: {
+      itemCount: 2,
+      subtotal: 40_000_000,
+      productDiscountTotal: 4_000_000,
+      couponDiscount: 0,
+      total: 36_000_000,
+    },
+    hasUnavailableLines: false,
+    ...over,
+  });
+  it("بدون کد: none و تخفیف صفر", () => {
+    const c = toServerCart(cart());
+    expect(c.coupon).toEqual({ code: null, status: "none", invalidReason: null });
+    expect(c.couponDiscount).toBe(0);
+  });
+  it("کد اعمال‌شده: تخفیف از ریال به تومان", () => {
+    const c = toServerCart(
+      cart({
+        coupon: { code: "SUMMER20", status: "applied", invalidReason: null },
+        totals: {
+          itemCount: 2,
+          subtotal: 0,
+          productDiscountTotal: 0,
+          couponDiscount: 2_000_000,
+          total: 0,
+        },
+      }),
+    );
+    expect(c.coupon.code).toBe("SUMMER20");
+    expect(c.couponDiscount).toBe(200_000);
+  });
+  it("کد نامعتبر: دلیل نگه داشته می‌شود", () => {
+    const c = toServerCart(
+      cart({ coupon: { code: "OLD", status: "invalid", invalidReason: "expired" } }),
+    );
+    expect(c.coupon.invalidReason).toBe("expired");
+  });
+});

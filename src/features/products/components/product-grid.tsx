@@ -1,10 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { favouritesCopy } from "@/features/favourites/copy";
-import { favouritesStore } from "@/features/favourites/store";
-import { useFavourites } from "@/features/favourites/use-favourites";
+import { favouritesStore } from "@/features/favourites/instance";
+import { useFavouriteIds } from "@/features/favourites/use-favourites";
 import { cn } from "@/lib/cn";
 import { productHref } from "../routes";
 import type { Product } from "../types";
@@ -16,14 +16,15 @@ export function ProductGrid({ products }: { products: Product[] }) {
   // پیام برای صفحه‌خوان؛ کلید تازه باعث می‌شود افزودن پشت‌سرهم‌ی همان کالا هم اعلام شود.
   const [announcement, setAnnouncement] = useState({ id: 0, text: "" });
 
-  const favourites = useFavourites();
-  const favouriteIds = useMemo(() => new Set(favourites.map((p) => p.id)), [favourites]);
+  const favouriteIds = useFavouriteIds();
 
   function toggleFavourite(product: Product) {
     const was = favouriteIds.has(product.id);
-    favouritesStore.toggle(product);
     const text = was ? favouritesCopy.removed(product.name) : favouritesCopy.added(product.name);
     setAnnouncement((a) => ({ id: a.id + 1, text }));
+    void favouritesStore.toggle(product).then((r) => {
+      if (!r.ok) setAnnouncement((a) => ({ id: a.id + 1, text: r.message }));
+    });
   }
 
   return (

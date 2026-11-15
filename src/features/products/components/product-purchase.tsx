@@ -9,7 +9,7 @@ import { MAX_QUANTITY } from "@/features/cart/cart";
 import { cartCopy } from "@/features/cart/copy";
 import { cartStore } from "@/features/cart/instance";
 import { useCartMeta } from "@/features/cart/use-cart";
-import { favouritesStore } from "@/features/favourites/store";
+import { favouritesStore } from "@/features/favourites/instance";
 import { useIsFavourite } from "@/features/favourites/use-favourites";
 import { productCopy } from "../copy";
 import type { Product } from "../types";
@@ -100,7 +100,7 @@ export function ProductPurchase({ product }: { product: Product }) {
           type="button"
           aria-pressed={favourite}
           aria-label={favourite ? productCopy.removeFromFavourites : productCopy.addToFavourites}
-          onClick={() => favouritesStore.toggle(product)}
+          onClick={() => void favouritesStore.toggle(product)}
           className="bg-surface-2 text-fg focus-visible:outline-brand flex size-13 items-center justify-center rounded-full transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:transition-none"
         >
           <HeartIcon className="size-[22px]" fill={favourite ? "currentColor" : "none"} />

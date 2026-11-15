@@ -35,5 +35,14 @@ export function toCartItem(line: CartLineDto): CartItem {
 }
 
 export function toServerCart(dto: CartDto): ServerCart {
-  return { items: dto.items.map(toCartItem), hasUnavailable: dto.hasUnavailableLines };
+  return {
+    items: dto.items.map(toCartItem),
+    hasUnavailable: dto.hasUnavailableLines,
+    coupon: {
+      code: dto.coupon.code,
+      status: dto.coupon.status,
+      invalidReason: dto.coupon.invalidReason ?? null,
+    },
+    couponDiscount: rialToToman(dto.totals.couponDiscount),
+  };
 }

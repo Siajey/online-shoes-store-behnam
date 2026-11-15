@@ -18,7 +18,12 @@ const item = (variantId: string, quantity = 1): CartItem => ({
   variantId,
   maxQuantity: 10,
 });
-const cartOf = (...items: CartItem[]): ServerCart => ({ items, hasUnavailable: false });
+const cartOf = (...items: CartItem[]): ServerCart => ({
+  items,
+  hasUnavailable: false,
+  coupon: { code: null, status: "none", invalidReason: null },
+  couponDiscount: 0,
+});
 
 function fakeStorage() {
   const data: Record<string, string> = {};
@@ -60,6 +65,8 @@ function setup(server: Partial<CartServerApi> = {}, auth = fakeAuth()) {
       cart: cartOf(...lines.map((l) => item(l.variantId, l.quantity))),
       skippedVariantIds: [],
     })),
+    applyCoupon: vi.fn(async () => cartOf()),
+    removeCoupon: vi.fn(async () => cartOf()),
     ...server,
   };
   const service = createCartService({ local, server: api, auth });
@@ -227,5 +234,81 @@ describe("سبد سرور", () => {
     service.subscribe(listener);
     await service.add(product, 1, variant);
     expect(listener).toHaveBeenCalled();
+  });
+
+  describe("کد تخفیف", () => {
+    const withCoupon = (discount = 200_000): ServerCart => ({
+      ...cartOf(item("v1", 2)),
+      coupon: { code: "SUMMER20", status: "applied", invalidReason: null },
+      couponDiscount: discount,
+    });
+
+    it("مهمان نمی‌تواند کد ثبت کند و درخواستی نمی‌رود", async () => {
+      const { service, api } = setup({}, fakeAuth({ status: "guest" }));
+      service.start();
+      await flush();
+      const r = await service.applyCoupon("SUMMER20");
+      expect(r.ok).toBe(false);
+      expect(api.applyCoupon).not.toHaveBeenCalled();
+    });
+
+    it("کد خالی درخواست نمی‌فرستد", async () => {
+      const { service, api } = setup({}, fakeAuth({ status: "authenticated", id: "u1" }));
+      service.start();
+      await flush();
+      expect((await service.applyCoupon("   ")).ok).toBe(false);
+      expect(api.applyCoupon).not.toHaveBeenCalled();
+    });
+
+    it("ثبت کد: کد و مبلغ تخفیف در meta می‌آید", async () => {
+      const { service, api } = setup(
+        { applyCoupon: vi.fn(async () => withCoupon()) },
+        fakeAuth({ status: "authenticated", id: "u1" }),
+      );
+      service.start();
+      await flush();
+      expect((await service.applyCoupon(" SUMMER20 ")).ok).toBe(true);
+      expect(api.applyCoupon).toHaveBeenCalledWith("SUMMER20");
+      expect(service.getMeta().coupon?.code).toBe("SUMMER20");
+      expect(service.getMeta().couponDiscount).toBe(200_000);
+    });
+
+    it("کد نامعتبر: پیام خطا برمی‌گردد و خطای بالای سبد نمی‌نشیند", async () => {
+      const { service } = setup(
+        {
+          applyCoupon: vi.fn(async () => {
+            throw new ApiRequestError({
+              status: 409,
+              code: "CART_COUPON_INVALID",
+              message: "نامعتبر",
+            });
+          }),
+        },
+        fakeAuth({ status: "authenticated", id: "u1" }),
+      );
+      service.start();
+      await flush();
+      const r = await service.applyCoupon("BAD");
+      expect(r).toEqual({ ok: false, message: "نامعتبر" });
+      expect(service.getMeta().error).toBeNull();
+      expect(service.getMeta().coupon?.status).toBe("none");
+    });
+
+    it("حذف کد: تخفیف صفر می‌شود", async () => {
+      let current = withCoupon();
+      const { service } = setup(
+        {
+          get: vi.fn(async () => current),
+          removeCoupon: vi.fn(async () => (current = cartOf(item("v1", 2)))),
+        },
+        fakeAuth({ status: "authenticated", id: "u1" }),
+      );
+      service.start();
+      await flush();
+      expect(service.getMeta().couponDiscount).toBe(200_000);
+      await service.removeCoupon();
+      expect(service.getMeta().coupon?.status).toBe("none");
+      expect(service.getMeta().couponDiscount).toBe(0);
+    });
   });
 });

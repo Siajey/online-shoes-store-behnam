@@ -47,13 +47,64 @@ describe("CartView", () => {
     expect(html(items)).toMatch(/<a[^>]*href="\/checkout"[^>]*>ادامه‌ی خرید/);
   });
 
-  it("ردیف هزینهٔ ارسال و کد تخفیف غیرفعال", () => {
+  it("ردیف هزینهٔ ارسال", () => {
     const out = html(items);
     expect(out).toContain("هزینه‌ی ارسال");
     expect(out).toContain("در مرحله‌ی بعد محاسبه می‌شود");
+  });
+
+  it("مهمان: به‌جای کادر کد، لینک ورود", () => {
+    const out = html(items);
+    expect(out).toContain("برای استفاده از کد تخفیف، وارد حساب خود شوید.");
+    expect(out).toContain('href="/login?next=%2Fcart"');
+    expect(out).not.toContain("<input");
+  });
+
+  it("کاربر واردشده بدون کد: فیلد کد و دکمه‌ی اعمال", () => {
+    const out = html(items, {
+      couponEnabled: true,
+      coupon: { code: null, status: "none", invalidReason: null },
+    });
     expect(out).toContain("کد تخفیف");
-    expect(out).toMatch(/<input[^>]*disabled/);
-    expect(out).toContain("ثبت کد تخفیف به‌زودی فعال می‌شود.");
+    expect(out).toContain("اعمال");
+    expect(out).toMatch(/<input/);
+    expect(out).not.toMatch(/<input[^>]*\sdisabled(=|\s|>)/);
+  });
+
+  it("کد اعمال‌شده: کد، ردیف تخفیف، جمع کمتر و دکمه‌ی حذف", () => {
+    const out = html(items, {
+      couponEnabled: true,
+      coupon: { code: "SUMMER20", status: "applied", invalidReason: null },
+      couponDiscount: 280_000,
+    });
+    expect(out).toContain("SUMMER20");
+    expect(out).toContain("تخفیف کد");
+    expect(out).toContain("۲٬۵۲۰٬۰۰۰");
+    expect(out).toContain("حذف کد تخفیف");
+    expect(out).toContain("کد SUMMER20 اعمال شد");
+    expect(out).toContain('href="/checkout"');
+  });
+
+  it("بدون تخفیف کد، ردیف «تخفیف کد» نیست", () => {
+    expect(html(items)).not.toContain("تخفیف کد");
+  });
+
+  it("کد نامعتبر: دلیل فارسی و ادامه‌ی خرید بسته", () => {
+    const out = html(items, {
+      couponEnabled: true,
+      coupon: { code: "OLD", status: "invalid", invalidReason: "expired" },
+    });
+    expect(out).toContain("مهلت استفاده از این کد تمام شده است.");
+    expect(out).toContain("کد تخفیف دیگر معتبر نیست");
+    expect(out).not.toContain('href="/checkout"');
+  });
+
+  it("دلیل ناشناخته: پیام عمومی", () => {
+    const out = html(items, {
+      couponEnabled: true,
+      coupon: { code: "X", status: "invalid", invalidReason: "newReason" },
+    });
+    expect(out).toContain("این کد تخفیف معتبر نیست.");
   });
 
   it("فقط از ویژگی‌های منطقی استفاده می‌کند", () => {

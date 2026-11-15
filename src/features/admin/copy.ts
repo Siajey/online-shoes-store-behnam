@@ -13,11 +13,17 @@ export const adminCopy = {
   titles: {
     productNew: "محصول جدید",
     productEdit: "ویرایش محصول",
+    discountNew: "تخفیف جدید",
+    discountEdit: "ویرایش تخفیف",
+    couponNew: "کوپن جدید",
+    couponEdit: "ویرایش کوپن",
   },
   nav: {
     products: "محصولات",
     categories: "دسته‌بندی‌ها",
     brands: "برندها",
+    discounts: "تخفیف‌ها",
+    coupons: "کوپن‌ها",
     users: "کاربران",
   },
 } as const;

@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useState, type FormEvent } from "react";
 import { ShoeIllustration } from "@/components/illustrations/shoe-illustration";
-import { TrashIcon } from "@/components/layout/icons";
+import { TicketIcon, TrashIcon } from "@/components/layout/icons";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { QuantityStepper } from "@/components/ui/quantity-stepper";
@@ -21,7 +22,8 @@ import {
   maxFor,
 } from "../cart";
 import { cartCopy } from "../copy";
-import type { CartItem } from "../types";
+import type { CartResult } from "../service";
+import type { CartCoupon, CartItem } from "../types";
 
 const price = (amount: number) => (
   <>
@@ -30,23 +32,108 @@ const price = (amount: number) => (
   </>
 );
 
-/**
- * ورود کد تخفیف. بک‌اند هنوز کد تخفیف ندارد، پس فیلد غیرفعال است و چیزی نمایش داده یا حساب نمی‌شود.
- * ☐ بعد از آماده شدن API، همین‌جا ثبت و نمایش مبلغ تخفیف اضافه شود.
- */
-export function DiscountCodeBox() {
+type CouponProps = {
+  coupon: CartCoupon | null;
+  /** مبلغ تخفیف کد (تومان) */
+  discount: number;
+  /** فقط کاربر واردشده می‌تواند کد ثبت کند */
+  enabled: boolean;
+  pending: boolean;
+  onApply: (code: string) => Promise<CartResult>;
+  onRemove: () => void;
+};
+
+/** ورود و نمایش کد تخفیف سبد. مهمان به ورود هدایت می‌شود؛ کد نامعتبر با دلیلش نشان داده می‌شود. */
+export function DiscountCodeBox({
+  coupon,
+  discount,
+  enabled,
+  pending,
+  onApply,
+  onRemove,
+}: CouponProps) {
+  const [code, setCode] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  if (!enabled) {
+    return (
+      <p className="text-fg-muted text-xs leading-6">
+        {cartCopy.couponLoginRequired}{" "}
+        <Link href="/login?next=%2Fcart" className="text-brand underline underline-offset-4">
+          {cartCopy.couponLogin}
+        </Link>
+      </p>
+    );
+  }
+
+  if (coupon && coupon.status !== "none" && coupon.code) {
+    const invalid = coupon.status === "invalid";
+    return (
+      <div className="flex flex-col gap-2">
+        <div className="bg-surface-2 flex items-center justify-between gap-2 rounded-xl px-4 py-3">
+          <span dir="ltr" className="flex items-center gap-2 text-sm font-medium">
+            <TicketIcon className={`size-5 ${invalid ? "text-danger" : "text-ok"}`} />
+            {coupon.code}
+          </span>
+          <button
+            type="button"
+            disabled={pending}
+            onClick={onRemove}
+            className="text-fg-muted hover:text-danger focus-visible:outline-brand text-xs focus-visible:outline-2 disabled:opacity-40"
+          >
+            {cartCopy.couponRemove}
+          </button>
+        </div>
+        {invalid ? (
+          <p role="alert" className="text-danger text-xs leading-6">
+            {cartCopy.couponReasons[coupon.invalidReason as keyof typeof cartCopy.couponReasons] ??
+              cartCopy.couponReasonFallback}
+          </p>
+        ) : (
+          <p role="status" className="text-ok text-xs leading-6">
+            {cartCopy.couponApplied(coupon.code)}
+            {discount > 0 && <> — {price(discount)}</>}
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  async function submit(e: FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setBusy(true);
+    const result = await onApply(code);
+    setBusy(false);
+    if (result.ok) setCode("");
+    else setError(result.message);
+  }
+
   return (
-    <div className="flex flex-col gap-2">
+    <form onSubmit={submit} className="flex flex-col gap-2" noValidate>
       <div className="flex items-end gap-2">
         <div className="flex-1">
-          <Input label={cartCopy.discountLabel} ltr disabled placeholder="CODE" />
+          <Input
+            label={cartCopy.discountLabel}
+            ltr
+            placeholder="CODE"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            error={error ?? undefined}
+          />
         </div>
-        <Button type="button" variant="secondary" disabled className="h-13">
+        <Button
+          type="submit"
+          variant="secondary"
+          loading={busy}
+          disabled={pending}
+          className="h-13"
+        >
           {cartCopy.discountApply}
         </Button>
       </div>
-      <p className="text-fg-muted text-xs leading-6">{cartCopy.discountSoon}</p>
-    </div>
+    </form>
   );
 }
 
@@ -61,6 +148,13 @@ type ViewProps = {
   error?: string | null;
   /** پیام اطلاع‌رسانی (مثلاً بعد از ادغام سبد) */
   notice?: string | null;
+  /** کد تخفیف سبد سرور (برای مهمان null) و مبلغ تخفیفش */
+  coupon?: CartCoupon | null;
+  couponDiscount?: number;
+  /** کاربر واردشده می‌تواند کد ثبت کند */
+  couponEnabled?: boolean;
+  onApplyCoupon?: (code: string) => Promise<CartResult>;
+  onRemoveCoupon?: () => void;
 };
 
 function Message({ tone, children }: { tone: "error" | "info"; children: string }) {
@@ -190,6 +284,11 @@ export function CartView({
   pending = false,
   error = null,
   notice = null,
+  coupon = null,
+  couponDiscount = 0,
+  couponEnabled = false,
+  onApplyCoupon = async () => ({ ok: false, message: "" }) as CartResult,
+  onRemoveCoupon = () => {},
 }: ViewProps) {
   if (items.length === 0) {
     return (
@@ -205,6 +304,7 @@ export function CartView({
 
   const savings = cartSavings(items);
   const blocked = hasUnavailable(items);
+  const couponInvalid = coupon?.status === "invalid";
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1fr_22rem] lg:items-start lg:gap-8">
@@ -240,23 +340,36 @@ export function CartView({
               <dd>{price(savings)}</dd>
             </div>
           )}
+          {couponDiscount > 0 && (
+            <div className="text-ok flex justify-between">
+              <dt>{cartCopy.discountRow}</dt>
+              <dd>{price(couponDiscount)}</dd>
+            </div>
+          )}
           <div className="flex justify-between">
             <dt className="text-fg-muted">{cartCopy.shipping}</dt>
             <dd className="text-fg-muted">{cartCopy.shippingLater}</dd>
           </div>
           <div className="border-line flex items-baseline justify-between border-t pt-3 text-base font-medium">
             <dt>{cartCopy.total}</dt>
-            <dd className="text-lg">{price(cartTotal(items))}</dd>
+            <dd className="text-lg">{price(cartTotal(items, couponDiscount))}</dd>
           </div>
         </dl>
-        <DiscountCodeBox />
-        {blocked ? (
+        <DiscountCodeBox
+          coupon={coupon}
+          discount={couponDiscount}
+          enabled={couponEnabled}
+          pending={pending}
+          onApply={onApplyCoupon}
+          onRemove={onRemoveCoupon}
+        />
+        {blocked || couponInvalid ? (
           <>
             <Button size="lg" fullWidth disabled>
               {cartCopy.checkout}
             </Button>
             <p role="status" className="text-danger text-xs leading-6">
-              {cartCopy.unavailableBlock}
+              {blocked ? cartCopy.unavailableBlock : cartCopy.couponInvalidBlock}
             </p>
           </>
         ) : (

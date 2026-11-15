@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-import { CheckoutView, type AddressesState } from "./checkout-views";
+import { CheckoutView, OrderSummary, type AddressesState } from "./checkout-views";
 
 const items = [
   { id: "1", slug: "a", name: "کفش الف", price: 1000000, originalPrice: 1200000, quantity: 2 },
@@ -95,6 +95,13 @@ describe("CheckoutView", () => {
     expect(out).toContain("سود شما از تخفیف");
     expect(out).toMatch(/<button[^>]*disabled[^>]*>ثبت سفارش و پرداخت/);
     expect(out).toContain("هنوز فعال نشده است");
+  });
+  it("تخفیف کد: ردیف تخفیف و جمع کمتر", () => {
+    const out = renderToStaticMarkup(
+      <OrderSummary items={items} hasAddress couponDiscount={100_000} />,
+    );
+    expect(out).toContain("تخفیف کد");
+    expect(out).toContain("۱۰۰٬۰۰۰");
   });
   it("فقط از ویژگی‌های منطقی استفاده می‌کند", () => {
     const out = html({ status: "ready", items: [addr("1")] }, "1");
