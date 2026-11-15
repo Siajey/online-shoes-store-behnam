@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { SearchBar } from "@/components/layout/search-bar";
 import { CategoryGridSkeleton } from "@/features/categories/components/category-grid";
 import { CategorySection } from "@/features/categories/components/category-section";
 import { WelcomeGate } from "@/features/welcome/components/welcome-gate";
@@ -8,6 +9,7 @@ import { Hero } from "@/features/landing/components/hero";
 import { NewsletterSection } from "@/features/landing/components/newsletter-section";
 import { OfferBanner } from "@/features/landing/components/offer-banner";
 import { landingCopy } from "@/features/landing/copy";
+import { MIN_SEARCH_LENGTH } from "@/features/products/api";
 import { ProductGridSkeleton } from "@/features/products/components/product-grid";
 import { ProductSection } from "@/features/products/components/product-section";
 
@@ -17,6 +19,9 @@ export default function Home() {
   return (
     <main>
       <WelcomeGate />
+      <div className="mx-auto w-full max-w-300 px-4 pt-2 lg:hidden">
+        <SearchBar minLength={MIN_SEARCH_LENGTH} />
+      </div>
       <Hero />
       <Benefits />
 

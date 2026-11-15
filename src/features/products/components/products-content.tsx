@@ -1,13 +1,14 @@
+import { SearchBar } from "@/components/layout/search-bar";
 import { StateMessage } from "@/components/ui/state-message";
 import { fetchCategories } from "@/features/categories/api";
 import { CategoryFilter } from "@/features/categories/components/category-filter";
 import { findCategoryTrail } from "@/features/categories/trail";
 import { apiCopy } from "@/lib/api/copy";
 import { isApiRequestError } from "@/lib/api/errors";
-import { fetchProducts } from "../api";
+import { MIN_SEARCH_LENGTH, fetchProducts } from "../api";
 import { PRODUCTS_PAGE_SIZE } from "../constants";
 import { productCopy } from "../copy";
-import { parseProductFilters, type RawSearchParams } from "../filters";
+import { parseProductFilters, productsHref, type RawSearchParams } from "../filters";
 import { ProductList } from "./product-list";
 import { ProductsToolbar } from "./products-toolbar";
 
@@ -35,6 +36,14 @@ export async function ProductsContent({
     <>
       <h1 className="text-2xl font-medium lg:text-[28px]">{title}</h1>
 
+      <SearchBar
+        className="mt-4 lg:hidden"
+        defaultValue={filters.q}
+        minLength={MIN_SEARCH_LENGTH}
+        clearHref={productsHref(filters, { q: undefined })}
+        hidden={hiddenFilters(filters)}
+      />
+
       {categories.length > 0 && <CategoryFilter categories={categories} trail={trail} />}
 
       <ProductsToolbar filters={filters} />
@@ -57,4 +66,15 @@ export async function ProductsContent({
       </div>
     </>
   );
+}
+
+/** فیلترهایی که با جستجوی تازه حفظ می‌شوند (جستجو و دسته‌ی فعلی جدا مدیریت می‌شوند). */
+function hiddenFilters(f: ReturnType<typeof parseProductFilters>) {
+  const out: { name: string; value: string }[] = [];
+  if (f.category) out.push({ name: "category", value: f.category });
+  if (f.sort) out.push({ name: "sort", value: f.sort });
+  if (f.minPrice !== undefined) out.push({ name: "minPrice", value: String(f.minPrice) });
+  if (f.maxPrice !== undefined) out.push({ name: "maxPrice", value: String(f.maxPrice) });
+  if (f.inStock) out.push({ name: "inStock", value: "1" });
+  return out;
 }
