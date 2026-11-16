@@ -61,6 +61,26 @@ export function toProduct(dto: ProductListItemDto, categories?: CategoryLookup):
   };
 }
 
+const GENDER_LABELS: Record<string, string> = {
+  men: "مردانه",
+  women: "زنانه",
+  unisex: "یونیسکس",
+  kids: "بچگانه",
+  boys: "پسرانه",
+  girls: "دخترانه",
+};
+
+/** مشخصات قابل‌نمایش از details و دسته؛ فقط مقدار موجود می‌آید (چیزی ساختگی نیست). */
+function specsOf(dto: ProductListItemDto, categoryName?: string): Product["specs"] {
+  const specs: { label: string; value: string }[] = [];
+  const material = dto.details?.material?.trim();
+  if (material) specs.push({ label: "جنس", value: material });
+  const gender = dto.details?.gender?.trim();
+  if (gender) specs.push({ label: "جنسیت", value: GENDER_LABELS[gender.toLowerCase()] ?? gender });
+  if (categoryName) specs.push({ label: "دسته‌بندی", value: categoryName });
+  return specs.length > 0 ? specs : undefined;
+}
+
 /** جزئیات محصول: همان آیتم لیست + توضیحات، گالری و ترکیب‌های سایز/رنگ. */
 export function toProductDetail(dto: ProductDetailDto, categories?: CategoryLookup): Product {
   const base = toProduct(dto, categories);
@@ -68,6 +88,7 @@ export function toProductDetail(dto: ProductDetailDto, categories?: CategoryLook
   return {
     ...base,
     description: dto.description || undefined,
+    specs: specsOf(dto, base.categoryName),
     images: images.length > 0 ? images : undefined,
     imageUrl: base.imageUrl ?? images[0],
     variants: dto.variants.length > 0 ? dto.variants.map(toVariant) : undefined,

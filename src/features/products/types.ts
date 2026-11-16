@@ -35,6 +35,8 @@ export type Product = {
   images?: readonly string[];
   /** نام رنگ‌های موجود (از options محصول)؛ اگر بک‌اند نفرستد نیست */
   colors?: readonly string[];
+  /** مشخصات فنی برای تب «مشخصات»؛ فقط مقدارهایی که بک‌اند داده */
+  specs?: readonly { label: string; value: string }[];
   /** بیشترین قیمت ترکیب‌ها؛ فقط وقتی با قیمت پایه فرق دارد */
   maxPrice?: number;
   /** ترکیب‌های سایز/رنگ؛ اگر نبود، محصول انتخاب ندارد. ☐ منتظر variantها در API HTTP. */

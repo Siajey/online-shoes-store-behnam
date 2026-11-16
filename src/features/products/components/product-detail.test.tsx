@@ -48,4 +48,23 @@ describe("ProductDetail", () => {
     expect(bare).not.toContain("line-through");
     expect(bare).not.toContain("category=");
   });
+
+  it("باکس ارسال و بازگشت، لینک نظرات و تب‌ها", () => {
+    expect(out).toContain("ارسال و بازگشت");
+    expect(out).toContain("بازگشت کالا تا ۷ روز");
+    expect(out).toContain('role="tablist"');
+  });
+  it("توضیحات کوتاه زیر قیمت و مشخصات در تب", () => {
+    const withData = renderToStaticMarkup(
+      <ProductDetail
+        product={{
+          ...base,
+          description: "کفش اسپرت سبک برای پیاده‌روی",
+          specs: [{ label: "جنس", value: "چرم" }],
+        }}
+      />,
+    );
+    expect(withData).toContain("کفش اسپرت سبک برای پیاده‌روی");
+    expect(withData).toContain("چرم");
+  });
 });

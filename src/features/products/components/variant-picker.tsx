@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { toPersianDigits } from "@/lib/format";
+import { isSizeAttribute } from "../colors";
 import { productCopy } from "../copy";
 import type { OptionGroup, Selection } from "../variants";
 
@@ -47,6 +49,14 @@ export function VariantPicker({ groups, selection, onToggle }: Props) {
               );
             })}
           </div>
+          {isSizeAttribute(g.name) && (
+            <Link
+              href="/size-guide"
+              className="text-brand focus-visible:outline-brand self-start text-sm underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2"
+            >
+              {productCopy.sizeGuide}
+            </Link>
+          )}
         </fieldset>
       ))}
     </div>
