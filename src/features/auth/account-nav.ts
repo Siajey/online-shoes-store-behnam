@@ -1,6 +1,7 @@
 import { authCopy as t } from "./copy";
 
-export type AccountKey = "summary" | "profile" | "addresses" | "orders" | "favourites" | "security";
+export type AccountKey =
+  "summary" | "profile" | "addresses" | "orders" | "favourites" | "reviews" | "security";
 
 export const ACCOUNT_LINKS: readonly {
   key: AccountKey;
@@ -13,6 +14,7 @@ export const ACCOUNT_LINKS: readonly {
   { key: "addresses", href: "/account/addresses", label: t.navAddresses, text: t.navAddressesText },
   { key: "orders", href: "/account/orders", label: t.navOrders, text: t.navOrdersText },
   { key: "favourites", href: "/favourites", label: t.navFavourites, text: t.navFavouritesText },
+  { key: "reviews", href: "/account/reviews", label: t.navReviews, text: t.navReviewsText },
   { key: "security", href: "/account/security", label: t.navSecurity, text: t.navSecurityText },
 ];
 

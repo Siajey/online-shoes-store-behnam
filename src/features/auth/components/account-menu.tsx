@@ -8,6 +8,7 @@ import {
   PencilIcon,
   PinIcon,
   ShieldIcon,
+  StarIcon,
 } from "@/components/layout/icons";
 import { buttonVariants } from "@/components/ui/button";
 import { toPersianDigits } from "@/lib/format";
@@ -24,6 +25,7 @@ const ITEMS: readonly Item[] = [
   { href: "/account/orders", label: authCopy.navOrders, Icon: CubeIcon },
   { href: "/favourites", label: authCopy.navFavourites, Icon: HeartIcon },
   { href: "/account/addresses", label: authCopy.navAddresses, Icon: PinIcon },
+  { href: "/account/reviews", label: authCopy.navReviews, Icon: StarIcon },
   { href: "/account/security", label: authCopy.navSecurity, Icon: ShieldIcon },
 ];
 

@@ -7,6 +7,7 @@ import {
   PencilIcon,
   PinIcon,
   ShieldIcon,
+  StarIcon,
   SummaryIcon,
 } from "@/components/layout/icons";
 import { cn } from "@/lib/cn";
@@ -20,6 +21,7 @@ export const ACCOUNT_ICONS: Record<AccountKey, ComponentType<SVGProps<SVGSVGElem
   orders: CubeIcon,
   addresses: PinIcon,
   favourites: HeartIcon,
+  reviews: StarIcon,
   profile: PencilIcon,
   security: ShieldIcon,
 };
@@ -33,7 +35,15 @@ type Props = {
   error?: string;
 };
 
-const ORDER: AccountKey[] = ["summary", "orders", "addresses", "favourites", "profile", "security"];
+const ORDER: AccountKey[] = [
+  "summary",
+  "orders",
+  "addresses",
+  "favourites",
+  "reviews",
+  "profile",
+  "security",
+];
 
 /** نمای خالص نوار کناری حساب (دسکتاپ): کارت کاربر، بخش‌ها با آیکون و خروج. */
 export function AccountSidebarView({ current, name, phone, onLogout, loggingOut, error }: Props) {

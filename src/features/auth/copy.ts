@@ -44,6 +44,8 @@ export const authCopy = {
   navOrdersText: "پیگیری و سابقه‌ی خرید",
   navFavourites: "علاقه‌مندی‌ها",
   navFavouritesText: "کالاهای ذخیره‌شده",
+  navReviews: "نظرات من",
+  navReviewsText: "نظرهایی که ثبت کرده‌اید",
   navSecurity: "امنیت حساب",
   navSecurityText: "روش ورود، خروج و حذف حساب",
   profilePageTitle: "ویرایش پروفایل",
