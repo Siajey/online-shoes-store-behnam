@@ -33,7 +33,7 @@ export function ProductDetail({ product }: { product: Product }) {
               fill
               unoptimized
               priority
-              sizes="(min-width: 1024px) 560px, 100vw"
+              sizes="(min-width: 960px) 560px, 100vw"
               className="object-cover"
             />
           ) : (

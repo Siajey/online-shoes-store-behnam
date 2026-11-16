@@ -21,4 +21,8 @@ describe("ProductsToolbar", () => {
     expect(out).toContain("حذف فیلترها");
     expect(out).toContain("checked");
   });
+  it("آکاردئون فلش پایین دارد", () => {
+    const out = renderToStaticMarkup(<ProductsToolbar filters={{}} />);
+    expect(out).toContain("group-open:rotate-180");
+  });
 });

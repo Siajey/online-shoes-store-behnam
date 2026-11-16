@@ -20,7 +20,7 @@ function PageSkeleton() {
 
 export default function ProductsPage({ searchParams }: { searchParams: Promise<RawSearchParams> }) {
   return (
-    <main className="mx-auto w-full max-w-300 px-4 py-6 lg:px-8 lg:py-10">
+    <main className="mx-auto w-full max-w-372 px-4 py-6 lg:px-8 lg:py-10">
       <Suspense fallback={<PageSkeleton />}>
         <ProductsContent searchParams={searchParams} />
       </Suspense>

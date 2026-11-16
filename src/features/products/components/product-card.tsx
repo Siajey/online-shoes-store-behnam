@@ -5,7 +5,8 @@ import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/cn";
-import { formatPrice } from "@/lib/format";
+import { formatPrice, toPersianDigits } from "@/lib/format";
+import { MAX_CARD_COLORS, colorHex } from "../colors";
 import { productCopy } from "../copy";
 
 export type ProductCardProps = {
@@ -22,6 +23,8 @@ export type ProductCardProps = {
   tag?: string;
   /** تصویر محصول (مثلاً <Image />)؛ برنامه تصمیم می‌گیرد چه بگذارد. */
   image?: ReactNode;
+  /** نام رنگ‌های موجود؛ فقط ۳ رنگ اول نمایش داده می‌شود و بقیه در صفحه‌ی محصول است. */
+  colors?: readonly string[];
   /** ناموجود بودن: دکمه‌ی سبد غیرفعال و نشان «ناموجود» نمایش داده می‌شود. */
   unavailable?: boolean;
   favourite?: boolean;
@@ -40,6 +43,7 @@ export function ProductCard({
   discountLabel,
   tag,
   image,
+  colors,
   unavailable = false,
   favourite = false,
   onToggleFavourite,
@@ -60,7 +64,10 @@ export function ProductCard({
           onClick={onToggleFavourite}
           aria-pressed={favourite}
           aria-label={favourite ? productCopy.removeFromFavourites : productCopy.addToFavourites}
-          className="bg-surface text-fg focus-visible:outline-brand absolute start-2 top-2 z-10 flex size-10 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2"
+          className={cn(
+            "bg-surface focus-visible:outline-brand absolute start-2 top-2 z-10 flex size-10 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2",
+            favourite ? "text-danger" : "text-fg",
+          )}
         >
           <HeartIcon filled={favourite} />
         </button>
@@ -101,6 +108,8 @@ export function ProductCard({
       >
         {name}
       </Link>
+
+      {colors && colors.length > 0 && <ColorDots colors={colors} />}
 
       <div className="flex items-end justify-between gap-2">
         <div className="flex min-w-0 flex-col">
@@ -168,5 +177,30 @@ function PlusIcon() {
     >
       <path d="M12 5v14M5 12h14" />
     </svg>
+  );
+}
+
+function ColorDots({ colors }: { colors: readonly string[] }) {
+  const shown = colors.slice(0, MAX_CARD_COLORS);
+  const extra = colors.length - shown.length;
+  return (
+    <ul aria-label={productCopy.availableColors} className="flex items-center gap-1.5">
+      {shown.map((name) => (
+        <li
+          key={name}
+          title={name}
+          className="border-line size-4 rounded-full border"
+          style={{ backgroundColor: colorHex(name) ?? "var(--color-surface-2)" }}
+        >
+          <span className="sr-only">{name}</span>
+        </li>
+      ))}
+      {extra > 0 && (
+        <li className="text-fg-muted text-xs">
+          <span aria-hidden="true">+{toPersianDigits(extra)}</span>
+          <span className="sr-only">{productCopy.moreColors(toPersianDigits(extra))}</span>
+        </li>
+      )}
+    </ul>
   );
 }

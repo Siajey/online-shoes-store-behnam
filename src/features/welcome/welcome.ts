@@ -2,7 +2,7 @@
 export const WELCOME_KEY = "welcome-seen";
 
 /** عرضی که از آن به بالا (lg در Tailwind) دسکتاپ حساب می‌شود و خوش‌آمدگویی نشان داده نمی‌شود. */
-export const DESKTOP_MIN_WIDTH = 1024;
+export const DESKTOP_MIN_WIDTH = 960;
 
 type StorageLike = Pick<Storage, "getItem" | "setItem">;
 

@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { ChevronDownIcon } from "@/components/layout/icons";
 import { cn } from "@/lib/cn";
 import { toPersianDigits } from "@/lib/format";
 import { productCopy as t } from "../copy";
 import { activeFilterCount, productsHref, type ProductFilters, type ProductSort } from "../filters";
+import type { CatalogFacets } from "../types";
+import { ProductsFilterForm } from "./products-filter-form";
 
 const SORT_OPTIONS: { value: ProductSort | undefined; label: string }[] = [
   { value: undefined, label: t.sortDefault },
@@ -16,7 +17,13 @@ const SORT_OPTIONS: { value: ProductSort | undefined; label: string }[] = [
  * مرتب‌سازی (چیپ‌های لینکی) و فیلتر قیمت/موجودی (فرم GET). همه‌چیز در آدرس می‌ماند؛
  * بدون JavaScript هم کار می‌کند و صفحه قابل اشتراک‌گذاری است.
  */
-export function ProductsToolbar({ filters }: { filters: ProductFilters }) {
+export function ProductsToolbar({
+  filters,
+  facets,
+}: {
+  filters: ProductFilters;
+  facets?: CatalogFacets | null;
+}) {
   const count = activeFilterCount(filters);
   return (
     <div className="mt-5 flex flex-col gap-4">
@@ -45,61 +52,17 @@ export function ProductsToolbar({ filters }: { filters: ProductFilters }) {
         })}
       </nav>
 
-      <details className="rounded-card bg-surface group" open={count > 0}>
-        <summary className="focus-visible:outline-brand cursor-pointer list-none rounded-full px-5 py-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2">
-          {count > 0 ? t.filtersCount(toPersianDigits(count)) : t.filtersTitle}
+      <details className="rounded-card bg-surface group xl:hidden" open={count > 0}>
+        <summary className="focus-visible:outline-brand flex cursor-pointer list-none items-center justify-between gap-2 rounded-full px-5 py-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 [&::-webkit-details-marker]:hidden">
+          <span>{count > 0 ? t.filtersCount(toPersianDigits(count)) : t.filtersTitle}</span>
+          <ChevronDownIcon
+            aria-hidden
+            className="text-fg-muted size-5 transition-transform group-open:rotate-180 motion-reduce:transition-none"
+          />
         </summary>
-        <form method="get" action="/products" className="flex flex-col gap-4 p-5 pt-2">
-          {filters.category && <input type="hidden" name="category" value={filters.category} />}
-          {filters.q && <input type="hidden" name="q" value={filters.q} />}
-          {filters.sort && <input type="hidden" name="sort" value={filters.sort} />}
-          <fieldset className="flex flex-col gap-3">
-            <legend className="text-fg-secondary mb-2 text-sm">{t.priceRange}</legend>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Input
-                label={t.minPrice}
-                name="minPrice"
-                inputMode="numeric"
-                ltr
-                maxLength={14}
-                defaultValue={filters.minPrice ?? ""}
-              />
-              <Input
-                label={t.maxPrice}
-                name="maxPrice"
-                inputMode="numeric"
-                ltr
-                maxLength={14}
-                defaultValue={filters.maxPrice ?? ""}
-              />
-            </div>
-          </fieldset>
-          <label className="flex items-center gap-3 text-sm">
-            <input
-              type="checkbox"
-              name="inStock"
-              value="1"
-              defaultChecked={filters.inStock}
-              className="accent-brand size-4"
-            />
-            {t.inStockOnly}
-          </label>
-          <div className="flex flex-wrap gap-2">
-            <Button type="submit">{t.applyFilters}</Button>
-            {count > 0 && (
-              <Link
-                href={productsHref(filters, {
-                  minPrice: undefined,
-                  maxPrice: undefined,
-                  inStock: undefined,
-                })}
-                className="text-brand inline-flex h-13 items-center px-4 text-sm underline underline-offset-4"
-              >
-                {t.clearFilters}
-              </Link>
-            )}
-          </div>
-        </form>
+        <div className="p-5 pt-2">
+          <ProductsFilterForm filters={filters} facets={facets} />
+        </div>
       </details>
     </div>
   );

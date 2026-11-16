@@ -117,3 +117,9 @@ export const TicketIcon = (p: ComponentProps<"svg">) => (
     <path d="M3 9V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2.5 2.5 0 0 0 0 5v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3a2.5 2.5 0 0 0 0-5zM14 6v12" />
   </Icon>
 );
+
+export const ChevronDownIcon = (p: ComponentProps<"svg">) => (
+  <Icon {...p}>
+    <path d="M6 9l6 6 6-6" />
+  </Icon>
+);

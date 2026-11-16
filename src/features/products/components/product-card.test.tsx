@@ -55,4 +55,23 @@ describe("ProductCard", () => {
   it("فقط از ویژگی‌های منطقی استفاده می‌کند", () => {
     expect(html()).not.toMatch(/class="[^"]*(\s|")(ml|mr|pl|pr|left|right)-/);
   });
+
+  it("قلب فعال قرمز است و غیرفعال نه", () => {
+    expect(html({ favourite: true })).toContain("text-danger");
+    expect(html({ favourite: false })).not.toContain("text-danger");
+  });
+
+  it("حداکثر ۳ رنگ و شمارنده‌ی بقیه", () => {
+    const out = html({ colors: ["مشکی", "سفید", "قرمز", "آبی", "سبز"] });
+    expect(out).toContain("رنگ‌های موجود");
+    expect(out).toContain("مشکی");
+    expect(out).toContain("قرمز");
+    expect(out).not.toContain("آبی</span>");
+    expect(out).toContain("+۲");
+  });
+
+  it("بدون رنگ، بخش رنگ دیده نمی‌شود", () => {
+    expect(html()).not.toContain("رنگ‌های موجود");
+    expect(html({ colors: [] })).not.toContain("رنگ‌های موجود");
+  });
 });
