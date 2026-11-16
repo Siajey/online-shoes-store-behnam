@@ -27,7 +27,7 @@ export function SiteHeader() {
           <Suspense fallback={<MainNavLinks pathname={null} />}>
             <MainNav />
           </Suspense>
-          <form action="/products" role="search" className="w-70">
+          <form action="/products" role="search" className="max-w-70 min-w-0 flex-1">
             <label className="bg-surface-2 text-fg-muted flex h-11 items-center gap-2 rounded-full px-4">
               <SearchIcon className="size-[18px]" />
               <span className="sr-only">{layoutCopy.searchLabel}</span>

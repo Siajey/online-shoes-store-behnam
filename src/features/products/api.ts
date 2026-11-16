@@ -2,11 +2,12 @@ import { api, type Page } from "@/lib/api";
 import { isApiRequestError } from "@/lib/api/errors";
 import { fetchCategories } from "@/features/categories/api";
 import type { Category } from "@/features/categories/types";
-import type { ProductDetailDto, ProductsPageDto } from "./dto";
-import type { ProductSort } from "./filters";
+import type { CatalogFiltersDto, ProductDetailDto, ProductsPageDto } from "./dto";
+import { COLOR_ATTRIBUTE, SIZE_ATTRIBUTE, isColorAttribute, isSizeAttribute } from "./colors";
+import { attributesParam, type ProductSort } from "./filters";
 import { toProduct, toProductDetail, type CategoryLookup } from "./mappers";
-import type { Product } from "./types";
-import { tomanToRial } from "@/lib/money";
+import type { CatalogFacets, Product } from "./types";
+import { rialToToman, tomanToRial } from "@/lib/money";
 
 export type ProductListParams = {
   cursor?: string;
@@ -18,6 +19,13 @@ export type ProductListParams = {
   minPrice?: number;
   maxPrice?: number;
   inStock?: boolean;
+  /** شناسه‌ی برند (از facets) */
+  brandId?: string;
+  /** رنگ‌ها و سایزهای انتخاب‌شده؛ نام ویژگی از facets می‌آید و پیش‌فرضش «رنگ» و «سایز» است */
+  colors?: readonly string[];
+  sizes?: readonly string[];
+  colorAttribute?: string;
+  sizeAttribute?: string;
 };
 
 /** عبارت جستجو در بک‌اند حداقل ۲ نویسه است. */
@@ -75,12 +83,61 @@ export async function fetchProducts(
       minPrice: params.minPrice === undefined ? undefined : tomanToRial(params.minPrice),
       maxPrice: params.maxPrice === undefined ? undefined : tomanToRial(params.maxPrice),
       inStock: params.inStock ? true : undefined,
+      brandId: params.brandId,
+      attributes: attributesParam({
+        [params.colorAttribute ?? COLOR_ATTRIBUTE]: params.colors,
+        [params.sizeAttribute ?? SIZE_ATTRIBUTE]: params.sizes,
+      }),
     },
     signal,
   });
   return {
     items: res.data.items.map((p) => toProduct(p, categories.byId)),
     nextCursor: res.data.nextCursor ?? null,
+  };
+}
+
+/**
+ * صفحه‌ی N ام لیست. بک‌اند فقط cursor دارد، پس صفحه‌ی N با N-1 بار جلو رفتن پیدا می‌شود
+ * (به همین دلیل MAX_PAGE کم است). hasNext از nextCursor می‌آید؛ تعداد کل در دست نیست.
+ */
+export async function fetchProductsPage(
+  params: Omit<ProductListParams, "cursor">,
+  page: number,
+  signal?: AbortSignal,
+): Promise<{ items: Product[]; page: number; hasNext: boolean }> {
+  let cursor: string | undefined;
+  for (let current = 1; ; current += 1) {
+    const result = await fetchProducts({ ...params, cursor }, signal);
+    if (current >= page) {
+      return { items: result.items, page: current, hasNext: result.nextCursor !== null };
+    }
+    // صفحه‌ی خواسته‌شده بیشتر از تعداد واقعی است: آخرین صفحه‌ی موجود را بده.
+    if (result.nextCursor === null) return { items: result.items, page: current, hasNext: false };
+    cursor = result.nextCursor;
+  }
+}
+
+/** گزینه‌های فیلتر (برند، قیمت، رنگ، سایز) برای یک دسته یا کل کاتالوگ. */
+export async function fetchCatalogFacets(
+  categoryId?: string,
+  signal?: AbortSignal,
+): Promise<CatalogFacets> {
+  const res = await api.get<CatalogFiltersDto>("/products/filters", {
+    query: { categoryId },
+    signal,
+  });
+  const attributes = res.data.attributes ?? [];
+  const color = attributes.find((a) => isColorAttribute(a.name));
+  const size = attributes.find((a) => isSizeAttribute(a.name));
+  const range = res.data.priceRange;
+  return {
+    brands: res.data.brands ?? [],
+    priceRange: range ? { min: rialToToman(range.min), max: rialToToman(range.max) } : null,
+    colorAttribute: color?.name ?? COLOR_ATTRIBUTE,
+    colors: color?.values ?? [],
+    sizeAttribute: size?.name ?? SIZE_ATTRIBUTE,
+    sizes: size?.values ?? [],
   };
 }
 

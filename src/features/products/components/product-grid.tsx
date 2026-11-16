@@ -10,9 +10,22 @@ import { productHref } from "../routes";
 import type { Product } from "../types";
 import { ProductCard } from "./product-card";
 
-const grid = "grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-5";
+const grid = "grid grid-cols-2 gap-3 lg:gap-5";
+const COLUMNS = {
+  3: "lg:grid-cols-3",
+  4: "lg:grid-cols-4",
+  // ستون‌های خودکار: هر کارت حداقل ۱۵rem (در دسکتاپ ۱۶rem) عرض دارد و جای خالی بین ستون‌ها تقسیم می‌شود
+  auto: "sm:grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] xl:grid-cols-[repeat(auto-fill,minmax(16rem,1fr))]",
+} as const;
 
-export function ProductGrid({ products }: { products: Product[] }) {
+/** columns: تعداد ستون در دسکتاپ؛ auto یعنی هر قدر کارت با حداقل عرض جا شود (برای صفحه‌ی دارای سایدبار). */
+export function ProductGrid({
+  products,
+  columns = 4,
+}: {
+  products: Product[];
+  columns?: keyof typeof COLUMNS;
+}) {
   // پیام برای صفحه‌خوان؛ کلید تازه باعث می‌شود افزودن پشت‌سرهم‌ی همان کالا هم اعلام شود.
   const [announcement, setAnnouncement] = useState({ id: 0, text: "" });
 
@@ -28,7 +41,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
   }
 
   return (
-    <div className={grid}>
+    <div className={cn(grid, COLUMNS[columns])}>
       <span key={announcement.id} role="status" className="sr-only">
         {announcement.text}
       </span>
@@ -41,6 +54,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
           originalPrice={product.originalPrice}
           discountLabel={product.discountLabel}
           tag={product.tag}
+          colors={product.colors}
           unavailable={!product.available}
           favourite={favouriteIds.has(product.id)}
           onToggleFavourite={() => toggleFavourite(product)}
@@ -53,7 +67,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
                 alt={product.name}
                 fill
                 unoptimized
-                sizes="(min-width: 1024px) 270px, 50vw"
+                sizes="(min-width: 1280px) 270px, (min-width: 640px) 33vw, 50vw"
                 className="object-cover"
               />
             ) : undefined
@@ -67,7 +81,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
 /** جای‌نگهدار هم‌اندازه‌ی کارت‌ها تا صفحه هنگام بارگذاری نپرد. */
 export function ProductGridSkeleton({ count = 4 }: { count?: number }) {
   return (
-    <div className={grid} aria-hidden="true">
+    <div className={cn(grid, "lg:grid-cols-4")} aria-hidden="true">
       {Array.from({ length: count }, (_, i) => (
         <div
           key={i}

@@ -1,5 +1,6 @@
 import { mediaUrl } from "@/lib/media";
 import { rialToToman } from "@/lib/money";
+import { isColorAttribute } from "./colors";
 import type { ProductDetailDto, ProductListItemDto, PublicVariantDto } from "./dto";
 import type { Product, ProductVariant } from "./types";
 
@@ -34,6 +35,14 @@ function toVariant(v: PublicVariantDto): ProductVariant {
 }
 
 /** تنها جایی که شکل API (آیتم لیست) به مدل فرانت تبدیل می‌شود. */
+/** نام رنگ‌ها از options؛ تکراری‌ها حذف می‌شوند. */
+function colorsOf(options: Record<string, string[]> | undefined): string[] | undefined {
+  if (!options) return undefined;
+  const key = Object.keys(options).find(isColorAttribute);
+  const list = key ? [...new Set(options[key].map((v) => String(v).trim()).filter(Boolean))] : [];
+  return list.length > 0 ? list : undefined;
+}
+
 export function toProduct(dto: ProductListItemDto, categories?: CategoryLookup): Product {
   const category = dto.categoryId ? categories?.get(dto.categoryId) : undefined;
   const min = rialToToman(dto.minPrice ?? 0);
@@ -46,6 +55,7 @@ export function toProduct(dto: ProductListItemDto, categories?: CategoryLookup):
     maxPrice: max !== null && max > min ? max : undefined,
     imageUrl: mediaUrl(dto.primaryImage?.fileKey),
     available: dto.inStock && dto.minPrice !== null,
+    colors: colorsOf(dto.options),
     categoryName: category?.name,
     categorySlug: category?.slug,
   };

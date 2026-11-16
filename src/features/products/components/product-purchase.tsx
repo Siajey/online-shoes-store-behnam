@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { cn } from "@/lib/cn";
 import { HeartIcon } from "@/components/layout/icons";
 import { Button } from "@/components/ui/button";
 import { QuantityStepper } from "@/components/ui/quantity-stepper";
@@ -101,7 +102,10 @@ export function ProductPurchase({ product }: { product: Product }) {
           aria-pressed={favourite}
           aria-label={favourite ? productCopy.removeFromFavourites : productCopy.addToFavourites}
           onClick={() => void favouritesStore.toggle(product)}
-          className="bg-surface-2 text-fg focus-visible:outline-brand flex size-13 items-center justify-center rounded-full transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:transition-none"
+          className={cn(
+            "bg-surface-2 focus-visible:outline-brand flex size-13 items-center justify-center rounded-full transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 motion-reduce:transition-none",
+            favourite ? "text-danger" : "text-fg",
+          )}
         >
           <HeartIcon className="size-[22px]" fill={favourite ? "currentColor" : "none"} />
         </button>

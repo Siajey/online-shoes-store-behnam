@@ -17,6 +17,8 @@ export type ProductListItemDto = {
   maxPrice: number | null;
   inStock: boolean;
   details: { gender?: string; material?: string | null } | null;
+  /** گزینه‌های محصول مثل { "رنگ": ["مشکی"] }؛ اگر بک‌اند در لیست بفرستد، رنگ‌ها روی کارت می‌آید. */
+  options?: Record<string, string[]>;
 };
 
 /** data از GET /products و GET /products/search */
@@ -36,4 +38,12 @@ export type ProductDetailDto = ProductListItemDto & {
   images: ProductImageDto[];
   options: Record<string, string[]>;
   variants: PublicVariantDto[];
+};
+
+/** data از GET /products/filters؛ قیمت‌ها ریال‌اند. */
+export type CatalogFiltersDto = {
+  categories?: { id: string; name: string; slug: string; count: number }[];
+  brands?: { id: string; name: string; slug: string; count: number }[];
+  priceRange?: { min: number; max: number } | null;
+  attributes?: { name: string; values: { value: string; count: number }[] }[];
 };

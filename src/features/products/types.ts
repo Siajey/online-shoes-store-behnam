@@ -33,8 +33,24 @@ export type Product = {
   description?: string;
   /** همه‌ی تصاویر گالری (فقط در صفحه‌ی محصول) */
   images?: readonly string[];
+  /** نام رنگ‌های موجود (از options محصول)؛ اگر بک‌اند نفرستد نیست */
+  colors?: readonly string[];
   /** بیشترین قیمت ترکیب‌ها؛ فقط وقتی با قیمت پایه فرق دارد */
   maxPrice?: number;
   /** ترکیب‌های سایز/رنگ؛ اگر نبود، محصول انتخاب ندارد. ☐ منتظر variantها در API HTTP. */
   variants?: readonly ProductVariant[];
+};
+
+export type FacetValue = { value: string; count: number };
+
+/** گزینه‌های فیلتر کاتالوگ برای نوار کناری (از /products/filters). */
+export type CatalogFacets = {
+  brands: { id: string; name: string; slug: string; count: number }[];
+  /** به تومان؛ null اگر محصولی نیست */
+  priceRange: { min: number; max: number } | null;
+  /** نام دقیق ویژگی در بک‌اند (برای پارامتر attributes) */
+  colorAttribute: string;
+  colors: FacetValue[];
+  sizeAttribute: string;
+  sizes: FacetValue[];
 };
