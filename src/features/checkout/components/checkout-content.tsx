@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { listAddresses } from "@/features/addresses/api";
 import { useCartItems, useCartMeta, useCartReady } from "@/features/cart/use-cart";
 import { useRequireAuth } from "@/features/auth/use-require-auth";
+import { usePlaceOrder } from "@/features/orders/use-place-order";
 import { isApiRequestError } from "@/lib/api/errors";
 import { resolveSelectedAddressId } from "../address-choice";
 import { checkoutCopy } from "../copy";
@@ -30,6 +31,7 @@ export function CheckoutContent() {
   const [addresses, setAddresses] = useState<AddressesState>({ status: "loading" });
   const [chosen, setChosen] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
+  const order = usePlaceOrder();
 
   useEffect(() => {
     if (auth.status !== "authenticated") return;
@@ -67,7 +69,12 @@ export function CheckoutContent() {
       selectedId={selectedId}
       recipient={recipient}
       couponDiscount={meta.couponDiscount}
-      onSelect={setChosen}
+      placeState={order.state}
+      onPlace={selectedId ? () => void order.place(selectedId) : undefined}
+      onSelect={(id) => {
+        order.reset();
+        setChosen(id);
+      }}
       onRetry={() => {
         setAddresses({ status: "loading" });
         setReloadKey((k) => k + 1);

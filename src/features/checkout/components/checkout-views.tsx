@@ -6,6 +6,9 @@ import type { Address } from "@/features/addresses/types";
 import { cartCount, cartSavings, cartTotal } from "@/features/cart/cart";
 import type { CartItem } from "@/features/cart/types";
 import { formatPrice, toPersianDigits } from "@/lib/format";
+import { ordersCopy as o } from "@/features/orders/copy";
+import type { PlaceOrderFailure } from "@/features/orders/errors";
+import type { PlaceOrderState } from "@/features/orders/use-place-order";
 import { checkoutCopy as t } from "../copy";
 import { SHIPPING_METHODS } from "../shipping";
 
@@ -203,11 +206,19 @@ export function OrderSummary({
   items,
   hasAddress,
   couponDiscount = 0,
+  placeState = { status: "idle" },
+  onPlace,
 }: {
   items: readonly CartItem[];
   hasAddress: boolean;
   couponDiscount?: number;
+  placeState?: PlaceOrderState;
+  /** وقتی داده نشود، دکمه غیرفعال می‌ماند. */
+  onPlace?: () => void;
 }) {
+  const placing = placeState.status === "placing";
+  const failure = placeState.status === "failed" ? placeState.failure : null;
+  const canPlace = hasAddress && Boolean(onPlace) && !placing;
   const savings = cartSavings(items);
   return (
     <aside
@@ -249,17 +260,59 @@ export function OrderSummary({
         </Link>
         {t.termsSuffix}
       </p>
-      {/* ☐ وقتی API سفارش/پرداخت آماده شد، این دکمه سفارش را ثبت کند. */}
-      <Button size="lg" fullWidth disabled>
-        {t.placeOrder}
+      <Button size="lg" fullWidth disabled={!canPlace} onClick={onPlace}>
+        {placing
+          ? o.checkout.placing
+          : failure?.kind === "priceChanged"
+            ? o.checkout.confirmAgain
+            : t.placeOrder}
       </Button>
-      <p className="text-fg-muted text-center text-xs">
-        {hasAddress ? t.placeOrderSoon : t.needAddress}
-      </p>
+      {failure && <PlaceFailure failure={failure} />}
+      {!failure && !hasAddress && (
+        <p className="text-fg-muted text-center text-xs">{t.needAddress}</p>
+      )}
       <Link href="/cart" className={buttonVariants({ variant: "ghost", size: "sm" })}>
         {t.backToCart}
       </Link>
     </aside>
+  );
+}
+
+function PlaceFailure({ failure }: { failure: PlaceOrderFailure }) {
+  if (failure.kind === "recipient") {
+    return (
+      <p role="alert" className="text-danger text-center text-xs leading-6">
+        {o.checkout.completeProfile}{" "}
+        <Link href="/account" className="underline underline-offset-4">
+          {o.checkout.goToProfile}
+        </Link>
+      </p>
+    );
+  }
+  if (failure.kind === "empty") {
+    return (
+      <p role="alert" className="text-danger text-center text-xs leading-6">
+        {o.checkout.cartEmpty}{" "}
+        <Link href="/cart" className="underline underline-offset-4">
+          {o.checkout.goToCart}
+        </Link>
+      </p>
+    );
+  }
+  const message = failure.kind === "couponInvalid" ? o.checkout.couponInvalid : failure.message;
+  return (
+    <p role="alert" className="text-danger text-center text-xs leading-6">
+      {failure.kind === "priceChanged" && <strong>{o.checkout.priceChangedTitle}. </strong>}
+      {message}
+      {failure.kind === "couponInvalid" && (
+        <>
+          {" "}
+          <Link href="/cart" className="underline underline-offset-4">
+            {o.checkout.goToCart}
+          </Link>
+        </>
+      )}
+    </p>
   );
 }
 
@@ -272,6 +325,8 @@ type ViewProps = {
   recipient?: Recipient | null;
   /** تخفیف کد تخفیف سبد (تومان) */
   couponDiscount?: number;
+  placeState?: PlaceOrderState;
+  onPlace?: () => void;
 };
 
 /** نمای خالص صفحه‌ی تسویه. */
@@ -283,6 +338,8 @@ export function CheckoutView({
   onRetry,
   recipient = null,
   couponDiscount = 0,
+  placeState,
+  onPlace,
 }: ViewProps) {
   if (items.length === 0) {
     return (
@@ -334,6 +391,8 @@ export function CheckoutView({
           items={items}
           hasAddress={selectedId !== null}
           couponDiscount={couponDiscount}
+          placeState={placeState}
+          onPlace={onPlace}
         />
       </div>
     </div>
