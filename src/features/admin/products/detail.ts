@@ -1,5 +1,7 @@
 import { rialToToman } from "@/lib/money";
+import { mediaUrl } from "@/lib/media";
 import type { ProductFormInput } from "./form";
+import type { GalleryImage } from "./gallery/gallery";
 import type { ProductStatus } from "./types";
 
 /** GET/POST/PATCH /admin/products (ProductPresenter.adminDetail) */
@@ -26,6 +28,14 @@ export type AdminProductDetailDto = {
   details: { gender: string; material: string | null } | null;
   publishedAt: string | null;
   variants?: AdminVariantDto[];
+  /** تصاویر گالری؛ url آدرس کامل ساخته‌شده‌ی بک‌اند است. */
+  images?: {
+    id: string;
+    fileKey: string;
+    url?: string;
+    altText: string | null;
+    position: number;
+  }[];
 };
 
 export type AdminVariant = {
@@ -51,6 +61,8 @@ export type AdminProductDetail = {
   /** بعد از اولین انتشار slug قفل می‌شود */
   slugLocked: boolean;
   variants: AdminVariant[];
+  /** گالری به ترتیب نمایش؛ اولی تصویر اصلی است. */
+  images: GalleryImage[];
 };
 
 /** ویژگی‌های ترکیب (سایز، رنگ…) به شیء «نام → مقدار رشته‌ای». */
@@ -92,6 +104,13 @@ export function toProductDetail(
     material: d.details?.material ?? "",
     slugLocked: d.publishedAt !== null,
     variants: (d.variants ?? []).map(toVariant),
+    images: [...(d.images ?? [])]
+      .sort((a, b) => a.position - b.position)
+      .map((i) => ({
+        fileKey: i.fileKey,
+        url: i.url || mediaUrl(i.fileKey),
+        altText: i.altText ?? "",
+      })),
   };
 }
 
