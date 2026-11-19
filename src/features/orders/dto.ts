@@ -35,7 +35,7 @@ export type OrderLineDto = {
   externalId?: string | null;
 };
 
-export type OrderDetailDto = OrderSummaryDto & {
+export type OrderDetailDto = Omit<OrderSummaryDto, "recipient" | "userId"> & {
   totals: {
     subtotal: number;
     productDiscountTotal: number;

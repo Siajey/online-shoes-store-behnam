@@ -59,7 +59,7 @@ describe("orders mappers", () => {
   });
 
   it("صفحه‌ی لیست و نشانگر بعدی", () => {
-    const page = toOrderPage({ items: [dto], nextCursor: null });
+    const page = toOrderPage({ items: [{ ...dto, recipient: "علی رضایی" }], nextCursor: null });
     expect(page.items[0]?.total).toBe(1250000);
     expect(page.nextCursor).toBeNull();
   });
