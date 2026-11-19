@@ -39,7 +39,7 @@ export const checkoutCopy = {
   termsPrefix: "با ثبت سفارش، ",
   termsLink: "قوانین و مقررات",
   termsSuffix: " فروشگاه را می‌پذیرید.",
-  placeOrder: "ثبت سفارش و پرداخت",
+  placeOrder: "ثبت سفارش",
   placeOrderSoon: "ثبت سفارش و پرداخت آنلاین هنوز فعال نشده است.",
   needAddress: "برای ادامه، یک آدرس انتخاب کنید.",
 } as const;

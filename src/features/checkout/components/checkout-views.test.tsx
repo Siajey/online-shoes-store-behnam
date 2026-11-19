@@ -93,8 +93,8 @@ describe("CheckoutView", () => {
     const out = html({ status: "ready", items: [addr("1")] }, "1");
     expect(out).toContain("مبلغ قابل پرداخت");
     expect(out).toContain("سود شما از تخفیف");
-    expect(out).toMatch(/<button[^>]*disabled[^>]*>ثبت سفارش و پرداخت/);
-    expect(out).toContain("هنوز فعال نشده است");
+    expect(out).toMatch(/<button[^>]*disabled[^>]*>ثبت سفارش</);
+    expect(out).not.toContain("هنوز فعال نشده است");
   });
   it("تخفیف کد: ردیف تخفیف و جمع کمتر", () => {
     const out = renderToStaticMarkup(
