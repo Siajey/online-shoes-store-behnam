@@ -3,7 +3,23 @@
  * همه‌ی تبدیل‌ها فقط در mappers.ts انجام می‌شود.
  * ☐ واحد قیمت (تومان یا ریال) با همکار بک‌اند تأیید شود؛ فعلاً تومان فرض شده.
  */
-export type ProductImageDto = { fileKey: string; altText: string | null };
+/** url: آدرس کامل تصویر که بک‌اند از روی کلید می‌سازد؛ اگر نبود از کلید و CDN ساخته می‌شود. */
+export type ProductImageDto = { fileKey: string; url?: string; altText: string | null };
+
+export type ProductTagDto = "newest" | "best_seller" | "popular";
+
+/** قیمت‌های اصلی و نهایی (بعد از تخفیف) و برچسب‌ها؛ مبلغ‌ها ریال‌اند. */
+export type ProductMetaDto = {
+  tags: ProductTagDto[];
+  pricing: {
+    minPrice: number | null;
+    maxPrice: number | null;
+    finalMinPrice: number | null;
+    finalMaxPrice: number | null;
+    hasDiscount: boolean;
+    maxDiscountPercent: number;
+  };
+};
 
 export type ProductListItemDto = {
   id: string;
@@ -19,6 +35,8 @@ export type ProductListItemDto = {
   details: { gender?: string; material?: string | null } | null;
   /** گزینه‌های محصول مثل { "رنگ": ["مشکی"] }؛ اگر بک‌اند در لیست بفرستد، رنگ‌ها روی کارت می‌آید. */
   options?: Record<string, string[]>;
+  /** تخفیف واقعی و برچسب‌ها؛ در پاسخ‌های قدیمی‌تر ممکن است نباشد. */
+  meta?: ProductMetaDto;
 };
 
 /** data از GET /products و GET /products/search */

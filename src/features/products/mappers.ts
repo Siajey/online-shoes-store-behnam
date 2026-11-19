@@ -1,7 +1,14 @@
 import { mediaUrl } from "@/lib/media";
+import { toPersianDigits } from "@/lib/format";
 import { rialToToman } from "@/lib/money";
 import { isColorAttribute } from "./colors";
-import type { ProductDetailDto, ProductListItemDto, PublicVariantDto } from "./dto";
+import type {
+  ProductDetailDto,
+  ProductImageDto,
+  ProductListItemDto,
+  ProductTagDto,
+  PublicVariantDto,
+} from "./dto";
 import type { Product, ProductVariant } from "./types";
 
 /** نام فارسی ویژگی‌ها؛ نام ناشناخته همان‌طور که هست نمایش داده می‌شود. */
@@ -43,17 +50,56 @@ function colorsOf(options: Record<string, string[]> | undefined): string[] | und
   return list.length > 0 ? list : undefined;
 }
 
+const TAG_LABELS: Record<ProductTagDto, string> = {
+  best_seller: "پرفروش",
+  popular: "محبوب",
+  newest: "جدید",
+};
+/** اگر چند برچسب داشت، مهم‌ترین نمایش داده می‌شود. */
+const TAG_PRIORITY: readonly ProductTagDto[] = ["best_seller", "popular", "newest"];
+
+const tagOf = (tags: readonly ProductTagDto[] | undefined): string | undefined => {
+  const top = TAG_PRIORITY.find((t) => tags?.includes(t));
+  return top ? TAG_LABELS[top] : undefined;
+};
+
+/** تصویر: آدرس کامل بک‌اند، وگرنه ساخت از کلید و CDN. */
+const imageUrlOf = (image: ProductImageDto | null | undefined): string | undefined =>
+  image?.url || mediaUrl(image?.fileKey);
+
+/**
+ * قیمت نمایشی: اگر بک‌اند قیمت نهایی (بعد از تخفیف) داده، همان است و قیمت اصلی خط‌خورده می‌شود.
+ * درصد تخفیف از همین دو قیمت نمایش‌داده‌شده حساب می‌شود تا با کارت ناسازگار نباشد.
+ */
+function pricingOf(
+  dto: ProductListItemDto,
+): Pick<Product, "price" | "maxPrice" | "originalPrice" | "discountLabel"> {
+  const pricing = dto.meta?.pricing;
+  const base = pricing?.finalMinPrice ?? dto.minPrice;
+  const baseMax = pricing?.finalMaxPrice ?? dto.maxPrice;
+  const price = rialToToman(base ?? 0);
+  const max = baseMax === null || baseMax === undefined ? null : rialToToman(baseMax);
+  const original =
+    pricing?.hasDiscount && pricing.minPrice !== null ? rialToToman(pricing.minPrice) : undefined;
+  const discounted = original !== undefined && original > price;
+  const percent = discounted ? Math.max(1, Math.floor(((original - price) * 100) / original)) : 0;
+  return {
+    price,
+    maxPrice: max !== null && max > price ? max : undefined,
+    originalPrice: discounted ? original : undefined,
+    discountLabel: discounted ? `${toPersianDigits(percent)}٪ تخفیف` : undefined,
+  };
+}
+
 export function toProduct(dto: ProductListItemDto, categories?: CategoryLookup): Product {
   const category = dto.categoryId ? categories?.get(dto.categoryId) : undefined;
-  const min = rialToToman(dto.minPrice ?? 0);
-  const max = dto.maxPrice === null ? null : rialToToman(dto.maxPrice);
   return {
     id: dto.id,
     slug: dto.slug,
     name: dto.name,
-    price: min,
-    maxPrice: max !== null && max > min ? max : undefined,
-    imageUrl: mediaUrl(dto.primaryImage?.fileKey),
+    ...pricingOf(dto),
+    tag: tagOf(dto.meta?.tags),
+    imageUrl: imageUrlOf(dto.primaryImage),
     available: dto.inStock && dto.minPrice !== null,
     colors: colorsOf(dto.options),
     categoryName: category?.name,
@@ -84,7 +130,7 @@ function specsOf(dto: ProductListItemDto, categoryName?: string): Product["specs
 /** جزئیات محصول: همان آیتم لیست + توضیحات، گالری و ترکیب‌های سایز/رنگ. */
 export function toProductDetail(dto: ProductDetailDto, categories?: CategoryLookup): Product {
   const base = toProduct(dto, categories);
-  const images = dto.images.map((i) => mediaUrl(i.fileKey)).filter((u): u is string => Boolean(u));
+  const images = dto.images.map(imageUrlOf).filter((u): u is string => Boolean(u));
   return {
     ...base,
     description: dto.description || undefined,

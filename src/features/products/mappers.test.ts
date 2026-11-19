@@ -77,26 +77,59 @@ describe("toProductDetail", () => {
   });
 });
 
-describe("ویژگی‌های عددی ترکیب", () => {
-  it("مقدار عددی (سایز) را به رشته تبدیل می‌کند", () => {
-    const dto = {
-      id: "p1",
-      type: "shoe",
-      name: "کفش",
-      slug: "shoe",
-      categoryId: null,
-      brandId: null,
-      primaryImage: null,
-      minPrice: 10,
-      maxPrice: 10,
-      inStock: true,
-      details: null,
-      description: "",
-      images: [],
-      options: {},
-      variants: [{ id: "v1", price: 10, isAvailable: true, attributes: { size: 42 } }],
-    };
-    const product = toProductDetail(dto as never);
-    expect(product.variants?.[0].options["سایز"]).toBe("42");
+describe("toProduct با meta بک‌اند (تخفیف و برچسب)", () => {
+  const meta = (over: Record<string, unknown> = {}) => ({
+    tags: ["newest"] as ("newest" | "best_seller" | "popular")[],
+    pricing: {
+      minPrice: 1_000_000,
+      maxPrice: 1_000_000,
+      finalMinPrice: 800_000,
+      finalMaxPrice: 800_000,
+      hasDiscount: true,
+      maxDiscountPercent: 20,
+      ...over,
+    },
+  });
+
+  it("قیمت نهایی، قیمت اصلی خط‌خورده و درصد تخفیف", () => {
+    const p = toProduct({ ...items[0], meta: meta() });
+    expect(p.price).toBe(80_000);
+    expect(p.originalPrice).toBe(100_000);
+    expect(p.discountLabel).toBe("۲۰٪ تخفیف");
+  });
+  it("بدون تخفیف: قیمت اصلی و برچسب تخفیف نیست", () => {
+    const p = toProduct({
+      ...items[0],
+      meta: meta({ finalMinPrice: 1_000_000, finalMaxPrice: 1_000_000, hasDiscount: false }),
+    });
+    expect(p.originalPrice).toBeUndefined();
+    expect(p.discountLabel).toBeUndefined();
+  });
+  it("مهم‌ترین برچسب: پرفروش > محبوب > جدید", () => {
+    expect(
+      toProduct({ ...items[0], meta: { ...meta(), tags: ["newest", "best_seller"] } }).tag,
+    ).toBe("پرفروش");
+    expect(toProduct({ ...items[0], meta: { ...meta(), tags: ["newest", "popular"] } }).tag).toBe(
+      "محبوب",
+    );
+    expect(toProduct({ ...items[0], meta: meta() }).tag).toBe("جدید");
+    expect(toProduct({ ...items[0], meta: { ...meta(), tags: [] } }).tag).toBeUndefined();
+  });
+  it("بدون meta همان قیمت پایه (سازگار با پاسخ قدیمی)", () => {
+    const p = toProduct(items[0]);
+    expect(p.price).toBe(360_000);
+    expect(p.originalPrice).toBeUndefined();
+    expect(p.tag).toBeUndefined();
+  });
+  it("آدرس کامل تصویر از بک‌اند اولویت دارد", () => {
+    const p = toProduct({
+      ...items[0],
+      primaryImage: {
+        fileKey: "products/a.webp",
+        url: "https://img.test/products/a.webp",
+        altText: null,
+      },
+    });
+    expect(p.imageUrl).toBe("https://img.test/products/a.webp");
   });
 });

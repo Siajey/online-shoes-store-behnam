@@ -19,6 +19,7 @@ import {
 } from "../form";
 import { productFormCopy as t } from "../form-copy";
 import type { StatusAction } from "../types";
+import { GalleryManager } from "./gallery-manager";
 import { ProductFormView, VariantsReadOnly } from "./product-form-view";
 
 type Load =
@@ -149,29 +150,34 @@ export function ProductFormContent({ productId }: { productId?: string }) {
   }
 
   return (
-    <ProductFormView
-      mode={product ? "edit" : "create"}
-      values={values}
-      errors={errors}
-      slugLocked={slugLocked}
-      categories={categoryOptions}
-      brands={brandOptions}
-      pending={pending}
-      formError={formError}
-      notice={notice}
-      publish={
-        product
-          ? {
-              status: product.status,
-              busy: statusBusy,
-              error: statusError,
-              onAction: (a) => void changeStatus(a),
-            }
-          : undefined
-      }
-      variants={product ? <VariantsReadOnly variants={product.variants} /> : undefined}
-      onChange={setValues}
-      onSubmit={() => void submit()}
-    />
+    <div className="flex flex-col gap-6">
+      <ProductFormView
+        mode={product ? "edit" : "create"}
+        values={values}
+        errors={errors}
+        slugLocked={slugLocked}
+        categories={categoryOptions}
+        brands={brandOptions}
+        pending={pending}
+        formError={formError}
+        notice={notice}
+        publish={
+          product
+            ? {
+                status: product.status,
+                busy: statusBusy,
+                error: statusError,
+                onAction: (a) => void changeStatus(a),
+              }
+            : undefined
+        }
+        variants={product ? <VariantsReadOnly variants={product.variants} /> : undefined}
+        onChange={setValues}
+        onSubmit={() => void submit()}
+      />
+      {product && (
+        <GalleryManager key={product.id} productId={product.id} initial={product.images} />
+      )}
+    </div>
   );
 }
