@@ -14,6 +14,8 @@ export function adminTitle(pathname: string | null): string {
   if (pathname === "/admin/coupons/new") return adminCopy.titles.couponNew;
   if (pathname.startsWith("/admin/coupons/")) return adminCopy.titles.couponEdit;
   if (pathname.startsWith("/admin/coupons")) return adminCopy.nav.coupons;
+  if (pathname.startsWith("/admin/orders/")) return adminCopy.titles.orderDetail;
+  if (pathname.startsWith("/admin/orders")) return adminCopy.nav.orders;
   if (pathname.startsWith("/admin/users")) return adminCopy.nav.users;
   return adminCopy.title;
 }

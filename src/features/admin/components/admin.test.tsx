@@ -52,7 +52,7 @@ describe("AdminNavView", () => {
   it("لینک بازگشت به فروشگاه دارد و هر آیتم آیکن دارد", () => {
     const out = renderToStaticMarkup(<AdminNavView pathname="/admin/users" />);
     expect(out).toMatch(/<a[^>]*href="\/"[^>]*>.*بازگشت به فروشگاه/);
-    expect(out.match(/<svg/g)?.length).toBe(7);
+    expect(out.match(/<svg/g)?.length).toBe(8);
   });
 
   it("فقط از ویژگی‌های منطقی استفاده می‌کند", () => {

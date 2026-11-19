@@ -92,3 +92,11 @@ export const TicketIcon = (props: IconProps) => (
     <path d="M14 6v12" strokeDasharray="2 2.5" />
   </Icon>
 );
+
+/** سفارش‌ها */
+export const ReceiptIcon = (props: IconProps) => (
+  <Icon {...props}>
+    <path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z" />
+    <path d="M9 8h6M9 12h6" />
+  </Icon>
+);

@@ -10,6 +10,7 @@ import {
   BoxIcon,
   ExitIcon,
   PercentIcon,
+  ReceiptIcon,
   TagIcon,
   TicketIcon,
   UsersIcon,
@@ -27,6 +28,7 @@ const ITEMS: readonly Item[] = [
   { href: "/admin/brands", label: adminCopy.nav.brands, Icon: BadgeIcon },
   { href: "/admin/discounts", label: adminCopy.nav.discounts, Icon: PercentIcon },
   { href: "/admin/coupons", label: adminCopy.nav.coupons, Icon: TicketIcon },
+  { href: "/admin/orders", label: adminCopy.nav.orders, Icon: ReceiptIcon },
   { href: "/admin/users", label: adminCopy.nav.users, Icon: UsersIcon },
 ];
 

@@ -17,6 +17,7 @@ export const adminCopy = {
     discountEdit: "ویرایش تخفیف",
     couponNew: "کوپن جدید",
     couponEdit: "ویرایش کوپن",
+    orderDetail: "جزئیات سفارش",
   },
   nav: {
     products: "محصولات",
@@ -24,6 +25,7 @@ export const adminCopy = {
     brands: "برندها",
     discounts: "تخفیف‌ها",
     coupons: "کوپن‌ها",
+    orders: "سفارش‌ها",
     users: "کاربران",
   },
 } as const;
