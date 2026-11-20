@@ -11,7 +11,12 @@ import {
   setAlt,
   type GalleryImage,
 } from "../gallery/gallery";
-import { saveGallery, uploadGalleryImage } from "../gallery/gallery-api";
+import {
+  MissingUploadFieldsError,
+  saveGallery,
+  StorageUploadError,
+  uploadGalleryImage,
+} from "../gallery/gallery-api";
 import { galleryCopy as t } from "../gallery/gallery-copy";
 import { GalleryView } from "./gallery-view";
 
@@ -54,7 +59,17 @@ export function GalleryManager({
     try {
       for (const file of accepted) added.push(await uploadGalleryImage(file));
     } catch (e) {
-      setError(isApiRequestError(e) ? e.message : t.uploadError);
+      setError(
+        e instanceof MissingUploadFieldsError
+          ? t.uploadNoFields
+          : e instanceof StorageUploadError
+            ? e.status === 0
+              ? t.uploadBlocked
+              : t.uploadRejected(e.status)
+            : isApiRequestError(e)
+              ? e.message
+              : t.uploadError,
+      );
     } finally {
       if (added.length > 0) {
         setImages((current) => [...current, ...added]);
