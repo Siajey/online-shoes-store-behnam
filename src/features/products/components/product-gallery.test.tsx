@@ -20,9 +20,23 @@ describe("ProductGallery", () => {
     expect(out).toContain('aria-pressed="true"');
     expect(out).toContain("نمایش تصویر ۲");
   });
-  it("حداکثر ۵ تصویر کوچک", () => {
-    const many = Array.from({ length: 9 }, (_, i) => `https://x/${i}.jpg`);
+  it("۸ تصویر: همه‌ی تصویرهای کوچک، فلش‌ها و شمارنده", () => {
+    const eight = Array.from({ length: 8 }, (_, i) => `https://x/${i}.jpg`);
+    const out = renderToStaticMarkup(<ProductGallery images={eight} name="کفش" />);
+    expect(out.match(/aria-pressed/g)).toHaveLength(8);
+    expect(out).toContain('aria-label="تصویر قبلی"');
+    expect(out).toContain('aria-label="تصویر بعدی"');
+    expect(out).toContain("۱ / ۸");
+  });
+  it("سقف ۱۲ تصویر مثل بک‌اند", () => {
+    const many = Array.from({ length: 15 }, (_, i) => `https://x/${i}.jpg`);
     const out = renderToStaticMarkup(<ProductGallery images={many} name="کفش" />);
-    expect(out.match(/aria-pressed/g)).toHaveLength(5);
+    expect(out.match(/aria-pressed/g)).toHaveLength(12);
+    expect(out).toContain("۱ / ۱۲");
+  });
+  it("یک تصویر: بدون فلش و شمارنده", () => {
+    const out = renderToStaticMarkup(<ProductGallery images={["https://x/a.jpg"]} name="کفش" />);
+    expect(out).not.toContain("تصویر بعدی");
+    expect(out).not.toContain(" / ");
   });
 });
