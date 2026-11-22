@@ -24,7 +24,7 @@ export function toCartItem(line: CartLineDto): CartItem {
     name: product?.name ?? REMOVED_PRODUCT_NAME,
     price,
     originalPrice: original > price ? original : undefined,
-    imageUrl: mediaUrl(product?.imageKey),
+    imageUrl: product?.imageUrl || mediaUrl(product?.imageKey),
     quantity: line.quantity,
     productId: product?.id,
     variantId: line.variantId,

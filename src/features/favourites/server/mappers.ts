@@ -13,7 +13,7 @@ export function toFavouriteProduct(dto: FavoriteItemDto): Product {
     name: dto.name,
     price: min,
     maxPrice: max !== null && max > min ? max : undefined,
-    imageUrl: mediaUrl(dto.imageKey),
+    imageUrl: dto.imageUrl || mediaUrl(dto.imageKey),
     available: dto.inStock && dto.minPrice !== null,
   };
 }

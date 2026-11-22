@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { buttonVariants } from "@/components/ui/button";
 import { PlusIcon } from "@/features/admin/components/admin-icons";
+import { RefreshPanel } from "@/features/admin/insights/components/refresh-panel";
 import { isApiRequestError } from "@/lib/api/errors";
 import { changeProductStatus, fetchAdminProducts } from "../api";
 import { adminProductsCopy as t } from "../copy";
@@ -107,6 +108,7 @@ export function AdminProductsContent() {
           {t.create}
         </Link>
       </div>
+      <RefreshPanel onRefreshed={restart} />
       <FilterBar
         status={status}
         onStatus={changeStatus}

@@ -10,7 +10,13 @@ export type CartLineDto = {
   /** کمینه‌ی موجودی و سقف هر ردیف؛ برای ترکیب حذف‌شده ۰ است. */
   maxQuantity: number;
   /** برای ترکیبی که از سیستم حذف شده null است. */
-  product: { id: string; name: string; slug: string; imageKey: string | null } | null;
+  product: {
+    id: string;
+    name: string;
+    slug: string;
+    imageKey: string | null;
+    imageUrl?: string | null;
+  } | null;
   attributes: { name: string; value: string | number }[];
   originalUnitPrice: number | null;
   unitPrice: number | null;
