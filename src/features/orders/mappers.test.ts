@@ -68,4 +68,15 @@ describe("orders mappers", () => {
     expect(canCancel("pending_payment")).toBe(true);
     expect(canCancel("paid")).toBe(false);
   });
+
+  it("imageUrl سرور بر ساخت از کلید اولویت دارد", () => {
+    const withUrl: OrderDetailDto = {
+      ...dto,
+      previewImageUrl: "https://img.test/p.webp",
+      lines: [{ ...dto.lines[0], imageUrl: "https://img.test/l.webp" }],
+    };
+    const d = toOrderDetail(withUrl);
+    expect(d.imageUrl).toBe("https://img.test/p.webp");
+    expect(d.lines[0].imageUrl).toBe("https://img.test/l.webp");
+  });
 });

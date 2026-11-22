@@ -4,6 +4,7 @@ export type FavoriteItemDto = {
   name: string;
   slug: string;
   imageKey: string | null;
+  imageUrl?: string | null;
   minPrice: number | null;
   maxPrice: number | null;
   inStock: boolean;

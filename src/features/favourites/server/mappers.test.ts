@@ -31,4 +31,8 @@ describe("toFavouriteProduct", () => {
   it("بیشینه‌ی برابر با کمینه نمایش داده نمی‌شود", () => {
     expect(toFavouriteProduct({ ...dto, maxPrice: dto.minPrice }).maxPrice).toBeUndefined();
   });
+  it("imageUrl سرور استفاده می‌شود", () => {
+    const p = toFavouriteProduct({ ...dto, imageUrl: "https://img.test/a.webp" });
+    expect(p.imageUrl).toBe("https://img.test/a.webp");
+  });
 });

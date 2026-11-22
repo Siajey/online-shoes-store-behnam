@@ -10,6 +10,7 @@ export type OrderSummaryDto = {
   total: number;
   currency: string;
   previewImageKey: string | null;
+  previewImageUrl?: string | null;
   createdAt: string;
   paidAt: string | null;
   /** فقط در لیست ادمین */
@@ -23,6 +24,7 @@ export type OrderLineDto = {
   productName: string;
   productSlug: string;
   imageKey: string | null;
+  imageUrl?: string | null;
   attributes: { name: string; value: string | number }[];
   quantity: number;
   originalUnitPrice: number;
