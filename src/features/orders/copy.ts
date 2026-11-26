@@ -48,6 +48,10 @@ export const ordersCopy = {
   timelineTitle: "تاریخچه‌ی سفارش",
   payNow: "پرداخت سفارش",
   paySoon: "پرداخت آنلاین هنوز فعال نشده است.",
+  payRedirecting: "در حال انتقال به درگاه…",
+  cannotPay: "این سفارش در حال حاضر قابل پرداخت نیست.",
+  payFailedNotice:
+    "سفارش ثبت شد، اما اتصال به درگاه برقرار نشد. برای پرداخت دوباره دکمه‌ی پرداخت را بزنید.",
   payWindow: (when: string) => `مهلت پرداخت تا ${when}`,
   cancel: "لغو سفارش",
   cancelConfirm: "سفارش لغو شود؟ این کار قابل بازگشت نیست.",
@@ -62,6 +66,7 @@ export const ordersCopy = {
   },
   checkout: {
     placing: "در حال ثبت سفارش…",
+    redirecting: "در حال انتقال به درگاه…",
     priceChangedTitle: "مبلغ سفارش تغییر کرد",
     confirmAgain: "مبلغ جدید را می‌پذیرم، ثبت سفارش",
     couponInvalid: "کد تخفیف دیگر معتبر نیست. سبد را بررسی کنید.",

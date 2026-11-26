@@ -1,13 +1,17 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { beginPayment } from "@/features/payments/api";
 import { placeOrder } from "./api";
 import { classifyPlaceOrderError, needsFreshKey, type PlaceOrderFailure } from "./errors";
 import { newIdempotencyKey } from "./idempotency";
 
 export type PlaceOrderState =
-  { status: "idle" } | { status: "placing" } | { status: "failed"; failure: PlaceOrderFailure };
+  | { status: "idle" }
+  | { status: "placing" }
+  | { status: "redirecting" }
+  | { status: "failed"; failure: PlaceOrderFailure };
 
 /**
  * ثبت سفارش از تسویه. کلید idempotency بین تلاش‌های دوباره‌ی «همان درخواست» (مثلاً قطع شبکه)
@@ -18,6 +22,17 @@ export function usePlaceOrder() {
   const [state, setState] = useState<PlaceOrderState>({ status: "idle" });
   const keyRef = useRef<{ key: string; addressId: string } | null>(null);
   const busy = useRef(false);
+  const placedId = useRef<string | null>(null);
+
+  // برگشت با دکمه‌ی back از درگاه: سفارش ساخته شده؛ کاربر را به صفحه‌ی سفارش ببر که دکمه‌ی پرداخت دارد.
+  useEffect(() => {
+    const onShow = (e: PageTransitionEvent) => {
+      if (e.persisted && placedId.current)
+        router.replace(`/account/orders/${placedId.current}?placed=1`);
+    };
+    window.addEventListener("pageshow", onShow);
+    return () => window.removeEventListener("pageshow", onShow);
+  }, [router]);
 
   const place = useCallback(
     async (addressId: string, expectedTotal?: number) => {
@@ -34,7 +49,17 @@ export function usePlaceOrder() {
           expectedTotal,
         });
         keyRef.current = null;
-        router.push(`/account/orders/${order.id}?placed=1`);
+        placedId.current = order.id;
+        setState({ status: "redirecting" });
+        try {
+          await beginPayment(order.id);
+          // مرورگر به درگاه می‌رود؛ حالت «redirecting» می‌ماند.
+          return;
+        } catch {
+          // سفارش ساخته شده؛ پرداخت را از صفحه‌ی سفارش دوباره امتحان می‌کند.
+          router.push(`/account/orders/${order.id}?placed=1&pay=failed`);
+          return;
+        }
       } catch (e) {
         const failure = classifyPlaceOrderError(e);
         if (needsFreshKey(failure)) keyRef.current = null;
