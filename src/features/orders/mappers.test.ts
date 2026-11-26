@@ -48,11 +48,11 @@ const dto: OrderDetailDto = {
 };
 
 describe("orders mappers", () => {
-  it("مبلغ‌ها را از ریال به تومان برمی‌گرداند", () => {
+  it("مبلغ‌ها را بدون تبدیل نگه می‌دارد (تومان)", () => {
     const o = toOrderDetail(dto);
-    expect(o.total).toBe(1250000);
-    expect(o.totals.shippingFee).toBe(50000);
-    expect(o.lines[0]?.unitPrice).toBe(650000);
+    expect(o.total).toBe(12500000);
+    expect(o.totals.shippingFee).toBe(500000);
+    expect(o.lines[0]?.unitPrice).toBe(6500000);
     expect(o.lines[0]?.variantLabel).toBe("مشکی · 42");
     expect(o.couponCode).toBe("WELCOME");
     expect(o.recipient.name).toBe("علی رضایی");
@@ -60,7 +60,7 @@ describe("orders mappers", () => {
 
   it("صفحه‌ی لیست و نشانگر بعدی", () => {
     const page = toOrderPage({ items: [{ ...dto, recipient: "علی رضایی" }], nextCursor: null });
-    expect(page.items[0]?.total).toBe(1250000);
+    expect(page.items[0]?.total).toBe(12500000);
     expect(page.nextCursor).toBeNull();
   });
 

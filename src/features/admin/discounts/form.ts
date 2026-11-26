@@ -1,5 +1,4 @@
 import { toEnglishDigits } from "@/lib/format";
-import { tomanToRial } from "@/lib/money";
 import type {
   AdminCoupon,
   AdminDiscount,
@@ -120,7 +119,7 @@ function scopeOf(raw: OfferFormInput): { scope?: DiscountScope; error?: OfferErr
 type Options = { editing?: boolean };
 
 /**
- * فرم را بررسی می‌کند و بدنه‌ی درخواست (به ریال) می‌سازد.
+ * فرم را بررسی می‌کند و بدنه‌ی درخواست (مبالغ به تومان) می‌سازد.
  * در ویرایش کوپن، code فرستاده نمی‌شود (بک‌اند نمی‌پذیرد).
  */
 export function validateOffer(
@@ -171,12 +170,11 @@ export function validateOffer(
 
   if (Object.keys(errors).length > 0 || !scope) return { ok: false, errors };
 
-  const rial = (n: number | null | "bad") => (typeof n === "number" ? tomanToRial(n) : null);
-  const amount = raw.kind === "fixed" ? tomanToRial(value as number) : (value as number);
+  const num = (n: number | null | "bad") => (typeof n === "number" ? n : null);
   const common = {
     name,
     kind: raw.kind,
-    value: amount,
+    value: value as number,
     scope,
     startsAt: startsAt as string | null,
     endsAt: endsAt as string | null,
@@ -184,15 +182,15 @@ export function validateOffer(
   };
 
   if (offer === "discount") {
-    return { ok: true, payload: { ...common, maxDiscountPerUnit: rial(cap) } };
+    return { ok: true, payload: { ...common, maxDiscountPerUnit: num(cap) } };
   }
   return {
     ok: true,
     payload: {
       ...(editing ? {} : { code }),
       ...common,
-      maxDiscount: rial(cap),
-      minOrderAmount: rial(minOrder),
+      maxDiscount: num(cap),
+      minOrderAmount: num(minOrder),
       applyToDiscountedItems: raw.applyToDiscounted,
       usageLimitTotal: usageTotal as number | null,
       usageLimitPerUser: usagePerUser as number | null,

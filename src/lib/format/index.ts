@@ -15,7 +15,7 @@ export function toEnglishDigits(value: string): string {
 /**
  * قیمت را با جداکننده‌ی هزارگان و ارقام فارسی نشان می‌دهد.
  * فرض فعلی: API قیمت را به «تومان» و عدد صحیح می‌دهد (تصمیم D-011 باید با همکار نهایی شود).
- * اگر واحد API ریال شد، فقط همین تابع تغییر می‌کند.
+ * واحد همه‌ی مبلغ‌ها تومان است.
  */
 export function formatPrice(amount: number, opts: { unit?: string | false } = {}): string {
   const { unit = "تومان" } = opts;

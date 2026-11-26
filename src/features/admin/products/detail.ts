@@ -1,4 +1,3 @@
-import { rialToToman } from "@/lib/money";
 import { mediaUrl } from "@/lib/media";
 import type { ProductFormInput } from "./form";
 import type { GalleryImage } from "./gallery/gallery";
@@ -81,7 +80,7 @@ export function toVariant(d: AdminVariantDto): AdminVariant {
     id: d.id,
     title: d.title?.trim() || d.sku || "بدون عنوان",
     sku: d.sku ?? undefined,
-    price: rialToToman(d.price),
+    price: d.price,
     stock: d.stock,
     isActive: d.isActive,
     attributes: normalizeAttributes(d.attributes),

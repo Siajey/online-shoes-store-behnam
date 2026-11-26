@@ -8,7 +8,7 @@ export const toPaymentStatus = (raw: string): PaymentStatus =>
 
 export const isTerminal = (s: PaymentStatus): boolean =>
   s === "paid" || s === "failed" || s === "expired";
-
+/** مبلغ به تومان. */
 /** مبلغ به تومان (بک‌اند پرداخت تومان می‌دهد؛ تبدیل ریال/تومان سفارش‌ها اینجا اعمال نمی‌شود). */
 export type PaymentInfo = {
   id: string;

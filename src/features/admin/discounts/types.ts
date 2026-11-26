@@ -6,7 +6,7 @@ export type ScopeType = (typeof SCOPE_TYPES)[number];
 
 export type DiscountScope = { type: ScopeType; targetIds: string[] };
 
-/** مبالغ این مدل‌ها «تومان» هستند (تبدیل از ریال در mapper). value برای نوع percent درصد است. */
+/** مبالغ این مدل‌ها «تومان» هستند. value برای نوع percent درصد است. */
 export type AdminDiscount = {
   id: string;
   name: string;

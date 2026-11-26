@@ -34,10 +34,10 @@ describe("validateOffer: تخفیف", () => {
         isActive: true,
       });
   });
-  it("مبلغ ثابت و سقف به ریال می‌رود؛ ارقام فارسی و جداکننده پذیرفته", () => {
+  it("مبلغ ثابت و سقف بدون تبدیل (تومان)؛ ارقام فارسی و جداکننده پذیرفته", () => {
     const r = validateOffer(form({ kind: "fixed", value: "۱۰۰٬۰۰۰", cap: "50,000" }), "discount");
     expect(r.ok).toBe(true);
-    if (r.ok) expect(r.payload).toMatchObject({ value: 1_000_000, maxDiscountPerUnit: 500_000 });
+    if (r.ok) expect(r.payload).toMatchObject({ value: 100_000, maxDiscountPerUnit: 50_000 });
   });
   it("نام خالی، مقدار خالی یا نامعتبر", () => {
     const r = validateOffer(form({ name: " ", value: "" }), "discount");
@@ -132,7 +132,7 @@ describe("validateOffer: کوپن", () => {
     if (r.ok)
       expect(r.payload).toMatchObject({
         code: "SUMMER20",
-        minOrderAmount: 10_000,
+        minOrderAmount: 1_000,
         usageLimitTotal: 1000,
         usageLimitPerUser: 2,
         applyToDiscountedItems: true,

@@ -1,4 +1,3 @@
-import { rialToToman } from "@/lib/money";
 import type { AdminProductDto } from "./dto";
 import { PRODUCT_STATUSES, type AdminProduct, type ProductStatus } from "./types";
 
@@ -15,8 +14,8 @@ export function toAdminProduct(dto: AdminProductDto): AdminProduct {
     slug: dto.slug,
     status: toStatus(dto.status),
     imageKey: dto.primaryImage?.fileKey,
-    minPrice: dto.minPrice === null ? null : rialToToman(dto.minPrice),
-    maxPrice: dto.maxPrice === null ? null : rialToToman(dto.maxPrice),
+    minPrice: dto.minPrice,
+    maxPrice: dto.maxPrice,
     inStock: dto.inStock,
     variantCount: dto.variantCount,
     activeVariantCount: dto.activeVariantCount,

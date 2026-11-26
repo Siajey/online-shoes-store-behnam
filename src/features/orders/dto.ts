@@ -1,4 +1,4 @@
-/** شکل پاسخ API سفارش بک‌اند (مبلغ‌ها به ریال). فقط mapper این‌ها را می‌خواند. */
+/** شکل پاسخ API سفارش بک‌اند (مبلغ‌ها به تومان). فقط mapper این‌ها را می‌خواند. */
 export type OrderStatusDto =
   "pending_payment" | "paid" | "processing" | "shipped" | "delivered" | "cancelled" | "expired";
 

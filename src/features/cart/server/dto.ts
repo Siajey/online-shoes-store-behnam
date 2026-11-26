@@ -1,4 +1,4 @@
-/** شکل پاسخ API سبد بک‌اند (قیمت‌ها به ریال). فقط mapper این‌ها را می‌خواند. */
+/** شکل پاسخ API سبد بک‌اند (قیمت‌ها به تومان). فقط mapper این‌ها را می‌خواند. */
 export type CartUnavailableReasonDto =
   "variantUnavailable" | "productUnavailable" | "outOfStock" | "insufficientStock";
 
@@ -15,6 +15,7 @@ export type CartLineDto = {
     name: string;
     slug: string;
     imageKey: string | null;
+    /** آدرس کامل تصویر؛ اگر بک‌اند بفرستد بر ساخت از کلید اولویت دارد. */
     imageUrl?: string | null;
   } | null;
   attributes: { name: string; value: string | number }[];

@@ -1,14 +1,13 @@
 /**
  * شکل پاسخ ماژول محصول بک‌اند (milestone-2-endpoints.md). قیمت‌ها عدد صحیح‌اند.
  * همه‌ی تبدیل‌ها فقط در mappers.ts انجام می‌شود.
- * ☐ واحد قیمت (تومان یا ریال) با همکار بک‌اند تأیید شود؛ فعلاً تومان فرض شده.
  */
 /** url: آدرس کامل تصویر که بک‌اند از روی کلید می‌سازد؛ اگر نبود از کلید و CDN ساخته می‌شود. */
 export type ProductImageDto = { fileKey: string; url?: string; altText: string | null };
 
 export type ProductTagDto = "newest" | "best_seller" | "popular";
 
-/** قیمت‌های اصلی و نهایی (بعد از تخفیف) و برچسب‌ها؛ مبلغ‌ها ریال‌اند. */
+/** قیمت‌های اصلی و نهایی (بعد از تخفیف) و برچسب‌ها؛ مبلغ‌ها تومان‌اند. */
 export type ProductMetaDto = {
   tags: ProductTagDto[];
   pricing: {
@@ -58,7 +57,7 @@ export type ProductDetailDto = ProductListItemDto & {
   variants: PublicVariantDto[];
 };
 
-/** data از GET /products/filters؛ قیمت‌ها ریال‌اند. */
+/** data از GET /products/filters؛ قیمت‌ها تومان‌اند. */
 export type CatalogFiltersDto = {
   categories?: { id: string; name: string; slug: string; count: number }[];
   brands?: { id: string; name: string; slug: string; count: number }[];

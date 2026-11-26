@@ -24,11 +24,11 @@ const discount = {
 };
 
 describe("discountsApi", () => {
-  it("فهرست: پارامترها و تبدیل ریال به تومان", async () => {
+  it("فهرست: پارامترها (مبلغ‌ها تومان)", async () => {
     vi.mocked(api.get).mockResolvedValue(ok({ items: [discount], nextCursor: "n" }) as never);
     const page = await discountsApi.list({ isActive: true }, { cursor: "c", limit: 20 });
     expect(page.nextCursor).toBe("n");
-    expect(page.items[0].value).toBe(100_000);
+    expect(page.items[0].value).toBe(1_000_000);
     const [path, opts] = vi.mocked(api.get).mock.calls[0] as unknown as [
       string,
       { query: Record<string, unknown> },
@@ -79,7 +79,7 @@ describe("couponsApi و آمار", () => {
       ok({ reserved: 1, committed: 2, released: 3, totalDiscount: 10_000 }) as never,
     );
     const usage = await fetchCouponUsage("c1");
-    expect(usage.totalDiscount).toBe(1000);
+    expect(usage.totalDiscount).toBe(10_000);
     expect(vi.mocked(api.get).mock.calls[0][0]).toBe("/admin/coupons/c1/usage");
   });
 });

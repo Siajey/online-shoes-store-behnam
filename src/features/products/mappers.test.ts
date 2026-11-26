@@ -14,9 +14,9 @@ describe("toProduct (شکل ماژول محصول بک‌اند)", () => {
     expect(items.map((i) => toProduct(i))).toHaveLength(6);
   });
   it("قیمت پایه = کمترین قیمت و بیشینه فقط وقتی فرق دارد", () => {
-    expect(toProduct(items[0]).price).toBe(360_000);
+    expect(toProduct(items[0]).price).toBe(3_600_000);
     expect(toProduct(items[0]).maxPrice).toBeUndefined();
-    expect(toProduct(items[4]).maxPrice).toBe(310_000);
+    expect(toProduct(items[4]).maxPrice).toBe(3_100_000);
   });
   it("تصویر از کلید و آدرس CDN", () => {
     expect(toProduct(items[0]).imageUrl).toBe(
@@ -93,8 +93,8 @@ describe("toProduct با meta بک‌اند (تخفیف و برچسب)", () => {
 
   it("قیمت نهایی، قیمت اصلی خط‌خورده و درصد تخفیف", () => {
     const p = toProduct({ ...items[0], meta: meta() });
-    expect(p.price).toBe(80_000);
-    expect(p.originalPrice).toBe(100_000);
+    expect(p.price).toBe(800_000);
+    expect(p.originalPrice).toBe(1_000_000);
     expect(p.discountLabel).toBe("۲۰٪ تخفیف");
   });
   it("بدون تخفیف: قیمت اصلی و برچسب تخفیف نیست", () => {
@@ -117,7 +117,7 @@ describe("toProduct با meta بک‌اند (تخفیف و برچسب)", () => {
   });
   it("بدون meta همان قیمت پایه (سازگار با پاسخ قدیمی)", () => {
     const p = toProduct(items[0]);
-    expect(p.price).toBe(360_000);
+    expect(p.price).toBe(3_600_000);
     expect(p.originalPrice).toBeUndefined();
     expect(p.tag).toBeUndefined();
   });

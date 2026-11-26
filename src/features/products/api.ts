@@ -7,7 +7,6 @@ import { COLOR_ATTRIBUTE, SIZE_ATTRIBUTE, isColorAttribute, isSizeAttribute } fr
 import { attributesParam, type ProductSort } from "./filters";
 import { toProduct, toProductDetail, type CategoryLookup } from "./mappers";
 import type { CatalogFacets, Product } from "./types";
-import { rialToToman, tomanToRial } from "@/lib/money";
 
 export type ProductListParams = {
   cursor?: string;
@@ -80,8 +79,8 @@ export async function fetchProducts(
       nextCursor: params.cursor,
       categoryId,
       sort: params.sort ? SORT_PARAM[params.sort] : DEFAULT_SORT,
-      minPrice: params.minPrice === undefined ? undefined : tomanToRial(params.minPrice),
-      maxPrice: params.maxPrice === undefined ? undefined : tomanToRial(params.maxPrice),
+      minPrice: params.minPrice,
+      maxPrice: params.maxPrice,
       inStock: params.inStock ? true : undefined,
       brandId: params.brandId,
       attributes: attributesParam({
@@ -133,7 +132,7 @@ export async function fetchCatalogFacets(
   const range = res.data.priceRange;
   return {
     brands: res.data.brands ?? [],
-    priceRange: range ? { min: rialToToman(range.min), max: rialToToman(range.max) } : null,
+    priceRange: range ? { min: range.min, max: range.max } : null,
     colorAttribute: color?.name ?? COLOR_ATTRIBUTE,
     colors: color?.values ?? [],
     sizeAttribute: size?.name ?? SIZE_ATTRIBUTE,

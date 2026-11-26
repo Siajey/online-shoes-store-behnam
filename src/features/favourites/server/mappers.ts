@@ -1,12 +1,11 @@
 import type { Product } from "@/features/products/types";
 import { mediaUrl } from "@/lib/media";
-import { rialToToman } from "@/lib/money";
 import type { FavoriteItemDto } from "./dto";
 
 /** یک علاقه‌مندی سرور به مدل محصول فرانت. قیمت می‌تواند null باشد؛ آن‌وقت ناموجود حساب می‌شود. */
 export function toFavouriteProduct(dto: FavoriteItemDto): Product {
-  const min = rialToToman(dto.minPrice ?? 0);
-  const max = dto.maxPrice === null ? null : rialToToman(dto.maxPrice);
+  const min = dto.minPrice ?? 0;
+  const max = dto.maxPrice;
   return {
     id: dto.productId,
     slug: dto.slug,

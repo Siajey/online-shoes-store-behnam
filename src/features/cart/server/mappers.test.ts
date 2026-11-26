@@ -20,15 +20,15 @@ const line = (over: Partial<CartLineDto> = {}): CartLineDto => ({
 });
 
 describe("toCartItem", () => {
-  it("ریال را به تومان و ویژگی‌ها را به برچسب فارسی تبدیل می‌کند", () => {
+  it("قیمت تومان را نگه می‌دارد و ویژگی‌ها را به برچسب فارسی تبدیل می‌کند", () => {
     expect(toCartItem(line())).toMatchObject({
       id: "p1:v1",
       productId: "p1",
       variantId: "v1",
       slug: "air-max",
       name: "ایر مکس",
-      price: 1_800_000,
-      originalPrice: 2_000_000,
+      price: 18_000_000,
+      originalPrice: 20_000_000,
       quantity: 2,
       maxQuantity: 5,
       variantLabel: "سایز ۴۲، رنگ مشکی",
@@ -102,7 +102,7 @@ describe("کد تخفیف در سبد", () => {
     expect(c.coupon).toEqual({ code: null, status: "none", invalidReason: null });
     expect(c.couponDiscount).toBe(0);
   });
-  it("کد اعمال‌شده: تخفیف از ریال به تومان", () => {
+  it("کد اعمال‌شده: تخفیف به تومان", () => {
     const c = toServerCart(
       cart({
         coupon: { code: "SUMMER20", status: "applied", invalidReason: null },
@@ -116,12 +116,33 @@ describe("کد تخفیف در سبد", () => {
       }),
     );
     expect(c.coupon.code).toBe("SUMMER20");
-    expect(c.couponDiscount).toBe(200_000);
+    expect(c.couponDiscount).toBe(2_000_000);
   });
   it("کد نامعتبر: دلیل نگه داشته می‌شود", () => {
     const c = toServerCart(
       cart({ coupon: { code: "OLD", status: "invalid", invalidReason: "expired" } }),
     );
     expect(c.coupon.invalidReason).toBe("expired");
+  });
+});
+
+describe("تصویر ردیف سبد", () => {
+  it("آدرس کامل بک‌اند اولویت دارد", () => {
+    const item = toCartItem(
+      line({
+        product: {
+          id: "p1",
+          name: "ایر مکس",
+          slug: "air-max",
+          imageKey: "products/a.webp",
+          imageUrl: "https://img.test/products/a.webp",
+        },
+      }),
+    );
+    expect(item.imageUrl).toBe("https://img.test/products/a.webp");
+  });
+
+  it("بدون آدرس کامل و بدون کلید، تصویری نیست", () => {
+    expect(toCartItem(line()).imageUrl).toBeUndefined();
   });
 });

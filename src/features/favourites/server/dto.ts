@@ -1,4 +1,4 @@
-/** شکل پاسخ API علاقه‌مندی‌های بک‌اند (قیمت‌ها به ریال). فقط mapper این‌ها را می‌خواند. */
+/** شکل پاسخ API علاقه‌مندی‌های بک‌اند (قیمت‌ها به تومان). فقط mapper این‌ها را می‌خواند. */
 export type FavoriteItemDto = {
   productId: string;
   name: string;

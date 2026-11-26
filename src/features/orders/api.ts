@@ -1,5 +1,4 @@
 import { api } from "@/lib/api";
-import { tomanToRial } from "@/lib/money";
 import type { OrderDetailDto, OrderListDto } from "./dto";
 import { toOrderDetail, toOrderPage } from "./mappers";
 import type { OrderDetail, OrderPage, OrderStatus, OrderStatusAction } from "./types";
@@ -20,7 +19,7 @@ export async function placeOrder(input: {
   expectedTotal?: number;
 }): Promise<OrderDetail> {
   const body: { addressId: string; expectedTotal?: number } = { addressId: input.addressId };
-  if (input.expectedTotal !== undefined) body.expectedTotal = tomanToRial(input.expectedTotal);
+  if (input.expectedTotal !== undefined) body.expectedTotal = input.expectedTotal;
   const { data } = await api.post<OrderDetailDto>("/orders", {
     ...withCsrf,
     body,

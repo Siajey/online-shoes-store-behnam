@@ -1,5 +1,4 @@
 import { mediaUrl } from "@/lib/media";
-import { rialToToman } from "@/lib/money";
 import type { OrderDetailDto, OrderLineDto, OrderListDto, OrderSummaryDto } from "./dto";
 import type { OrderDetail, OrderLine, OrderPage, OrderSummary } from "./types";
 
@@ -12,7 +11,7 @@ export function toOrderSummary(dto: OrderSummaryDto): OrderSummary {
     orderNumber: dto.orderNumber,
     status: dto.status,
     itemCount: dto.itemCount,
-    total: rialToToman(dto.total),
+    total: dto.total,
     imageUrl: dto.previewImageUrl || mediaUrl(dto.previewImageKey),
     createdAt: dto.createdAt,
     paidAt: dto.paidAt,
@@ -32,9 +31,9 @@ const toLine = (l: OrderLineDto): OrderLine => ({
   imageUrl: l.imageUrl || mediaUrl(l.imageKey),
   variantLabel: labelOf(l.attributes),
   quantity: l.quantity,
-  originalUnitPrice: rialToToman(l.originalUnitPrice),
-  unitPrice: rialToToman(l.unitPrice),
-  lineTotal: rialToToman(l.lineTotal),
+  originalUnitPrice: l.originalUnitPrice,
+  unitPrice: l.unitPrice,
+  lineTotal: l.lineTotal,
   sku: l.sku,
 });
 
@@ -49,16 +48,16 @@ export function toOrderDetail(dto: OrderDetailDto): OrderDetail {
     orderNumber: dto.orderNumber,
     status: dto.status,
     itemCount: dto.itemCount,
-    total: rialToToman(dto.total),
+    total: dto.total,
     imageUrl: dto.previewImageUrl || mediaUrl(dto.previewImageKey),
     createdAt: dto.createdAt,
     paidAt: dto.paidAt,
     totals: {
-      subtotal: rialToToman(dto.totals.subtotal),
-      productDiscountTotal: rialToToman(dto.totals.productDiscountTotal),
-      couponDiscount: rialToToman(dto.totals.couponDiscount),
-      shippingFee: rialToToman(dto.totals.shippingFee),
-      total: rialToToman(dto.totals.total),
+      subtotal: dto.totals.subtotal,
+      productDiscountTotal: dto.totals.productDiscountTotal,
+      couponDiscount: dto.totals.couponDiscount,
+      shippingFee: dto.totals.shippingFee,
+      total: dto.totals.total,
     },
     couponCode: dto.coupon?.code ?? null,
     lines: dto.lines.map(toLine),
