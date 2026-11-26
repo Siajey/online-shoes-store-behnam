@@ -22,7 +22,7 @@ describe("normalizeAttributes", () => {
 });
 
 describe("toVariant", () => {
-  it("ویژگی‌های آرایه‌ای را می‌خواند و قیمت ریال را به تومان می‌برد", () => {
+  it("ویژگی‌های آرایه‌ای را می‌خواند و قیمت را بدون تبدیل نگه می‌دارد", () => {
     const v = toVariant({
       id: "v1",
       title: null,
@@ -33,7 +33,7 @@ describe("toVariant", () => {
       attributes: [{ name: "size", value: "42" }],
     });
     expect(v.attributes).toEqual({ size: "42" });
-    expect(v.price).toBe(2_190_000);
+    expect(v.price).toBe(21_900_000);
     expect(v.title).toBe("S-1");
   });
 });

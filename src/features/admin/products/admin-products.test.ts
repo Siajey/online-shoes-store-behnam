@@ -31,7 +31,7 @@ describe("toAdminProduct", () => {
       id: "1",
       status: "published",
       imageKey: "seed/a.webp",
-      minPrice: 10,
+      minPrice: 100,
       activeVariantCount: 2,
     });
   });

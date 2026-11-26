@@ -14,15 +14,15 @@ const base = {
 };
 
 describe("discount mappers", () => {
-  it("درصد همان می‌ماند و سقف از ریال به تومان می‌رود", () => {
+  it("درصد همان می‌ماند و سقف همان می‌ماند (تومان)", () => {
     const d = toAdminDiscount({ ...base, kind: "percent", value: 20, maxDiscountPerUnit: 500_000 });
     expect(d.value).toBe(20);
-    expect(d.maxDiscountPerUnit).toBe(50_000);
+    expect(d.maxDiscountPerUnit).toBe(500_000);
   });
-  it("مبلغ ثابت از ریال به تومان", () => {
+  it("مبلغ ثابت بدون تبدیل (تومان)", () => {
     expect(
       toAdminDiscount({ ...base, kind: "fixed", value: 1_000_000, maxDiscountPerUnit: null }).value,
-    ).toBe(100_000);
+    ).toBe(1_000_000);
   });
   it("کوپن: سقف، حداقل سفارش و محدودیت‌ها", () => {
     const c = toAdminCoupon({
@@ -36,8 +36,8 @@ describe("discount mappers", () => {
       usageLimitTotal: 1000,
       usageLimitPerUser: null,
     });
-    expect(c.maxDiscount).toBe(50_000);
-    expect(c.minOrderAmount).toBe(100_000);
+    expect(c.maxDiscount).toBe(500_000);
+    expect(c.minOrderAmount).toBe(1_000_000);
     expect(c.usageLimitTotal).toBe(1000);
     expect(c.usageLimitPerUser).toBeNull();
   });
@@ -48,7 +48,7 @@ describe("discount mappers", () => {
       reserved: 5,
       committed: 42,
       released: 3,
-      totalDiscount: 1_250_000,
+      totalDiscount: 12_500_000,
     });
   });
 });

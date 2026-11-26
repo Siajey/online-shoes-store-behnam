@@ -1,7 +1,6 @@
 import { attributeLabel } from "@/features/products/mappers";
 import { mediaUrl } from "@/lib/media";
 import { toPersianDigits } from "@/lib/format";
-import { rialToToman } from "@/lib/money";
 import type { CartItem } from "../types";
 import type { CartDto, CartLineDto } from "./dto";
 import type { ServerCart } from "./types";
@@ -16,8 +15,8 @@ const variantText = (attributes: CartLineDto["attributes"]) =>
 /** یک ردیف سبد سرور به مدل داخلی. id همان قالب «محصول:ترکیب» ردیف‌های محلی است. */
 export function toCartItem(line: CartLineDto): CartItem {
   const { product } = line;
-  const price = rialToToman(line.unitPrice ?? 0);
-  const original = line.originalUnitPrice === null ? 0 : rialToToman(line.originalUnitPrice);
+  const price = line.unitPrice ?? 0;
+  const original = line.originalUnitPrice ?? 0;
   return {
     id: `${product?.id ?? "removed"}:${line.variantId}`,
     slug: product?.slug ?? "",
@@ -43,6 +42,6 @@ export function toServerCart(dto: CartDto): ServerCart {
       status: dto.coupon.status,
       invalidReason: dto.coupon.invalidReason ?? null,
     },
-    couponDiscount: rialToToman(dto.totals.couponDiscount),
+    couponDiscount: dto.totals.couponDiscount,
   };
 }

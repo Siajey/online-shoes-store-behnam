@@ -1,6 +1,6 @@
 import type { DiscountKind, DiscountScope } from "./types";
 
-/** شکل پاسخ API تخفیف و کوپن بک‌اند (مبالغ به ریال). فقط mapper این‌ها را می‌خواند. */
+/** شکل پاسخ API تخفیف و کوپن بک‌اند (مبالغ به تومان). فقط mapper این‌ها را می‌خواند. */
 export type DiscountDto = {
   id: string;
   name: string;

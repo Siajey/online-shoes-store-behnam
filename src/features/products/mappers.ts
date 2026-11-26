@@ -1,6 +1,5 @@
 import { mediaUrl } from "@/lib/media";
 import { toPersianDigits } from "@/lib/format";
-import { rialToToman } from "@/lib/money";
 import { isColorAttribute } from "./colors";
 import type {
   ProductDetailDto,
@@ -33,7 +32,7 @@ function attributePairs(attributes: PublicVariantDto["attributes"]): [string, st
 function toVariant(v: PublicVariantDto): ProductVariant {
   return {
     id: v.id,
-    price: rialToToman(v.price),
+    price: v.price,
     available: v.isAvailable,
     options: Object.fromEntries(
       attributePairs(v.attributes).map(([name, value]) => [attributeLabel(name), value]),
@@ -77,10 +76,9 @@ function pricingOf(
   const pricing = dto.meta?.pricing;
   const base = pricing?.finalMinPrice ?? dto.minPrice;
   const baseMax = pricing?.finalMaxPrice ?? dto.maxPrice;
-  const price = rialToToman(base ?? 0);
-  const max = baseMax === null || baseMax === undefined ? null : rialToToman(baseMax);
-  const original =
-    pricing?.hasDiscount && pricing.minPrice !== null ? rialToToman(pricing.minPrice) : undefined;
+  const price = base ?? 0;
+  const max = baseMax ?? null;
+  const original = pricing?.hasDiscount && pricing.minPrice !== null ? pricing.minPrice : undefined;
   const discounted = original !== undefined && original > price;
   const percent = discounted ? Math.max(1, Math.floor(((original - price) * 100) / original)) : 0;
   return {

@@ -85,7 +85,7 @@ describe("toProductDetail", () => {
       gender: "women",
       material: "چرم",
     });
-    expect(p.variants[0]).toMatchObject({ title: "S-1", price: 100, stock: 3 });
+    expect(p.variants[0]).toMatchObject({ title: "S-1", price: 1000, stock: 3 });
     expect(toFormInput(p)).toMatchObject({ slug: "nike", gender: "women", brandId: "" });
   });
   it("پیش‌نویس منتشرنشده slug قفل ندارد و واریانت اختیاری است", () => {
