@@ -8,6 +8,7 @@ import { StateMessage } from "@/components/ui/state-message";
 import { authStore } from "@/features/auth/auth-store";
 import { AccountError } from "@/features/auth/components/account-views";
 import { useRequireAuth } from "@/features/auth/use-require-auth";
+import { useStartPayment } from "@/features/payments/use-start-payment";
 import { cancelOrder, getOrder } from "../api";
 import { ordersCopy as t } from "../copy";
 import { isNotFound, orderMessage } from "../errors";
@@ -25,7 +26,10 @@ type State =
 export function OrderDetailContent({ id }: { id: string }) {
   const auth = useRequireAuth(`/account/orders/${id}`);
   const authed = auth.status === "authenticated";
-  const justPlaced = useSearchParams().get("placed") === "1";
+  const search = useSearchParams();
+  const justPlaced = search.get("placed") === "1";
+  const payNotice = search.get("pay") === "failed";
+  const payment = useStartPayment();
   const [state, setState] = useState<State>({ status: "loading" });
   const [reloadKey, setReloadKey] = useState(0);
   const [confirming, setConfirming] = useState(false);
@@ -121,6 +125,10 @@ export function OrderDetailContent({ id }: { id: string }) {
         onAbortCancel={() => setConfirming(false)}
         onConfirmCancel={() => void confirmCancel()}
         onRefresh={reload}
+        onPay={() => void payment.pay(id)}
+        paying={payment.state.status === "starting"}
+        payError={payment.state.status === "failed" ? payment.state.message : null}
+        payNotice={payNotice}
       />
     </div>
   );

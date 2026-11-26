@@ -16,6 +16,12 @@ type Props = {
   onAbortCancel: () => void;
   onConfirmCancel: () => void;
   onRefresh: () => void;
+  /** شروع پرداخت آنلاین؛ اگر نباشد دکمه غیرفعال است. */
+  onPay?: () => void;
+  paying?: boolean;
+  payError?: string | null;
+  /** بعد از ثبت سفارش، اتصال به درگاه ناموفق بود. */
+  payNotice?: boolean;
   /** بعد از ثبت سفارش از تسویه، بالای صفحه تبریک نشان داده می‌شود. */
   justPlaced?: boolean;
 };
@@ -44,6 +50,10 @@ export function OrderDetailView({
   onConfirmCancel,
   onRefresh,
   justPlaced = false,
+  onPay,
+  paying = false,
+  payError = null,
+  payNotice = false,
 }: Props) {
   const { totals } = order;
   return (
@@ -68,13 +78,25 @@ export function OrderDetailView({
 
       {order.status === "pending_payment" && (
         <div className="rounded-card bg-surface flex flex-col gap-3 p-5">
+          {payNotice && (
+            <p role="status" className="text-warn text-sm">
+              {t.payFailedNotice}
+            </p>
+          )}
           {order.expiresAt && (
             <p className="text-warn text-sm">{t.payWindow(formatOrderDateTime(order.expiresAt))}</p>
           )}
           <div className="flex flex-wrap items-center gap-3">
-            <Button disabled>{t.payNow}</Button>
-            <span className="text-fg-muted text-xs">{t.paySoon}</span>
+            <Button disabled={!order.canPay || !onPay || paying} onClick={onPay}>
+              {paying ? t.payRedirecting : t.payNow}
+            </Button>
+            {!order.canPay && <span className="text-fg-muted text-xs">{t.cannotPay}</span>}
           </div>
+          {payError && (
+            <p role="alert" className="text-danger text-sm">
+              {payError}
+            </p>
+          )}
         </div>
       )}
 

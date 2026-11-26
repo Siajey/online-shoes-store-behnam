@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { StateMessage } from "@/components/ui/state-message";
 import { adminGetOrder, adminUpdateOrderStatus } from "@/features/orders/api";
 import { isNotFound, orderMessage } from "@/features/orders/errors";
+import { AdminPaymentsPanel } from "@/features/payments/components/admin-payments-panel";
 import type { OrderDetail } from "@/features/orders/types";
 import { buildAction, EMPTY_DRAFT, type ActionDraft, type AdminOrderActionKind } from "../actions";
 import { adminOrdersCopy as t } from "../copy";
@@ -95,18 +96,21 @@ export function AdminOrderDetailContent({ id }: { id: string }) {
     );
   }
   return (
-    <AdminOrderDetailView
-      order={state.order}
-      selected={selected}
-      draft={draft}
-      submitting={submitting}
-      message={message}
-      onSelect={(a) => {
-        setSelected(a);
-        setMessage(null);
-      }}
-      onDraft={(patch) => setDraft((d) => ({ ...d, ...patch }))}
-      onSubmit={() => void submit()}
-    />
+    <div className="flex flex-col gap-5">
+      <AdminOrderDetailView
+        order={state.order}
+        selected={selected}
+        draft={draft}
+        submitting={submitting}
+        message={message}
+        onSelect={(a) => {
+          setSelected(a);
+          setMessage(null);
+        }}
+        onDraft={(patch) => setDraft((d) => ({ ...d, ...patch }))}
+        onSubmit={() => void submit()}
+      />
+      <AdminPaymentsPanel orderId={id} />
+    </div>
   );
 }

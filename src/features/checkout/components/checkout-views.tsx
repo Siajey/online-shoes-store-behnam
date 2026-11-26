@@ -216,7 +216,7 @@ export function OrderSummary({
   /** وقتی داده نشود، دکمه غیرفعال می‌ماند. */
   onPlace?: () => void;
 }) {
-  const placing = placeState.status === "placing";
+  const placing = placeState.status === "placing" || placeState.status === "redirecting";
   const failure = placeState.status === "failed" ? placeState.failure : null;
   const canPlace = hasAddress && Boolean(onPlace) && !placing;
   const savings = cartSavings(items);
@@ -261,11 +261,13 @@ export function OrderSummary({
         {t.termsSuffix}
       </p>
       <Button size="lg" fullWidth disabled={!canPlace} onClick={onPlace}>
-        {placing
-          ? o.checkout.placing
-          : failure?.kind === "priceChanged"
-            ? o.checkout.confirmAgain
-            : t.placeOrder}
+        {placeState.status === "redirecting"
+          ? o.checkout.redirecting
+          : placing
+            ? o.checkout.placing
+            : failure?.kind === "priceChanged"
+              ? o.checkout.confirmAgain
+              : t.placeOrder}
       </Button>
       {failure && <PlaceFailure failure={failure} />}
       {!failure && !hasAddress && (
