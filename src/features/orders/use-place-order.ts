@@ -15,12 +15,12 @@ export type PlaceOrderState =
 
 /**
  * ثبت سفارش از تسویه. کلید idempotency بین تلاش‌های دوباره‌ی «همان درخواست» (مثلاً قطع شبکه)
- * ثابت می‌ماند تا سفارش دوبار ساخته نشود؛ فقط وقتی سرور درخواست را رد کرده یا آدرس عوض شده تازه می‌شود.
+ * ثابت می‌ماند تا سفارش دوبار ساخته نشود؛ فقط وقتی سرور درخواست را رد کرده یا آدرس/روش ارسال عوض شده تازه می‌شود.
  */
 export function usePlaceOrder() {
   const router = useRouter();
   const [state, setState] = useState<PlaceOrderState>({ status: "idle" });
-  const keyRef = useRef<{ key: string; addressId: string } | null>(null);
+  const keyRef = useRef<{ key: string; addressId: string; shippingMethod: string } | null>(null);
   const busy = useRef(false);
   const placedId = useRef<string | null>(null);
 
@@ -35,16 +35,21 @@ export function usePlaceOrder() {
   }, [router]);
 
   const place = useCallback(
-    async (addressId: string, expectedTotal?: number) => {
+    async (addressId: string, shippingMethod: string, expectedTotal?: number) => {
       if (busy.current) return;
       busy.current = true;
       setState({ status: "placing" });
-      if (!keyRef.current || keyRef.current.addressId !== addressId) {
-        keyRef.current = { key: newIdempotencyKey(), addressId };
+      if (
+        !keyRef.current ||
+        keyRef.current.addressId !== addressId ||
+        keyRef.current.shippingMethod !== shippingMethod
+      ) {
+        keyRef.current = { key: newIdempotencyKey(), addressId, shippingMethod };
       }
       try {
         const order = await placeOrder({
           addressId,
+          shippingMethod,
           idempotencyKey: keyRef.current.key,
           expectedTotal,
         });

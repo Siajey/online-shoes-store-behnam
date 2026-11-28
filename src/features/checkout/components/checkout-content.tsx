@@ -5,6 +5,8 @@ import { listAddresses } from "@/features/addresses/api";
 import { useCartItems, useCartMeta, useCartReady } from "@/features/cart/use-cart";
 import { useRequireAuth } from "@/features/auth/use-require-auth";
 import { usePlaceOrder } from "@/features/orders/use-place-order";
+import { resolveShippingCode } from "@/features/shipping/choice";
+import { useShippingOptions } from "@/features/shipping/use-shipping-options";
 import { isApiRequestError } from "@/lib/api/errors";
 import { resolveSelectedAddressId } from "../address-choice";
 import { checkoutCopy } from "../copy";
@@ -30,6 +32,7 @@ export function CheckoutContent() {
   const meta = useCartMeta();
   const [addresses, setAddresses] = useState<AddressesState>({ status: "loading" });
   const [chosen, setChosen] = useState<string | null>(null);
+  const [chosenShipping, setChosenShipping] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const order = usePlaceOrder();
 
@@ -53,14 +56,21 @@ export function CheckoutContent() {
     };
   }, [auth.status, reloadKey]);
 
+  const selectedId =
+    addresses.status === "ready" ? resolveSelectedAddressId(addresses.items, chosen) : null;
+  // هزینه‌ی ارسال به آدرس و سبد بستگی دارد؛ با تغییر هرکدام دوباره گرفته می‌شود.
+  const cartKey = `${items.map((i) => `${i.id}:${i.quantity}`).join(",")}|${meta.couponDiscount}`;
+  const shipping = useShippingOptions(selectedId, cartKey);
+  const shippingCode =
+    shipping.state.status === "ready"
+      ? resolveShippingCode(shipping.state.options, chosenShipping)
+      : null;
+
   if (!cartReady || auth.status === "unknown") return <Skeleton />;
   if (auth.status !== "authenticated") return <Skeleton />;
 
   const name = [auth.user.firstName, auth.user.lastName].filter(Boolean).join(" ");
   const recipient: Recipient | null = name ? { name, phone: auth.user.phoneNumber } : null;
-
-  const selectedId =
-    addresses.status === "ready" ? resolveSelectedAddressId(addresses.items, chosen) : null;
 
   return (
     <CheckoutView
@@ -70,7 +80,18 @@ export function CheckoutContent() {
       recipient={recipient}
       couponDiscount={meta.couponDiscount}
       placeState={order.state}
-      onPlace={selectedId ? () => void order.place(selectedId) : undefined}
+      onPlace={
+        selectedId && shippingCode ? () => void order.place(selectedId, shippingCode) : undefined
+      }
+      shipping={{
+        state: shipping.state,
+        selectedCode: shippingCode,
+        onSelect: (code) => {
+          order.reset();
+          setChosenShipping(code);
+        },
+        onRetry: shipping.retry,
+      }}
       onSelect={(id) => {
         order.reset();
         setChosen(id);
