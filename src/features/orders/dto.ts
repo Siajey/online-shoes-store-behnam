@@ -49,11 +49,28 @@ export type OrderDetailDto = Omit<OrderSummaryDto, "recipient" | "userId"> & {
   lines: OrderLineDto[];
   shippingAddress: { province: string; city: string; street: string; postalCode: string };
   recipient: { firstName: string; lastName: string; phoneNumber: string } | string;
-  shipment: { carrier: string | null; trackingCode: string | null };
+  shipment?: { carrier: string | null; trackingCode: string | null } | null;
+  shippingMethod?: { code: string; name: string } | null;
+  tracking?: OrderTrackingDto | null;
   canPay: boolean;
   expiresAt: string | null;
   timeline: { status: OrderStatusDto; note: string | null; at: string; actorId?: string | null }[];
   userId?: string;
+};
+
+export type OrderTrackingDto = {
+  carrier?: string | null;
+  trackingCode?: string | null;
+  trackingUrl?: string | null;
+  autoTracked?: boolean;
+  status?: string | null;
+  deliveredAt?: string | null;
+  events?: {
+    status: string;
+    description?: string | null;
+    location?: string | null;
+    at: string;
+  }[];
 };
 
 export type OrderListDto = { items: OrderSummaryDto[]; nextCursor: string | null };

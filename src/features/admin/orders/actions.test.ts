@@ -6,7 +6,7 @@ describe("admin order actions", () => {
     expect(adminActionsFor("pending_payment")).toEqual([]);
     expect(adminActionsFor("paid")).toEqual(["startProcessing", "cancel"]);
     expect(adminActionsFor("processing")).toEqual(["ship", "cancel"]);
-    expect(adminActionsFor("shipped")).toEqual(["deliver"]);
+    expect(adminActionsFor("shipped")).toEqual(["updateTracking", "deliver"]);
     expect(adminActionsFor("delivered")).toEqual([]);
     expect(adminActionsFor("cancelled")).toEqual([]);
   });
@@ -22,7 +22,6 @@ describe("admin order actions", () => {
   it("ارسال با شرکت حمل و کد رهگیری", () => {
     expect(buildAction("ship", { carrier: "پست", trackingCode: "123", note: "" })).toEqual({
       action: "ship",
-      carrier: "پست",
       trackingCode: "123",
     });
     expect(buildAction("ship", EMPTY_DRAFT)).toEqual({ action: "ship" });
@@ -30,7 +29,6 @@ describe("admin order actions", () => {
 
   it("فیلد بلندتر از سقف نامعتبر است", () => {
     expect(buildAction("deliver", { ...EMPTY_DRAFT, note: "x".repeat(501) })).toBeNull();
-    expect(buildAction("ship", { ...EMPTY_DRAFT, carrier: "x".repeat(101) })).toBeNull();
     expect(buildAction("ship", { ...EMPTY_DRAFT, trackingCode: "x".repeat(101) })).toBeNull();
   });
 });

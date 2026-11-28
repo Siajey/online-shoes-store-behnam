@@ -7,7 +7,7 @@ const ACTIONS: Record<OrderStatus, readonly AdminOrderActionKind[]> = {
   pending_payment: [],
   paid: ["startProcessing", "cancel"],
   processing: ["ship", "cancel"],
-  shipped: ["deliver"],
+  shipped: ["updateTracking", "deliver"],
   delivered: [],
   cancelled: [],
   expired: [],
@@ -20,21 +20,21 @@ export type ActionDraft = { carrier: string; trackingCode: string; note: string 
 
 export const EMPTY_DRAFT: ActionDraft = { carrier: "", trackingCode: "", note: "" };
 
-const LIMITS = { carrier: 100, trackingCode: 100, note: 500 } as const;
+const LIMITS = { trackingCode: 100, note: 500 } as const;
 
 /** از فرم، بدنه‌ی درخواست می‌سازد؛ فیلد خالی فرستاده نمی‌شود. null یعنی فرم نامعتبر. */
 export function buildAction(kind: AdminOrderActionKind, d: ActionDraft): OrderStatusAction | null {
   const note = d.note.trim();
   if (note.length > LIMITS.note) return null;
   const withNote = note ? { note } : {};
+  if (kind === "updateTracking") {
+    const code = d.trackingCode.trim();
+    if (!code || code.length > LIMITS.trackingCode) return null;
+    return { action: "updateTracking", trackingCode: code, ...withNote };
+  }
   if (kind !== "ship") return { action: kind, ...withNote };
-  const carrier = d.carrier.trim();
+  // شرکت حمل از روی روش ارسال سفارش تعیین می‌شود؛ فقط کد رهگیری (اختیاری) فرستاده می‌شود.
   const trackingCode = d.trackingCode.trim();
-  if (carrier.length > LIMITS.carrier || trackingCode.length > LIMITS.trackingCode) return null;
-  return {
-    action: "ship",
-    ...(carrier ? { carrier } : {}),
-    ...(trackingCode ? { trackingCode } : {}),
-    ...withNote,
-  };
+  if (trackingCode.length > LIMITS.trackingCode) return null;
+  return { action: "ship", ...(trackingCode ? { trackingCode } : {}), ...withNote };
 }

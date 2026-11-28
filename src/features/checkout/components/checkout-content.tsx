@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { listAddresses } from "@/features/addresses/api";
+import { cartTotal } from "@/features/cart/cart";
 import { useCartItems, useCartMeta, useCartReady } from "@/features/cart/use-cart";
 import { useRequireAuth } from "@/features/auth/use-require-auth";
 import { usePlaceOrder } from "@/features/orders/use-place-order";
@@ -66,6 +67,15 @@ export function CheckoutContent() {
       ? resolveShippingCode(shipping.state.options, chosenShipping)
       : null;
 
+  // مبلغی که به مشتری نشان داده شد؛ فقط برای بررسی هم‌خوانی است و قیمت را سرور حساب می‌کند.
+  // بعد از «مبلغ تغییر کرد» مشتری مبلغ جدید را تأیید می‌کند، پس دیگر فرستاده نمی‌شود.
+  const fee =
+    shipping.state.status === "ready"
+      ? (shipping.state.options.find((o) => o.code === shippingCode)?.fee ?? 0)
+      : 0;
+  const accepted = order.state.status === "failed" && order.state.failure.kind === "priceChanged";
+  const expectedTotal = accepted ? undefined : cartTotal(items, meta.couponDiscount) + fee;
+
   if (!cartReady || auth.status === "unknown") return <Skeleton />;
   if (auth.status !== "authenticated") return <Skeleton />;
 
@@ -81,7 +91,9 @@ export function CheckoutContent() {
       couponDiscount={meta.couponDiscount}
       placeState={order.state}
       onPlace={
-        selectedId && shippingCode ? () => void order.place(selectedId, shippingCode) : undefined
+        selectedId && shippingCode
+          ? () => void order.place(selectedId, shippingCode, expectedTotal)
+          : undefined
       }
       shipping={{
         state: shipping.state,
