@@ -5,6 +5,8 @@ import type { OrderDetail } from "../types";
 import { OrderDetailView } from "./order-detail-view";
 
 const order: OrderDetail = {
+  shippingMethod: null,
+  tracking: null,
   id: "o1",
   orderNumber: 1001,
   status: "pending_payment",

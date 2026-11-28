@@ -1,6 +1,12 @@
 import { mediaUrl } from "@/lib/media";
-import type { OrderDetailDto, OrderLineDto, OrderListDto, OrderSummaryDto } from "./dto";
-import type { OrderDetail, OrderLine, OrderPage, OrderSummary } from "./types";
+import type {
+  OrderDetailDto,
+  OrderLineDto,
+  OrderListDto,
+  OrderSummaryDto,
+  OrderTrackingDto,
+} from "./dto";
+import type { OrderDetail, OrderLine, OrderPage, OrderSummary, OrderTracking } from "./types";
 
 const labelOf = (attrs: OrderLineDto["attributes"]): string =>
   attrs.map((a) => String(a.value)).join(" · ");
@@ -37,8 +43,27 @@ const toLine = (l: OrderLineDto): OrderLine => ({
   sku: l.sku,
 });
 
+const toTracking = (t: OrderTrackingDto | null | undefined): OrderTracking | null =>
+  t
+    ? {
+        carrier: t.carrier ?? null,
+        trackingCode: t.trackingCode ?? null,
+        trackingUrl: t.trackingUrl ?? null,
+        autoTracked: t.autoTracked ?? false,
+        status: t.status ?? null,
+        deliveredAt: t.deliveredAt ?? null,
+        events: (t.events ?? []).map((e) => ({
+          status: e.status,
+          description: e.description ?? null,
+          location: e.location ?? null,
+          at: e.at,
+        })),
+      }
+    : null;
+
 export function toOrderDetail(dto: OrderDetailDto): OrderDetail {
   const r = dto.recipient;
+  const tracking = toTracking(dto.tracking);
   const recipient =
     typeof r === "string"
       ? { name: r, phone: "" }
@@ -63,8 +88,12 @@ export function toOrderDetail(dto: OrderDetailDto): OrderDetail {
     lines: dto.lines.map(toLine),
     address: dto.shippingAddress,
     recipient,
-    carrier: dto.shipment?.carrier ?? null,
-    trackingCode: dto.shipment?.trackingCode ?? null,
+    carrier: tracking?.carrier ?? dto.shipment?.carrier ?? null,
+    trackingCode: tracking?.trackingCode ?? dto.shipment?.trackingCode ?? null,
+    shippingMethod: dto.shippingMethod
+      ? { code: dto.shippingMethod.code, name: dto.shippingMethod.name }
+      : null,
+    tracking,
     canPay: dto.canPay,
     expiresAt: dto.expiresAt,
     timeline: dto.timeline.map((t) => ({ status: t.status, note: t.note, at: t.at })),

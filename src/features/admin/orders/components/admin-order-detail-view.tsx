@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatusBadge, Thumb, price } from "@/features/orders/components/order-parts";
+import { ShipmentSection } from "@/features/orders/components/shipment-section";
 import { formatOrderDateTime } from "@/features/orders/format";
 import { statusLabel } from "@/features/orders/status";
 import type { OrderDetail } from "@/features/orders/types";
@@ -18,6 +19,8 @@ export type DetailViewProps = {
   onSelect: (a: AdminOrderActionKind | null) => void;
   onDraft: (patch: Partial<ActionDraft>) => void;
   onSubmit: () => void;
+  onRefreshShipment?: () => void;
+  refreshing?: boolean;
 };
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
@@ -75,19 +78,15 @@ export function AdminOrderDetailView(p: DetailViewProps) {
                 {p.selected === "cancel" && (
                   <p className="text-danger text-sm">{t.confirmCancel}</p>
                 )}
-                {p.selected === "ship" && (
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <Input
-                      label={t.carrierLabel}
-                      value={p.draft.carrier}
-                      onChange={(e) => p.onDraft({ carrier: e.target.value })}
-                    />
+                {(p.selected === "ship" || p.selected === "updateTracking") && (
+                  <div className="flex flex-col gap-1">
                     <Input
                       label={t.trackingLabel}
                       ltr
                       value={p.draft.trackingCode}
                       onChange={(e) => p.onDraft({ trackingCode: e.target.value })}
                     />
+                    <span className="text-fg-muted text-xs">{t.trackingHint}</span>
                   </div>
                 )}
                 <Input
@@ -111,6 +110,17 @@ export function AdminOrderDetailView(p: DetailViewProps) {
               </form>
             )}
           </div>
+        )}
+        {p.onRefreshShipment && order.tracking && order.status === "shipped" && (
+          <Button
+            size="sm"
+            variant="ghost"
+            className="self-start"
+            onClick={p.onRefreshShipment}
+            disabled={p.refreshing || p.submitting}
+          >
+            {p.refreshing ? t.refreshingShipment : t.refreshShipment}
+          </Button>
         )}
         {p.message && (
           <p
@@ -165,12 +175,8 @@ export function AdminOrderDetailView(p: DetailViewProps) {
             </p>
             <p className="text-fg-muted">{toPersianDigits(order.address.postalCode)}</p>
           </div>
-          {(order.carrier || order.trackingCode) && (
-            <p className="border-line border-t pt-3 text-sm">
-              {order.carrier} {order.trackingCode && `· ${toPersianDigits(order.trackingCode)}`}
-            </p>
-          )}
         </Section>
+        <ShipmentSection order={order} />
         <Section title="تاریخچه">
           <ol className="flex flex-col gap-3 text-sm">
             {order.timeline.map((e, i) => (

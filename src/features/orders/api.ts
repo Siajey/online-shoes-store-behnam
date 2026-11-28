@@ -61,6 +61,14 @@ export async function cancelOrder(id: string): Promise<OrderDetail> {
   return toOrderDetail(data);
 }
 
+/** درخواست به‌روزرسانی فوری رهگیری مرسوله (به‌جای انتظار برای کار زمان‌بندی‌شده). */
+export async function adminRefreshShipment(orderId: string): Promise<void> {
+  await api.post<unknown>(`/admin/shipments/${encodeURIComponent(orderId)}/refresh`, {
+    ...withCsrf,
+    body: {},
+  });
+}
+
 /* ───── ادمین (فعلاً فقط لایه‌ی API؛ صفحه‌ی ادمین بعداً ساخته می‌شود) ───── */
 
 export type AdminOrdersQuery = {

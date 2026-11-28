@@ -69,6 +69,38 @@ describe("orders mappers", () => {
     expect(canCancel("paid")).toBe(false);
   });
 
+  it("روش ارسال و رهگیری را می‌خواند و بدون رهگیری null می‌ماند", () => {
+    const none = toOrderDetail(dto);
+    expect(none.tracking).toBeNull();
+    expect(none.shippingMethod).toBeNull();
+
+    const o = toOrderDetail({
+      ...dto,
+      shippingMethod: { code: "post", name: "پست" },
+      tracking: {
+        carrier: "tipax",
+        trackingCode: "ABC1234567",
+        trackingUrl: null,
+        autoTracked: true,
+        status: "in_transit",
+        deliveredAt: null,
+        events: [
+          {
+            status: "in_transit",
+            description: "در مسیر",
+            location: "تهران",
+            at: "2026-11-24T11:00:00.000Z",
+          },
+        ],
+      },
+    });
+    expect(o.shippingMethod).toEqual({ code: "post", name: "پست" });
+    expect(o.tracking?.status).toBe("in_transit");
+    expect(o.tracking?.events[0]?.location).toBe("تهران");
+    expect(o.carrier).toBe("tipax");
+    expect(o.trackingCode).toBe("ABC1234567");
+  });
+
   it("imageUrl سرور بر ساخت از کلید اولویت دارد", () => {
     const withUrl: OrderDetailDto = {
       ...dto,

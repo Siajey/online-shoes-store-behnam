@@ -53,15 +53,41 @@ export type OrderDetail = Omit<OrderSummary, "customer"> & {
   recipient: { name: string; phone: string };
   carrier: string | null;
   trackingCode: string | null;
+  /** نمونه‌ی ثبت‌شده‌ی روش ارسال هنگام سفارش */
+  shippingMethod: { code: string; name: string } | null;
+  tracking: OrderTracking | null;
   canPay: boolean;
   expiresAt: string | null;
   timeline: { status: OrderStatus; note: string | null; at: string }[];
+};
+
+export type TrackingStatus =
+  "created" | "picked_up" | "in_transit" | "out_for_delivery" | "delivered" | "returned" | "failed";
+
+export type TrackingEvent = {
+  status: string;
+  description: string | null;
+  location: string | null;
+  at: string;
+};
+
+/** رهگیری مرسوله؛ تا قبل از ارسال سفارش null است. */
+export type OrderTracking = {
+  carrier: string | null;
+  trackingCode: string | null;
+  trackingUrl: string | null;
+  /** وضعیت را سرور خودکار به‌روز می‌کند (مثل تیپاکس). */
+  autoTracked: boolean;
+  status: string | null;
+  deliveredAt: string | null;
+  events: TrackingEvent[];
 };
 
 export type OrderPage = { items: OrderSummary[]; nextCursor: string | null };
 
 export type OrderStatusAction =
   | { action: "startProcessing"; note?: string }
-  | { action: "ship"; carrier?: string | null; trackingCode?: string | null; note?: string }
+  | { action: "ship"; trackingCode?: string | null; note?: string }
+  | { action: "updateTracking"; trackingCode: string; note?: string }
   | { action: "deliver"; note?: string }
   | { action: "cancel"; note?: string };

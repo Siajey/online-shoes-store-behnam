@@ -6,6 +6,7 @@ import { formatOrderDate, formatOrderDateTime } from "../format";
 import { canCancel, statusLabel } from "../status";
 import type { OrderDetail } from "../types";
 import { price, StatusBadge, Thumb } from "./order-parts";
+import { ShipmentSection } from "./shipment-section";
 
 type Props = {
   order: OrderDetail;
@@ -180,16 +181,7 @@ export function OrderDetailView({
         </Section>
       </div>
 
-      {(order.carrier || order.trackingCode) && (
-        <Section title={t.shipmentTitle}>
-          <dl className="flex flex-col gap-2 text-sm">
-            {order.carrier && <Row label={t.carrier} value={order.carrier} />}
-            {order.trackingCode && (
-              <Row label={t.trackingCode} value={toPersianDigits(order.trackingCode)} />
-            )}
-          </dl>
-        </Section>
-      )}
+      <ShipmentSection order={order} />
 
       <Section title={t.timelineTitle}>
         <ol className="flex flex-col gap-3 text-sm">

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { StateMessage } from "@/components/ui/state-message";
-import { adminGetOrder, adminUpdateOrderStatus } from "@/features/orders/api";
+import { adminGetOrder, adminRefreshShipment, adminUpdateOrderStatus } from "@/features/orders/api";
 import { isNotFound, orderMessage } from "@/features/orders/errors";
 import { AdminPaymentsPanel } from "@/features/payments/components/admin-payments-panel";
 import type { OrderDetail } from "@/features/orders/types";
@@ -23,6 +23,7 @@ export function AdminOrderDetailContent({ id }: { id: string }) {
   const [selected, setSelected] = useState<AdminOrderActionKind | null>(null);
   const [draft, setDraft] = useState<ActionDraft>(EMPTY_DRAFT);
   const [submitting, setSubmitting] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [message, setMessage] = useState<DetailViewProps["message"]>(null);
 
   useEffect(() => {
@@ -63,6 +64,21 @@ export function AdminOrderDetailContent({ id }: { id: string }) {
       setMessage({ tone: "error", text: orderMessage(e, t.actionFailed) });
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function refreshShipment() {
+    setRefreshing(true);
+    setMessage(null);
+    try {
+      await adminRefreshShipment(id);
+      const order = await adminGetOrder(id);
+      setState({ status: "ready", order });
+      setMessage({ tone: "ok", text: t.shipmentRefreshed });
+    } catch (e) {
+      setMessage({ tone: "error", text: orderMessage(e, t.shipmentRefreshFailed) });
+    } finally {
+      setRefreshing(false);
     }
   }
 
@@ -109,6 +125,8 @@ export function AdminOrderDetailContent({ id }: { id: string }) {
         }}
         onDraft={(patch) => setDraft((d) => ({ ...d, ...patch }))}
         onSubmit={() => void submit()}
+        onRefreshShipment={() => void refreshShipment()}
+        refreshing={refreshing}
       />
       <AdminPaymentsPanel orderId={id} />
     </div>
