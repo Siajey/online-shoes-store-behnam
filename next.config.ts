@@ -19,7 +19,7 @@ const fromUrl = (value: string | undefined): Pattern | null => {
 };
 
 /** میزبان ذخیره‌ی تصاویر بک‌اند (imageUrl کامل در سبد، سفارش و علاقه‌مندی‌ها). */
-const BACKEND_IMAGE_HOSTS = ["behnam-sh.s3.ir-central1.arvanstorage.ir"];
+const BACKEND_IMAGE_HOSTS = ["**.arvanstorage.ir"];
 
 /** میزبان‌های اضافه، جداشده با ویرگول: NEXT_PUBLIC_IMAGE_HOSTS=cdn.example.com,img.example.com */
 const extraHosts = (process.env.NEXT_PUBLIC_IMAGE_HOSTS ?? "")

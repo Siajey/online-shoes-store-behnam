@@ -10,7 +10,8 @@ import { ordersCopy as o } from "@/features/orders/copy";
 import type { PlaceOrderFailure } from "@/features/orders/errors";
 import type { PlaceOrderState } from "@/features/orders/use-place-order";
 import { checkoutCopy as t } from "../copy";
-import { SHIPPING_METHODS } from "../shipping";
+import { shippingCopy as s } from "@/features/shipping/copy";
+import type { ShippingOptionsState } from "@/features/shipping/use-shipping-options";
 
 export type AddressesState =
   | { status: "loading" }
@@ -160,26 +161,83 @@ export function RecipientSection({ recipient }: { recipient: Recipient | null })
   );
 }
 
-/** شیوه‌ی ارسال: پست پیشتاز و تیپاکس؛ فعلاً غیرفعال تا آماده شدن قیمت‌گیری سرور. */
-export function ShippingSection() {
+export type ShippingProps = {
+  state: ShippingOptionsState;
+  selectedCode: string | null;
+  onSelect: (code: string) => void;
+  onRetry: () => void;
+};
+
+const idleShipping: ShippingProps = {
+  state: { status: "idle" },
+  selectedCode: null,
+  onSelect: () => {},
+  onRetry: () => {},
+};
+
+/** شیوه‌ی ارسال: روش‌ها و هزینه‌ی هرکدام از سرور، برای آدرس انتخاب‌شده. */
+export function ShippingSection({ state, selectedCode, onSelect, onRetry }: ShippingProps) {
+  if (state.status === "idle") {
+    return <p className="text-fg-muted rounded-card bg-surface p-4 text-sm">{s.needAddress}</p>;
+  }
+  if (state.status === "loading") {
+    return (
+      <div role="status" aria-busy="true" className="grid gap-3">
+        <span className="sr-only">{s.loading}</span>
+        <div
+          aria-hidden="true"
+          className="rounded-card bg-surface h-24 animate-pulse motion-reduce:animate-none"
+        />
+      </div>
+    );
+  }
+  if (state.status === "error") {
+    return (
+      <StateMessage tone="error">
+        <p>{state.message}</p>
+        <Button className="mt-4" variant="secondary" onClick={onRetry}>
+          {t.retry}
+        </Button>
+      </StateMessage>
+    );
+  }
+  if (!state.options.some((o) => o.available)) {
+    return <p className="text-fg-secondary rounded-card bg-surface p-4 text-sm">{s.none}</p>;
+  }
   return (
-    <fieldset disabled className="flex flex-col gap-3">
+    <fieldset className="flex flex-col gap-3">
       <legend className="sr-only">{t.shippingTitle}</legend>
-      {SHIPPING_METHODS.map((m) => (
+      {state.options.map((o) => (
         <label
-          key={m.id}
-          className="rounded-card bg-surface flex items-start gap-3 border-2 border-transparent p-4 opacity-70"
+          key={o.code}
+          className={`rounded-card bg-surface has-checked:border-brand has-focus-visible:outline-brand flex items-start gap-3 border-2 border-transparent p-4 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 ${o.available ? "cursor-pointer" : "opacity-60"}`}
         >
-          <input type="radio" name="shipping" value={m.id} disabled className="mt-2 size-4" />
-          <span className="flex flex-1 flex-col gap-1">
+          <input
+            type="radio"
+            name="shipping"
+            value={o.code}
+            checked={o.code === selectedCode}
+            disabled={!o.available}
+            onChange={() => onSelect(o.code)}
+            className="accent-brand mt-2 size-4"
+          />
+          <span className="flex min-w-0 flex-1 flex-col gap-1">
             <span className="flex items-center justify-between gap-2">
-              <span className="text-base font-medium">{m.label}</span>
-              <span className="bg-surface-2 text-fg-secondary rounded-full px-3 py-1 text-xs">
-                {t.shippingSoon}
+              <span className="text-base font-medium">{o.name}</span>
+              <span className="text-sm">
+                {!o.available ? (
+                  <span className="text-fg-muted text-xs">{s.unavailable}</span>
+                ) : o.isFree || o.fee === 0 ? (
+                  <span className="text-ok">{s.free}</span>
+                ) : (
+                  price(o.fee)
+                )}
               </span>
             </span>
-            <span className="text-fg-secondary text-sm">{m.description}</span>
-            <span className="text-fg-muted text-xs">{t.shippingPriceSoon}</span>
+            {o.description && <span className="text-fg-secondary text-sm">{o.description}</span>}
+            {o.available && o.days && (
+              <span className="text-fg-muted text-xs">{s.eta(o.days.min, o.days.max)}</span>
+            )}
           </span>
         </label>
       ))}
@@ -205,12 +263,18 @@ export function PaymentSection() {
 export function OrderSummary({
   items,
   hasAddress,
+  hasShipping = true,
+  shippingFee = null,
   couponDiscount = 0,
   placeState = { status: "idle" },
   onPlace,
 }: {
   items: readonly CartItem[];
   hasAddress: boolean;
+  /** روش ارسال انتخاب شده است؟ (پیش‌فرض بله) */
+  hasShipping?: boolean;
+  /** هزینه‌ی ارسال روش انتخاب‌شده (تومان)؛ null یعنی هنوز انتخاب نشده. */
+  shippingFee?: number | null;
   couponDiscount?: number;
   placeState?: PlaceOrderState;
   /** وقتی داده نشود، دکمه غیرفعال می‌ماند. */
@@ -218,7 +282,7 @@ export function OrderSummary({
 }) {
   const placing = placeState.status === "placing" || placeState.status === "redirecting";
   const failure = placeState.status === "failed" ? placeState.failure : null;
-  const canPlace = hasAddress && Boolean(onPlace) && !placing;
+  const canPlace = hasAddress && hasShipping && Boolean(onPlace) && !placing;
   const savings = cartSavings(items);
   return (
     <aside
@@ -245,14 +309,22 @@ export function OrderSummary({
         )}
         <div className="flex justify-between">
           <dt className="text-fg-muted">{t.shippingRow}</dt>
-          <dd className="text-fg-muted text-xs">{t.shippingRowPending}</dd>
+          {shippingFee === null ? (
+            <dd className="text-fg-muted text-xs">{t.shippingRowPending}</dd>
+          ) : shippingFee === 0 ? (
+            <dd className="text-ok">{t.shippingRowFree}</dd>
+          ) : (
+            <dd>{price(shippingFee)}</dd>
+          )}
         </div>
         <div className="border-line flex items-baseline justify-between border-t pt-3 text-base font-medium">
           <dt>{t.total}</dt>
-          <dd className="text-lg">{price(cartTotal(items, couponDiscount))}</dd>
+          <dd className="text-lg">
+            {price(cartTotal(items, couponDiscount) + (shippingFee ?? 0))}
+          </dd>
         </div>
       </dl>
-      <p className="text-fg-muted text-xs leading-6">{t.shippingNote}</p>
+      {shippingFee === null && <p className="text-fg-muted text-xs leading-6">{t.shippingNote}</p>}
       <p className="text-fg-muted text-xs leading-6">
         {t.termsPrefix}
         <Link href="/terms" className="text-brand underline underline-offset-4">
@@ -272,6 +344,9 @@ export function OrderSummary({
       {failure && <PlaceFailure failure={failure} />}
       {!failure && !hasAddress && (
         <p className="text-fg-muted text-center text-xs">{t.needAddress}</p>
+      )}
+      {!failure && hasAddress && !hasShipping && (
+        <p className="text-fg-muted text-center text-xs">{s.needMethod}</p>
       )}
       <Link href="/cart" className={buttonVariants({ variant: "ghost", size: "sm" })}>
         {t.backToCart}
@@ -329,6 +404,8 @@ type ViewProps = {
   couponDiscount?: number;
   placeState?: PlaceOrderState;
   onPlace?: () => void;
+  /** روش‌های ارسال؛ بدون آن، بخش ارسال «انتخاب آدرس» را نشان می‌دهد. */
+  shipping?: ShippingProps;
 };
 
 /** نمای خالص صفحه‌ی تسویه. */
@@ -342,7 +419,12 @@ export function CheckoutView({
   couponDiscount = 0,
   placeState,
   onPlace,
+  shipping = idleShipping,
 }: ViewProps) {
+  const selectedOption =
+    shipping.state.status === "ready"
+      ? shipping.state.options.find((o) => o.code === shipping.selectedCode)
+      : undefined;
   if (items.length === 0) {
     return (
       <StateMessage>
@@ -380,7 +462,7 @@ export function CheckoutView({
             <h2 id="checkout-shipping" className="text-lg font-medium">
               {t.shippingTitle}
             </h2>
-            <ShippingSection />
+            <ShippingSection {...shipping} />
           </section>
           <section aria-labelledby="checkout-payment" className="flex flex-col gap-4">
             <h2 id="checkout-payment" className="text-lg font-medium">
@@ -392,6 +474,8 @@ export function CheckoutView({
         <OrderSummary
           items={items}
           hasAddress={selectedId !== null}
+          hasShipping={selectedOption !== undefined}
+          shippingFee={selectedOption ? selectedOption.fee : null}
           couponDiscount={couponDiscount}
           placeState={placeState}
           onPlace={onPlace}

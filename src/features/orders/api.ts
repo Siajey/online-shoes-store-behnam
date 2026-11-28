@@ -15,10 +15,15 @@ export const ORDERS_PAGE_SIZE = 10;
  */
 export async function placeOrder(input: {
   addressId: string;
+  /** کد روش ارسال (methodCode از GET /shipping/options)؛ بک‌اند آن را اجباری می‌خواهد. */
+  shippingMethod: string;
   idempotencyKey: string;
   expectedTotal?: number;
 }): Promise<OrderDetail> {
-  const body: { addressId: string; expectedTotal?: number } = { addressId: input.addressId };
+  const body: { addressId: string; shippingMethod: string; expectedTotal?: number } = {
+    addressId: input.addressId,
+    shippingMethod: input.shippingMethod,
+  };
   if (input.expectedTotal !== undefined) body.expectedTotal = input.expectedTotal;
   const { data } = await api.post<OrderDetailDto>("/orders", {
     ...withCsrf,

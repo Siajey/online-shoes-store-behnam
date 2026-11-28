@@ -1,4 +1,5 @@
 import { isApiRequestError } from "@/lib/api/errors";
+import { shippingCopy } from "@/features/shipping/copy";
 import { ordersCopy as t } from "./copy";
 
 export type PlaceOrderFailure =
@@ -6,6 +7,7 @@ export type PlaceOrderFailure =
   | { kind: "recipient" }
   | { kind: "priceChanged"; message: string }
   | { kind: "couponInvalid"; message: string }
+  | { kind: "shipping"; message: string }
   | { kind: "other"; message: string };
 
 const CODE_MESSAGES: Record<string, string> = {
@@ -37,6 +39,12 @@ export function classifyPlaceOrderError(e: unknown): PlaceOrderFailure {
       return { kind: "priceChanged", message: t.errors.priceChanged };
     case "ORDER_COUPON_INVALID":
       return { kind: "couponInvalid", message: t.errors.couponInvalid };
+    case "SHIPPING_QUOTE_UNAVAILABLE":
+    case "SHIPPING_INVALID_METHOD":
+    case "SHIPPING_METHOD_NOT_FOUND":
+      return { kind: "shipping", message: shippingCopy.errors.methodUnavailable };
+    case "SHIPPING_INVALID_DESTINATION":
+      return { kind: "shipping", message: shippingCopy.errors.destination };
     default:
       return { kind: "other", message: orderMessage(e, t.errors.placeFailed) };
   }
